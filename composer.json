@@ -1,0 +1,24 @@
+{
+    "autoload" : {
+        "psr-4" : {
+             "NIM_Backend\\" : "src/"
+        }
+    },
+    "name" : "NIM_Backend_API",
+    "type" : "project",
+    "require": {
+        "slim/slim": "^3.10",
+        "monolog/monolog": "^1.23",
+        "phpoffice/phpspreadsheet": "^1.9",
+        "mpdf/mpdf": "^8.0",
+        "slim/twig-view": "^2.5",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "config" : {
+        "secure-http" : false
+    },
+    "authors" : [{
+        "name"  : "Fabrizio Santini",
+        "email" : "f.santini@almaviva.it"
+    }]
+}
