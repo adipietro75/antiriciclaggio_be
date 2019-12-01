@@ -4,13 +4,14 @@ namespace NIM_Backend\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use NIM_Backend\Models\DaoFactory as DaoFactory;
 
 class mainAppController
 {
     protected $logger;
     protected $db;
 
-    public function __construct(\Monolog\Logger $logger, $db)
+    public function __construct(\Monolog\Logger $logger, DaoFactory $db)
     {
         global $appConfig;
 
@@ -44,725 +45,665 @@ class mainAppController
         return $response->withJson($data, 200);
     }
 
-    public function monitor(Request $request, Response $response) //, $args)
+    //RC01_antiric.inc --> getForm()
+    public function selezionaConcessionari(Request $request, Response $response)
     {
-        // if (isset($args['filter'])) {
-        //     $stringa = urldecode($args['filter']);
-        // } else {
-        //     $stringa = "";
-        // }
+        $concessionario = null;
+        $traccolta      = null;
+        $anno           = null;
+        $gioco          = null;
+        $tipo_old       = null;
+        $traccolta_old  = null;
+        $semestre_old   = null;
+        $gioco_old      = null;
+        $anno_old       = null;
 
         $request_data = $request->getParsedBody();
-        $application    = "Gestione messaggi 607 - Monitor";
-        $COD_MITT       = $request_data['COD_MITT'];
-        $COD_PROD       = $request_data['COD_PROD'];
-        $P_PK_SG        = $request_data['P_PK_SG'];
-        $stato_flusso   = $request_data['stato_flusso'];
-
-        $flgDisabledProd = "disabled";
-        $flgDisabledSg   = "disabled";
-
-
-        $selectConcessionari   = $this->db->retrieveListConc();
-
-        $selectProduttori   = $this->db->retrieve_prod($COD_MITT);
-
-        $selectSistemiDiGioco   =  $this->db->retrieveSg($COD_MITT, $COD_PROD);  //$db->retrieveSg($COD_MITT,$COD_PROD);
-
-        $selectStati[0]['ID'] = "";
-        $selectStati[0]['DENOMINAZIONE'] = "Tutti";
-        $selectStati[1]['ID'] = "C";
-        $selectStati[1]['DENOMINAZIONE'] = "Chiusi";
-        $selectStati[2]['ID'] = "O";
-        $selectStati[2]['DENOMINAZIONE'] = "Aperti";
-
-
-        //HACK ALE -- COMPONENTE CHE STA SUL REPOSITORY CENTRALE E NON ALL'INTERNO DI OGNI APPLICAZIONE
-        // NAVIGATION BAR
-        //$navbar = new NavigationBar();
-        //$navbar->add_item("Gestione messaggi 607", "/php/videogiochi/gestione_messaggi_607/index.php", "Gestione messaggi 607");	   
-        //$navbar->add_item("Monitor", "", "Monitor");
-        //$response_data['navbarArray              = $navbar->ShowBar();
-        $navbarArray[0] = ["Gestione messaggi 607", "/php/videogiochi/gestione_messaggi_607/index.php", "Gestione messaggi 607"];
-        $navbarArray[1] = ["Monitor", "", "Monitor"];
-        //-----------------------------------
-
-        $response_data = array();
-        $response_data['error']                 = false;
-        $response_data['navbarArray']           = $navbarArray;
-        $response_data['selectConcessionari']   = $selectConcessionari;
-        $response_data['selectProduttori']      = $selectProduttori;
-        $response_data['selectSistemiDiGioco']  = $selectSistemiDiGioco;
-        $response_data['selectStati']           = $selectStati;
-        $response_data['application']           = $application;
-        $response_data['flgDisabledProd']       = $flgDisabledProd;
-        $response_data['flgDisabledSg']         = $flgDisabledSg;
-        $response->write(json_encode($response_data));
-
-        if (is_array($response_data)) {
-            $data = ["status" => "OK", "result" => $response_data];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero del monitoring"];
-            return $response->withJson($data, 500);
+        if (isset($request_data['concessionario'])) {
+            $concessionario = $request_data['concessionario'];
         }
-    }
-	
-	public function listaflussi(Request $request, Response $response)
-    {
-		$request_data = $request->getParsedBody();
-        $COD_MITT       = $request_data['COD_MITT'];
-        $COD_PROD       = $request_data['COD_PROD'];
-        $P_PK_SG        = $request_data['P_PK_SG'];
-        $stato_flusso   = $request_data['stato_flusso'];
-       	$application    = "Gestione messaggi 607 - Lista Flussi";
-	    $comeBackAction = $request_data['comeBackAction'];
-		
-		
-		$listaFlussi   = $this->db->retrieveFlussi($COD_MITT, $COD_PROD, $P_PK_SG, $statoFlusso);
-		
-       // NAVIGATION BAR
-        //$navbar = new NavigationBar();
-        //$navbar->add_item("Gestione messaggi 607", "/php/videogiochi/gestione_messaggi_607/index.php", "Gestione messaggi 607");	   
-        //$navbar->add_item("Monitor", "", "Monitor");
-        //$response_data['navbarArray              = $navbar->ShowBar();
-		$navbar->add_item("Gestione messaggi 607", "/php/videogiochi/gestione_messaggi_607/index.php", "Gestione messaggi 607");	   
-		$navbar->add_item("Lista Flussi", "", "Lista Flussi");
-        //-----------------------------------
 
-        $response_data = array();
-        $response_data['error']                 = false;
-        $response_data['navbarArray']           = $navbarArray;
-		$response_data['COD_MITT']           = $COD_MITT;
-		$response_data['COD_PROD']           = $COD_PROD;
-		$response_data['P_PK_SG']           = $P_PK_SG;
-		$response_data['stato_flusso']           = $stato_flusso;
-		$response_data['comeBackAction']           = $comeBackAction;  
-        $response_data['listaflussi']   		= $listaFlussi;
-        $response_data['application']           = $application;
- 
-
-        $response->write(json_encode($response_data));
-
-        if (is_array($response_data)) {
-            $data = ["status" => "OK", "result" => $response_data];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero della lista flussi"];
-            return $response->withJson($data, 500);
+        if (isset($request_data['anno'])) {
+            $anno = $request_data['anno'];
         }
-    }
 
-	public function dettaglio(Request $request, Response $response)
-    {
-		$request_data = $request->getParsedBody();
-        $p_pk_607_flusso       = $request_data['p_pk_607_flusso'];
-        $msgerr       = $request_data['msgerr'];
-        $msgEsitoUpdateClose        = $request_data['msgEsitoUpdateClose'];
-        $stato_flusso   = $request_data['stato_flusso'];
-       	$application    = "Gestione messaggi 607 - Dettaglio";
-	    $comeBackAction = $request_data['comeBackAction'];
-		$COD_MITT       = $request_data['COD_MITT'];
-        $COD_PROD       = $request_data['COD_PROD'];
-        $P_PK_SG        = $request_data['P_PK_SG'];
-		$esitoModifica  = $request_data['esitoModifica'];
+        if (isset($request_data['tiporaccolta'])) {
+            $traccolta = $request_data['tiporaccolta'];
+        }
 
-		if($comeBackAction=='cruscotto'){
-			$comeBackAction = "cruscotto";
-		}
-		else
-		{
-			$comeBackAction = "listaflussi";
-		}
+        if (isset($request_data['tipogioco'])) {
+            $gioco = $request_data['tipogioco'];
+        }
 
-		$resultFlusso   = $this->db->retrieveFlussi($p_pk_607_flusso);
-		$statoDelFlusso     = $resultFlusso[0]['STATO'];
+        if (isset($request_data['semestre'])) {
+            $semestre = $request_data['semestre'];
+        } else {
+            $semestre = '-1';
+        }
 
-		//indica se sono visibili le griglie dei dettagli invio messaggi
-		$flgGriglieVisibili                     = 1;
+        if (isset($request_data['anno_old'])) {
+            $anno_old = $request_data['anno_old'];
+        }
 
-		if($statoDelFlusso == 3 ||
-				$statoDelFlusso == 4){
-			$flgGriglieVisibili                     = 0;
-		}
-		if($flgGriglieVisibili){
+        if (isset($request_data['tiporaccolta_old'])) {
+            $traccolta_old = $request_data['tiporaccolta_old'];
+        }
 
-			/* messaggi 607 inviati ed accettati */
+        if (isset($request_data['tipogioco_old'])) {
+            $gioco_old = $request_data['tipogioco_old'];
+        }
 
-			$result607ok = $this->db->retrieve_607_ok($p_pk_607_flusso);
-			//if($model->getError()){
-			//	$msgerr                    = $model->getError();
-			//}
+        if (isset($request_data['semestre_old'])) {
+            $semestre_old = $request_data['semestre_old'];
+        } else {
+            $semestre_old = '-1';
+        }
 
-			$num_mess_ok = count($result607ok);
+        $responseData['concessionario'] = $concessionario;
+        $responseData['tiporaccolta']   = $traccolta;
+        $responseData['semestre']       = $semestre;
+        $responseData['tipogioco']      = $gioco;
+        $responseData['anno']           = $anno;
+        $responseData['pars']           = $request_data;
 
-			/* messaggi 607 inviati ed accettati */
+        if (isset($request_data['tipoconc'])) {
+            $tipo = $request_data['tipoconc'];
+        } else {
+            $tipo = 'T';
+        }
 
-			/* messaggi 607 inviati e scartati */
+        if (isset($request_data['tipoconc_old']) && $request_data['tipoconc_old'] != '') {
+            $tipo_old = $request_data['tipoconc_old'];
+        } else {
+            $tipo_old = 'T';
+        }
 
-			$result607nok = $this->db->retrieve_607_nok($p_pk_607_flusso);
-			//if($model->getError()){
-			//	$msgerr                    = $model->getError();
-			//}
+        $responseData['tipoconc_old']     = $tipo_old;
+        $responseData['tiporaccolta_old'] = $traccolta_old;
+        $responseData['semestre_old']     = $semestre_old;
+        $responseData['tipogioco_old']    = $gioco_old;
+        $responseData['anno_old']         = $anno_old;
+        $responseData['tipoconc']         = $tipo;
 
-			$num_mess_nok = count($result607nok);
+        $request_data['visualizza'] = 'Visualizza>>';
 
-			/* messaggi 607 inviati e scartati */
-
-			/* messaggi 607 annullati per tipo periodo e tipologia componente */
-
-			$result607annullatiGrid = $this->db->retrieve_num_600_annullati($p_pk_607_flusso);
-			//if($model->getError()){
-			//	$msgerr                    = $model->getError();
-			//}
-
-
-			/* messaggi 607 annullati per tipo periodo e tipologia componente */
-
-			/* messaggi 607 ritrasmessi e accettati */
-
-			$result607ritrasmAccGrid = $this->db->retrieve_num_600_ritrasm($p_pk_607_flusso);
-			//if($model->getError()){
-			//	$msgerr                    = $model->getError();
-			//}
+        if (isset($request_data['visualizza']) && $request_data['visualizza'] == 'Visualizza>>') {
+            $arrayBind = array(
+                'tipo_conc'    => $tipo,
+                'anno'         => $anno,
+                'semestre'     => $semestre,
+                'tipogioco'    => $gioco,
+                'tiporaccolta' => $traccolta,
+            );
 
 
+            $res = $this->db->selezioneConcessionari($arrayBind);
+            if ($res == null) {
+                $responseData['messaggioConcessionari']  = 'Non sono presenti concessionari per i parametri di ';
+                $responseData['messaggioConcessionari'] .= 'ricerca selezionati';
+            }
 
-			/* messaggi 607 ritrasmessi e accettati */
+            $concOpt = array();
+            if ($this->db->getError() == "" && $res != null) {
+                foreach ($res as $k => $v) {
+                    if ($v['TIPO_CONC'] == 'VID') {
+                        $concOpt[$v['TIPO_CONC'] . $v['COD_CONC']] = (isset($v['RAG_SOC']) ? $v['RAG_SOC'] : '');
+                    } else {
+                        $concOpt[$v['TIPO_CONC'] . $v['COD_CONC']] = $v['COD_CONC'] . ' - ' . (isset($v['RAG_SOC']) ? $v['RAG_SOC'] : '');
+                    }
+                }
+            }
 
-			/* messaggi 607 annullati e non ritrasmessi */
+            if ($this->db->getError() == "") {
+                if (isset($concOpt)) {
+                    $responseData['select_concessionari'] = $concOpt;
+                }
+            } else {
+                $responseData['messaggio'] = $this->db->getError();
+            }
 
-			$result607annNonRitrasmGrid = $this->db->retrieve_num_600_non_ritrasm($p_pk_607_flusso);
-			//if($model->getError()){
-			//	$msgerr                    = $model->getError();
-			//}
-		}
+            $responseData['tipoconcSelected'] = $tipo;
+            $responseData['concessionari']    = $concOpt;
+        }
 
-		//la variabile serve per vedere se ci sono dei messaggi annullati non ritrasmessi
-		// è minore o maggiore di 0
-		$flgNonRistrasmessi = 0;
+        $arrayBind   = array('allIn' => '1',);
+        $res         = $this->db->selezioneTipoConcessionari($arrayBind);
+        $tipoConcOpt = array();
+        foreach ($res as $k => $v) {
+            $tipoConcOpt[$v["TIPO_CONC"]] = $v['DESCRIZIONE'];
+        }
+        $responseData['tipoconcessioni'] = $tipoConcOpt;
 
-		if(!empty($result607annNonRitrasm)){
-			foreach ($result607annNonRitrasm as $message){
-				if($message['CNT']>0){
-					$flgNonRistrasmessi=1;
-				}
-			}
-		}
-
-		$numeroTotale607  = $resultFlusso[0]['NUMERO_TOTALE_607'];
-
-		$dataFineInvio607 = $resultFlusso[0]['DATA_FINE_INVIO607'];
-		$exploded = explode('/', $dataFineInvio607);
-		$dataFineInvio607 = $exploded[2]."/".$exploded[1]."/".$exploded[0];
-
-		$dataFineInvio607Timestamp= strtotime($dataFineInvio607); 
-
-		/* messaggi 607 annullati e non ritrasmessi */
-
-		$dataFineRitr600 = $resultFlusso[0]['DATA_RITRASM_600'];
-
-		$exploded = explode('/', $dataFineRitr600);
-
-		$dataFineRitr600 = $exploded[2]."/".$exploded[1]."/".$exploded[0];
-
-		//timestamp della data odierna
-		$today = date('Y/m/d');
-		$todayTimestamp = strtotime($today);
-
-		//timestamp della data fine ritrasmissione
-		$dataFineRitr600Timestamp = strtotime($dataFineRitr600); 
-
-		//rende modificabile o meno il flusso
-		$flgReadOnly = 0;
-
-		if($statoDelFlusso > 0){
-			$flgReadOnly = 1;
-		}
-
-		// situazione tutti e tre pulsandi disabilitati
-		$flgEnabledButtonRipristinoBD           = "disabled";
-		$flgEnabledButtonChiudiFlussoReinvia    = "disabled";
-		$flgEnabledButtonChiudiFlusso           = "disabled";
-
-		// verifica condizione flusso aperto
-		if(empty($statoDelFlusso)){
-			if($todayTimestamp>$dataFineInvio607Timestamp){
-				if($num_mess_ok != $numeroTotale607){
-					$flgEnabledButtonRipristinoBD = "";
-
-				}
-
-			}
-
-			if($todayTimestamp>$dataFineRitr600Timestamp){
-
-				$flgEnabledButtonRipristinoBD = "";
-
-				if($flgNonRistrasmessi>0){
-					$flgEnabledButtonChiudiFlussoReinvia = "";
-				}else{
-					$flgEnabledButtonChiudiFlusso = "";
-				}
-
-			}
-
-		}
-		
-		$statoDelFlussoString = "APERTO";
-
-		switch ($statoDelFlusso){
-
-			case 1:
-				$statoDelFlussoString = "CHIUSO - reinvio parziale";
-				break;
-
-			case 2:
-				$statoDelFlussoString = "CHIUSO - reinvio completato";
-				break;
-
-			case 3:
-				$statoDelFlussoString = "CHIUSO - ripristino banca dati richesto";
-				break;
-
-			case 4:
-				$statoDelFlussoString = "CHIUSO - rispristino banca dati eseguito";
-				break;
-
-		};
-		
-		
-		$cntAnn             = 0;
-		$cntRitrAcc         = 0;
-		$cntAnnNonRitr      = 0;
-
-		if(!empty($result607annullati)){
-			foreach ($result607annullati as $item){
-				$cntAnn = $cntAnn+$item['CNT'];
-			}
-		}
-
-		if(!empty($result607ritrasmAcc)){
-			foreach ($result607ritrasmAcc as $item){
-				$cntRitrAcc = $cntRitrAcc+$item['CNT'];
-			}
-		}
-
-		if(!empty($result607annNonRitrasm)){
-			foreach ($result607annNonRitrasm as $item){
-				$cntAnnNonRitr = $cntAnnNonRitr+$item['CNT'];
-			}
-		}
-
-
-       // NAVIGATION BAR
-        //$navbar = new NavigationBar();
-        //$navbar->add_item("Gestione messaggi 607", "/php/videogiochi/gestione_messaggi_607/index.php", "Gestione messaggi 607");	   
-        //$navbar->add_item("Monitor", "", "Monitor");
-        //$response_data['navbarArray              = $navbar->ShowBar();
-		$navbar->add_item("Gestione messaggi 607", "/php/videogiochi/gestione_messaggi_607/index.php", "Gestione messaggi 607");	   
-		$navbar->add_item("Lista Flussi", "", "Dettaglio");
-        //-----------------------------------
-
-        $response_data = array();
-        $response_data['error']                 = false;
-        $response_data['navbarArray']           = $navbarArray;
-		$response_data['esitoModifica']           	= $esitoModifica;
-		$response_data['flgEnabledButtonRipristinoBD']           	= $flgEnabledButtonRipristinoBD;
-		$response_data['flgEnabledButtonChiudiFlusso']           	= $flgEnabledButtonChiudiFlusso;
-		$response_data['flgEnabledButtonChiudiFlussoReinvia']          = $flgEnabledButtonChiudiFlussoReinvia;
-		$response_data['flgVisibleButtonModifica']        = $flgVisibleButtonModifica;  
-		$response_data['flgGriglieVisibili']        = $flgGriglieVisibili;  
-		$response_data['p_pk_607_flusso']        = $p_pk_607_flusso;  
-		$response_data['dettaglioFlusso']        = $resultFlusso[0];
-		$response_data['flgVisibleButtonModifica']        = $flgVisibleButtonModifica;  
-        $response_data['application']           = $application;
-		$response_data['num_mess_ok']           = $num_mess_ok;
-		$response_data['num_mess_nok']           = $num_mess_nok;
-		$response_data['result607annullatiGrid']           = $result607annullatiGrid;
-		$response_data['result607ritrasmAccGrid']           = $result607ritrasmAccGrid;	
-		$response_data['result607annNonRitrasmGrid']           = $result607annNonRitrasmGrid;
-		$response_data['statoDelFlusso']           = $statoDelFlusso;	
-		$response_data['statoDelFlussoString']           = $statoDelFlussoString;
-		$response_data['COD_MITT']           = $COD_MITT;
-		$response_data['COD_PROD']           = $COD_PROD;
-		$response_data['P_PK_SG']           = $P_PK_SG;
-		$response_data['statoFlusso']           = $statoFlusso;
-		$response_data['comeBackAction']           = $comeBackAction;
-
-
-        $response->write(json_encode($response_data));
-
-        if (is_array($response_data)) {
-            $data = ["status" => "OK", "result" => $response_data];
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
             return $response->withJson($data, 200);
         } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero del dettaglio"];
+            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei concessionari"];
             return $response->withJson($data, 500);
         }
     }
 
-  	public function updatecloseflusso(Request $request, Response $response)
+    function getDatiTrasmessi(Request $request, Response $response)
     {
-		$request_data = $request->getParsedBody();
-        $p_pk_607_flusso       = $request_data['p_pk_607_flusso'];
-	    $p_stato      		   = $request_data['p_stato'];
+        $request_data = $request->getParsedBody();
 
-		$esitoUpdateClose       = $this->db->updateCloseFlusso($p_pk_607_flusso, $p_stato);		
-		
-		if($esitoUpdateClose==1 && $p_stato==3){
-			$msgEsitoUpdateClose = "E' stato avviato il processo di ripristino della banca dati."
-				. "Controllare sul cruscotto l'avvenuta esecuzione del processo di ripristino richiesto.";
-		}
+        $conctmp = '';
+        $DWHFlag = '0';
+        $tipo_conc = '';
+        $concessionario = null;
 
-		if($esitoUpdateClose==1){
-			$model->db_commit();
-		}else{
-			$model->db_rollback();
-			$msgerr = "Attenzione! Si &eacute; verificato un errore durante l&rsquo;update del flusso, contattare l&rsquo;amministratore del sistema.";
-		}
+        if (isset($request_data['DWH'])) {
+            $DWHFlag = '1';
+        }
 
-		$response_data = array();
- 		$response_data['msgerr']                = $msgerr;
-		$response_data['p_pk_607_flusso']       = $p_pk_607_flusso;
-        $response_data['msgEsitoUpdateClose']   = $msgEsitoUpdateClose;
-		$response_data['action_forward']          	= 'dettaglio';
+        $responseData['pars'] = $request_data;
+        if (isset($request_data['annoPuntuale'])) {
+            $annoPuntuale = $request_data['annoPuntuale'];
+        }
 
-        $response->write(json_encode($response_data));
+        if (isset($request_data['semestrePuntuale'])) {
+            $semestrePuntuale = $request_data['semestrePuntuale'];
+        }
 
-        if (is_array($response_data)) {
-            $data = ["status" => "OK", "result" => $response_data];
+        if (isset($request_data['tipogiocoPuntuale'])) {
+            $GiocoPuntuale = $request_data['tipogiocoPuntuale'];
+        }
+
+        if (isset($request_data) && array_key_exists('F', $request_data) && $request_data['F'] == 'Raccolta fisica') {
+            $tipoRetePuntuale = 'F';
+        } else if (isset($request_data) && array_key_exists('D', $request_data) && $request_data['D'] == 'Raccolta a distanza') {
+            $tipoRetePuntuale = 'D';
+        }
+
+        if (isset($request_data['concessionario'])) {
+            $concessionario = $request_data['concessionario'];
+            if ($concessionario != str_replace('IPP', '', $concessionario)) {
+                $conctmp   = str_replace('IPP', '', $concessionario);
+                $tipo_conc = 'IPP';
+            } elseif ($concessionario != str_replace('GAD', '', $concessionario)) {
+                $conctmp   = str_replace('GAD', '', $concessionario);
+                $tipo_conc = 'GAD';
+            } elseif ($concessionario != str_replace('VID', '', $concessionario)) {
+                $conctmp   = str_replace('VID', '', $concessionario);
+                $tipo_conc = 'VID';
+            } elseif ($concessionario != str_replace('IDLG', '', $concessionario)) {
+                $conctmp   = str_replace('IDLG', '', $concessionario);
+                $tipo_conc = 'IDLG';
+            } elseif ($concessionario != str_replace('AI', '', $concessionario)) {
+                $conctmp   = str_replace('AI', '', $concessionario);
+                $tipo_conc = 'AI';
+            } elseif ($concessionario != str_replace('AS', '', $concessionario)) {
+                $conctmp   = str_replace('AS', '', $concessionario);
+                $tipo_conc = 'AS';
+            } elseif ($concessionario != (str_replace('S', '', $concessionario))) {
+                $conctmp   = str_replace('S', '', $concessionario);
+                $tipo_conc = 'S';
+            } elseif ($concessionario != str_replace('I', '', $concessionario)) {
+                $conctmp   = str_replace('I', '', $concessionario);
+                $tipo_conc = 'I';
+            } elseif ($concessionario != str_replace('B', '', $concessionario)) {
+                $conctmp   = str_replace('B', '', $concessionario);
+                $tipo_conc = 'B';
+            } elseif ($concessionario != str_replace('X', '', $concessionario)) {
+                $conctmp   = str_replace('X', '', $concessionario);
+                $tipo_conc = 'X';
+            } elseif ($concessionario != str_replace('A', '', $concessionario)) {
+                $conctmp   = str_replace('A', '', $concessionario);
+                $tipo_conc = 'A';
+            }
+        }
+
+        if (isset($request_data['anno'])) {
+            $anno = $request_data['anno'];
+        } else {
+            $anno = -1;
+        }
+
+        if (isset($request_data['tiporaccolta'])) {
+            $traccolta = $request_data['tiporaccolta'];
+        } else {
+            $traccolta = 'T';
+        }
+
+        if (isset($request_data['tipogioco'])) {
+            $gioco = $request_data['tipogioco'];
+        } else {
+            $gioco = '-1';
+        }
+
+        if (isset($request_data['semestre'])) {
+            $semestre = $request_data['semestre'];
+        } else {
+            $semestre = '-1';
+        }
+
+        if ($anno != -1) {
+            $caption = 'Anno ' . $anno;
+        } else {
+            $caption = 'Anno tutti';
+        }
+
+        if ($semestre != -1) {
+            $caption .= '<br /> Periodo ';
+            $caption .= $semestre == 2 ? 'secondo semestre' : 'primo semestre';
+        } else {
+            $caption .= '<br /> Periodo tutti';
+        }
+
+        if ($tipo_conc != 'GAD') {
+            if ($traccolta != 'T') {
+                $caption .= ' <br /> Tipo Raccolta ';
+                $caption .= $traccolta == 'F' ? 'fisica' : 'a distanza';
+            } else {
+                $caption .= ' <br /> Tipo raccolta fisica e a distanza';
+            }
+        }
+
+        $responseData['concessionario'] = $concessionario;
+        $responseData['concessione']    = $conctmp;
+        $responseData['tiporaccolta']   = $traccolta;
+        $responseData['semestre']       = $semestre;
+        $responseData['tipogioco']      = "$gioco";
+        $responseData['anno']           = $anno;
+        $responseData['tipoconc']       = $tipo_conc;
+        $cf                              = $request_data['cf_utente'];
+
+
+        $arrayBind                       = array(
+            'tipo_concIn' => $tipo_conc,
+            'cod_concIn'  => $conctmp,
+            'annoIn'      => $anno,
+            'semestreIn'  => $semestre,
+            'cod_giocoIn' => "$gioco",
+            'tipo_reteIn' => $traccolta,
+            'DWHFlag'     => $DWHFlag,
+            'cfaamsIn'    => $cf,
+            'subarea'     => 1,
+        );
+
+        if (
+            $tipo_conc == 'VID' || $tipo_conc == 'B' || $tipo_conc == 'AI' ||
+            $tipo_conc == 'AS'
+        ) {
+            $responseData['larghezzatabella'] = '40%';
+        } else {
+            $responseData['larghezzatabella'] = '100%';
+        }
+
+        $res = $this->db->selezioneDatiTrasmessi($arrayBind);
+        if ($this->db->getError() == "") {
+            if (isset($res)) {
+                /*
+                    Se giochi = -1 allora faccio vedere tutti i giochi,
+                    altrimenti faccio vedere solo il gioco selezionato e
+                    adatto la tabella alla visualizzazione di un solo gioco.
+                */
+
+                if ($gioco == -1) {
+                    $pars = array(
+                        'tipo_conc' => $tipo_conc,
+                        'tipo_rete' => $traccolta,
+                        'cod_gioco' => null,
+                        'anno'      => null,
+                        'semestre'  => null,
+                    );
+                    if (!$giochi = $this->_selGiochi($pars)) {
+                        $giochi = $this->calcolaGiochi2($tipo_conc, $traccolta);
+                    }
+
+                    $caption .= '<br /> Tipo gioco Tutti';
+                } else {
+                    $pars = array(
+                        'tipo_conc' => $tipo_conc,
+                        'tipo_rete' => $traccolta,
+                        'cod_gioco' => $gioco,
+                        'anno'      => null,
+                        'semestre'  => null,
+                    );
+                    if (!$giochi = $this->_selGiochi($pars)) {
+                        $giochi = $this->calcolaGiochi3($tipo_conc, $gioco);
+                    }
+
+                    $responseData['larghezzatabella'] = '40%';
+                    $caption                          .=
+                        '<br /> Tipo gioco ' . $giochi['DESCR_GIOCO'][0];
+                }
+
+                /*
+                    Se anno = -1 (TUTTI) allora richiamo la funzione
+                    calcolaAnni2 che calcola gli anni a partire dal 2011 Primo
+                    semestre per la costruzione della tabella, altrimenti
+                    calcolo gli anni, semestri in base all'input dell'anno !=-1
+                    e al semestre che può valere ={1,2,-1}.
+                */
+
+                if ($anno == -1) {
+                    $anni = $this->calcolaAnni2($res);
+                } else {
+                    $anni = $this->calcolaAnni3($res, $anno, $semestre);
+                }
+
+                $responseData['result'] = $res;
+                $responseData['giochi'] = $giochi;
+                $responseData['anni']   = $anni;
+            }
+        } else {
+            $responseData['messaggio'] = $this->db->getError();
+        }
+
+        if (isset($tipoRetePuntuale)) {
+            $arrayBind            = array(
+                'tipo_concIn' => $tipo_conc,
+                'cod_concIn'  => $conctmp,
+                'annoIn'      => $annoPuntuale,
+                'semestreIn'  => $semestrePuntuale,
+                'cod_giocoIn' => "$GiocoPuntuale",
+                'tipo_reteIn' => $tipoRetePuntuale,
+                'DWHFlag'     => $DWHFlag,
+                'cfaamsIn'    => $cf,
+                'subarea'     => 1,
+            );
+            $this->db->arr_output = null;
+            $tres3 = $this->db->selezioneDatiTrasmessi($arrayBind);
+            if ($this->db->getError() != "") {
+                $responseData['messaggio'] = $this->db->getError();
+            } else if ($tres3 == null) {
+                $responseData['messaggio'] = $this->db->getError();
+            } else {
+                $responseData['resultPuntuale'] = $tres3;
+            }
+        }
+
+        $responseData['caption'] = $caption;
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
             return $response->withJson($data, 200);
         } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero della chiusura del flusso"];
+            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
             return $response->withJson($data, 500);
         }
-    }  
+    }
 
-  	public function updateflusso(Request $request, Response $response)
+
+    function getDatiTrasmessiCSV(Request $request, Response $response)
     {
-		$request_data		   = $request->getParsedBody();
-        $p_pk_607_flusso       = $request_data['p_pk_607_flusso'];
-	    $p_data_fine_invio607  = $request_data['p_data_fine_invio607'];
-	    $p_numero_totale_607   = $request_data['p_numero_totale_607'];
-	    $p_data_ritrasm_600    = $request_data['p_data_ritrasm_600'];
-	    $p_data_fine_invio607  = $request_data['p_data_replica'];
+        $request_data = $request->getParsedBody();
 
-		$COD_MITT       = $request_data['COD_MITT'];
-		$COD_PROD       = $request_data['COD_PROD'];
-		$P_PK_SG        = $request_data['P_PK_SG'];
-		$statoFlusso    = $request_data['stato_flusso'];		
-		
-		$numero_totale_607_result  = $this->db->verifyExtendFlusso($p_pk_607_flusso, $p_numero_totale_607);
+        $responseData['pars'] = $request_data;
+        if (isset($request_data['concessionario'])) {
+            $concessionario = $request_data['concessionario'];
+            if ($concessionario != str_replace('IPP', '', $concessionario)) {
+                $conctmp   = str_replace('IPP', '', $concessionario);
+                $tipo_conc = 'IPP';
+            } elseif ($concessionario != str_replace(
+                'GAD',
+                '',
+                $concessionario
+            )) {
+                $conctmp   = str_replace('GAD', '', $concessionario);
+                $tipo_conc = 'GAD';
+            } elseif ($concessionario != str_replace(
+                'VID',
+                '',
+                $concessionario
+            )) {
+                $conctmp   = str_replace('VID', '', $concessionario);
+                $tipo_conc = 'VID';
+            } elseif ($concessionario != str_replace(
+                'IDLG',
+                '',
+                $concessionario
+            )) {
+                $conctmp   = str_replace('IDLG', '', $concessionario);
+                $tipo_conc = 'IDLG';
+            } elseif ($concessionario != str_replace(
+                'AI',
+                '',
+                $concessionario
+            )) {
+                $conctmp   = str_replace('AI', '', $concessionario);
+                $tipo_conc = 'AI';
+            } elseif ($concessionario != str_replace(
+                'AS',
+                '',
+                $concessionario
+            )) {
+                $conctmp   = str_replace('AS', '', $concessionario);
+                $tipo_conc = 'AS';
+            } elseif ($concessionario != (str_replace(
+                'S',
+                '',
+                $concessionario
+            ))) {
+                $conctmp   = str_replace('S', '', $concessionario);
+                $tipo_conc = 'S';
+            } elseif ($concessionario != str_replace(
+                'I',
+                '',
+                $concessionario
+            )) {
+                $conctmp   = str_replace('I', '', $concessionario);
+                $tipo_conc = 'I';
+            } elseif ($concessionario != str_replace(
+                'B',
+                '',
+                $concessionario
+            )) {
+                $conctmp   = str_replace('B', '', $concessionario);
+                $tipo_conc = 'B';
+            } elseif ($concessionario != str_replace(
+                'X',
+                '',
+                $concessionario
+            )) {
+                $conctmp   = str_replace('X', '', $concessionario);
+                $tipo_conc = 'X';
+            } elseif ($concessionario != str_replace(
+                'A',
+                '',
+                $concessionario
+            )) {
+                $conctmp   = str_replace('A', '', $concessionario);
+                $tipo_conc = 'A';
+            }
+        }
 
-		$ERRCODE = $numero_totale_607_result['ERRCODE'];
-		$ERRTEXT = $numero_totale_607_result['ERRTEXT'];
-
-		$msgerr = null;
-		if($ERRCODE==0){
-
-			$esito = $this->db->update_extend_flusso($p_pk_607_flusso,$p_data_fine_invio607,$p_numero_totale_607,$p_data_ritrasm_600,$p_data_replica);
-
-			if($esito==1){
-				$msgerr = "Attenzione! Si &eacute; verificato un errore durante l&rsquo;update del flusso, contattare l&rsquo;amministratore del sistema.";
-				$model->db_rollback();
-			}elseif($esito==0){
-				$model->db_commit();
-				$esitoModifica = 1;
-			}elseif($esito==2){
-				$msgerr = $model->getError();
-			}
-
-		}elseif($ERRCODE==1){
-			$msgerr = "Attenzione! Si &eacute; verificato un errore, contattare l&rsquo;amministratore del sistema.";            
-		}elseif($ERRCODE==2){
-			$msgerr = $ERRTEXT;
-		}
-		
-		$response_data = array();
- 		$response_data['msgerr']            = $msgerr;
-		$response_data['statoFlusso']       = $statoFlusso;
-        $response_data['P_PK_SG']   		= $P_PK_SG;
-        $response_data['COD_PROD']   		= $COD_PROD;
-        $response_data['COD_MITT']   		= $COD_MITT;
-        $response_data['p_pk_607_flusso']   = $p_pk_607_flusso;
-        $response_data['esitoModifica']   	= $esitoModifica;
-		$response_data['action_forward']    = 'dettaglio';
-
-        $response->write(json_encode($response_data));
-
-        if (is_array($response_data)) {
-            $data = ["status" => "OK", "result" => $response_data];
-            return $response->withJson($data, 200);
+        if (isset($request_data['anno'])) {
+            $anno = $request_data['anno'];
         } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dell'aggiornamento del flusso"];
-            return $response->withJson($data, 500);
+            $anno = -1;
         }
-    }  
-	
-	public function visualizzaric(Request $request, Response $response)
-    {
-		$request_data = $request->getParsedBody();
-        $p_pk_607_flusso       = $request_data['p_pk_607_flusso'];
 
-		
-		
-		$esito   = $this->db->ritrieve_richiesta_conc($p_pk_607_flusso,$filename,$fileContent);
-		
- 		if($esito==1 ){
-			$file_extension   = strtolower(substr(strrchr($filename,"."),1));
-
-			switch( $file_extension ){
-				case "pdf": $ctype="application/pdf"; break;
-				case "exe": $ctype="application/octet-stream"; break;
-				case "zip": $ctype="application/zip"; break;
-				case "doc": $ctype="application/msword"; break;
-				case "xls": $ctype="application/vnd.ms-excel"; break;
-				case "ppt": $ctype="application/vnd.ms-powerpoint"; break;
-				case "gif": $ctype="image/gif"; break;
-				case "png": $ctype="image/png"; break;
-				case "jpeg":
-					case "jpg": $ctype="image/jpg"; break;
-				case "mp3": $ctype="audio/mpeg"; break;
-				case "wav": $ctype="audio/x-wav"; break;
-				case "mpeg":
-					case "mpg":
-					case "mpe": $ctype="video/mpeg"; break;
-				case "mov": $ctype="video/quicktime"; break;
-				case "avi": $ctype="video/x-msvideo"; break;
-
-				//The following are for extensions that shouldn't be downloaded (sensitive stuff, like php files)
-				case "php":
-					case "htm":
-					case "html":
-					case "txt": $ctype="text/php ; charset=iso-8859-1"; break;
-
-				default: $ctype="application/force-download";
-			}
-
-			ob_clean();
-
-		}
-		else
-		{
-			$msgerr = "Attenzione! Si &eacute; verificato un errore durante la vuslizazione della richiesta, contattare l&rsquo;amministratore del sistema.";
-		}
-
-		$response_data = array();
-        $response_data['error']                 = false;
-		$response_data['msgerr']                = $msgerr;
-		$response_data['p_pk_607_flusso']       = $p_pk_607_flusso;
-        $response_data['fileContent']           = $fileContent;
-		$response_data['filename']          	= $filename;
-		$response_data['ctype']           		= $ctype;
-		$response_data['esito']           		= $esito;
-        $response->write(json_encode($response_data));
-
-        if (is_array($response_data)) {
-            $data = ["status" => "OK", "result" => $response_data];
-            return $response->withJson($data, 200);
+        if (isset($request_data['tiporaccolta'])) {
+            $traccolta = $request_data['tiporaccolta'];
         } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero del documento"];
-            return $response->withJson($data, 500);
+            $traccolta = 'T';
         }
-    }  
-	
-	public function responsocreazione(Request $request, Response $response)
-    {
-		$request_data = $request->getParsedBody();
-        $nomeSistemaDiGioco       = $request_data['nomeSistemaDiGioco'];
-        $nomeConcessionario       = $request_data['nomeConcessionario'];		
-        $p_data_fine_invio607       = $request_data['p_data_fine_invio607'];
-        $p_numero_totale_607       = $request_data['p_numero_totale_607'];		
-        $p_data_ritrasm_600       = $request_data['p_data_ritrasm_600'];		
-        $p_data_replica       = $request_data['p_data_replica'];		
-        $p_anno600       = $request_data['p_anno600'];		
-        $esitoInserimento       = $request_data['esitoInserimento'];		
-		
-		
-		$response_data = array();
-        $response_data['nomeSistemaDiGioco']         = $nomeSistemaDiGioco;
-		$response_data['nomeConcessionario']         = $nomeConcessionario;
-		$response_data['p_data_fine_invio607']       = $p_data_fine_invio607;
-        $response_data['p_numero_totale_607']        = $p_numero_totale_607;
-		$response_data['p_data_ritrasm_600']         = $p_data_ritrasm_600;
-		$response_data['p_data_replica']             = $p_data_replica;
-		$response_data['p_anno600']           		 = $p_anno600;
-		$response_data['esitoInserimento']           = $esitoInserimento;
 
-        $response->write(json_encode($response_data));
-
-        if (is_array($response_data)) {
-            $data = ["status" => "OK", "result" => $response_data];
-            return $response->withJson($data, 200);
+        if (isset($request_data['tipogioco'])) {
+            $gioco = $request_data['tipogioco'];
         } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero del documento"];
-            return $response->withJson($data, 500);
+            $gioco = '-1';
         }
-    }  	
-	
-	public function cruscotto(Request $request, Response $response)
-    {
-		$request_data = $request->getParsedBody();
-        $application       = "Gestione messaggi 607 - Cruscotto";
+
+        if (isset($request_data['semestre'])) {
+            $semestre = $request_data['semestre'];
+        } else {
+            $semestre = '-1';
+        }
+
+        $responseData['concessionario'] = $concessionario;
+        $responseData['tiporaccolta']   = $traccolta;
+        $responseData['semestre']       = $semestre;
+        $responseData['tipogioco']      = $gioco;
+        $responseData['anno']           = $anno;
+        $responseData['tipoconc']       = $tipo_conc;
+        $arrayBind                       = array(
+            'tipo_concIn' => $tipo_conc,
+            'cod_concIn'  => $conctmp,
+            'annoIn'      => $anno,
+            'semestreIn'  => $semestre,
+            'cod_giocoIn' => $gioco,
+            'tipo_reteIn' => $traccolta,
+
+        );
+        $res = $this->db->selezioneDatiTrasmessiCSV($arrayBind);
+        if ($tipo_conc == 'GAD') {
+            if ($anno == -1 && $gioco == -1) {
+                $message = 'NE';
+                $keyMax  = 0;
+                foreach ($res['Q5'] as $key => $value) {
+                    if ($res['Q5'][$key] == '-1.000') {
+                        $res['Q5'][$key] = $message;
+                    }
+
+                    if ($res['Q6'][$key] == '-1.000') {
+                        $res['Q6'][$key] = $message;
+                    }
+
+                    if ($res['Q7'][$key] == '-1.000') {
+                        $res['Q7'][$key] = $message;
+                    }
+
+                    if ($res['Q8'][$key] == '-1.000') {
+                        $res['Q8'][$key] = $message;
+                    }
+
+                    $keyMax = $keyMax;
+                }
+            } else {
+                unset($res['Q5']);
+                unset($res['Q6']);
+                unset($res['Q7']);
+                unset($res['Q8']);
+            }
+        }
+        $responseData['elenco']   = $res;
+        $responseData['sezione']  = 'DATI ANTIRICICLAGGIO';
+        $responseData['sezione'] .= "\n\n Legenda:";
+        $responseData['sezione'] .=
+            "\nND = Non disponibile NE = Non esiste DWH = data warehouse\n";
+        if ($tipo_conc == 'GAD' && $anno == -1 && $gioco == -1) {
+            $responseData['sezione'] .=
+                "\n Anno 2011 \n Q1=Giocate superiori a 1.000 euro ";
+            $responseData['sezione'] .=
+                'Q2=Vincite superiori a 1.000 euro Q3=Operazioni frazionate ';
+            $responseData['sezione'] .=
+                'Q4=Operazioni sospette Q5=Non presente Q6=Non presente ';
+            $responseData['sezione'] .= 'Q7=Non presente Q8=Non presente\n';
+            $responseData['sezione'] .=
+                "\n Anni Maggiori del 2011 \nQ1=Ricariche 1.000 ";
+            $responseData['sezione'] .=
+                'Q2=Ricariche 15.000 Q3=Prelievi 1.000 Q4=Prelievi 15.000 ';
+            $responseData['sezione'] .=
+                'Q5 = Carte 1.000 Q6=Carte 15.000 Q7=Carte Torneo 15.000 ';
+            $responseData['sezione'] .= "Q8=Operazioni sospette \n\n";
+        }
+
+        $responseData['titolo_tabella'] = 'Rapporto Concessorio - Monitoraggio<br>Storia della concessione';
+        $responseData['tpl_name'] = $conctmp;
         
-		//originale ---manca this.log
-		//$listaFlussi = $this->db->retrieveFlussiCruscotto($this->log);		
-		$listaFlussi = $this->db->retrieveFlussiCruscotto();		
-		
-		$navbar->add_item("Gestione messaggi 607", "/php/videogiochi/gestione_messaggi_607/index.php", "Gestione messaggi 607");	   
-		$navbar->add_item("Cruscotto", "", "Cruscotto");		
-		
-		$response_data = array();
-        $response_data['listaFlussi']         = $listaFlussi;
-		$response_data['application']         = $application;
-        $response_data['navbarArray']           = $navbarArray;		
-
-        $response->write(json_encode($response_data));
-
-        if (is_array($response_data)) {
-            $data = ["status" => "OK", "result" => $response_data];
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
             return $response->withJson($data, 200);
         } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero del documento"];
+            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
             return $response->withJson($data, 500);
         }
-    }  	
-	
-	/*
-	public function creazioneFlusso(Request $request, Response $response)
+    }
+
+    /**
+     * Restituisce codice gioco e descrizione su ricerca generica o puntuale.
+     *
+     * Se riceve il codice gioco fornisce la descrizione del gioco.
+     *
+     * @param array $pars Array di tipo conc, rete, anno, semestre e gioco.
+     *
+     * @return array $giochi Resulset con cod_gioco e descr_gioco.
+     */
+    function selezioneGiochi(Request $request, Response $response)
     {
-        $response_data = [];
         $request_data = $request->getParsedBody();
+        $responseData['giochi'] = null;
+        $pars = array(
+            'tipo_conc' => $request_data['tipo_conc'],
+            'tipo_rete' => $request_data['traccolta'],
+            'cod_gioco' => $request_data['cod_gioco'],
+            'anno'      => $request_data['anno'],
+            'semestre'  => $request_data['semestre'],
+        );
 
-        $application = "Gestione messaggi 607 - Creazione flusso";
-        //    REPORT CONDUZIONE RETE TELEMATICA
-        $a = time();
-        $b = date('d M y - H:i:s', $a);
-        $model = new DaoVlt($this->getLog());
-        $ucr  = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $_SERVER['PHP_AUTH_PW']);
-
-        //qui va messo il file che si occupa dell'elaborazione del file trasferito
-        $red  = "/videogiochi/gestione_messaggi_607/index.php/index/salvacreazione/";
-
-        $response_data['ucr'] = $ucr;
-        $response_data['red'] = $red;
-
-        $COD_MITT               = $request_data['COD_MITT'];
-        $PROG_SISTEMA_GIOCO_ID  = $request_data['PROG_SISTEMA_GIOCO_ID'];
-        $p_data_fine_invio607   = $request_data['p_data_fine_invio607'];
-        $p_numero_totale_607    = $request_data['p_numero_totale_607'];
-        $p_data_ritrasm_600     = $request_data['p_data_ritrasm_600'];
-        $p_data_replica         = $request_data['p_data_replica'];
-        $p_richiesta_conc       = $request_data['p_richiesta_conc']; //file da uploadare
-        $p_cf_operatore         = $_SESSION['cf_utente'];
-        $p_anno600              = $request_data['p_anno600'];
-
-        $response_data['msgerr'] = $request_data['esitoInserimento'];
-
-        if ($p_numero_totale_607 == '') {
-            $p_numero_totale_607 = 100;
-        }
-
-        if ($p_data_fine_invio607 == '') {
-            $a = time();
-            $myDate = date('Y-m-d', $a);
-            $newdate = strtotime('+7 day', strtotime($myDate));
-            $newdate = date('d/m/Y', $newdate);
-            $p_data_fine_invio607 = $newdate;
-        }
-
-        $pathFile = $_SESSION['ChunkUpload']['PFX'];
-        $cmd = "find $pathFile -print";
-
-        $path = '/opt/web/php/tmp/server/upload/' . session_id() . '/';
-        $dh  = @opendir($path);
-        while (false !== ($filename = @readdir($dh))) {
-            @unlink($path . $filename);
-        }
-
-        $response_data['COD_MITT']                   = $COD_MITT;
-        $response_data['PROG_SISTEMA_GIOCO_ID']      = $PROG_SISTEMA_GIOCO_ID;
-        $response_data['p_data_fine_invio607']       = $p_data_fine_invio607;
-        $response_data['p_numero_totale_607']        = $p_numero_totale_607;
-        $response_data['p_data_ritrasm_600']         = $p_data_ritrasm_600;
-        $response_data['p_data_replica']             = $p_data_replica;
-        $response_data['p_anno600']                  = $p_anno600;
-
-        // lista concessionari
-        $codmittList   = $model->retrieveListConc();
-        if ($model->getError() != "") {
-            $response_data['msgerr'] = $model->getError();
-        }
-        foreach ($codmittList as $key => $conc) {
-            $concListView[$conc['COD_MITT']] = $conc['DENOMINAZIONE'];
-            if ($conc['COD_MITT'] == $COD_MITT) {
-                $nomeConcessionario = $conc['DENOMINAZIONE'];
+        if (count($pars)) {
+            $retVal = $this->db->selGiochi($pars);
+            if ($this->db->getError() != "") {
+                $responseData['messaggio'] = $this->db->getError();
+            } else if ($retVal == null) {
+                $responseData['messaggio'] = $this->db->getError();
+            } else {
+                $responseData['giochi'] = $retVal;
             }
         }
-        $response_data['nomeConcessionario'] = $nomeConcessionario;
 
-        $selectConcessionari = $this->utilityClass->selectOptions($concListView, $COD_MITT);
-
-        $flgDisabledSg                  = "disabled";
-        $flgDisabledAnnoRiferimento     = "disabled";
-
-        if ($COD_MITT != '') {
-            $flgDisabledSg = "";
-            $resultSistemiGioco     = $model->retrieveSg($COD_MITT);
-            if ($model->getError()) {
-                $response_data['msgerr']                    = $model->getError();
-            }
-
-            foreach ($resultSistemiGioco as $key => $conc) {
-                $resultSistemiGiocoView[$conc['PROG_SISTEMA_GIOCO_ID']] = $conc['DENOMINAZIONE'];
-                if ($conc['PROG_SISTEMA_GIOCO_ID'] == $PROG_SISTEMA_GIOCO_ID) {
-                    $nomeSistemaDiGioco = $conc['DENOMINAZIONE'];
-                }
-            }
-
-            $response_data['nomeSistemaDiGioco'] = $nomeSistemaDiGioco;
-            $selectSistemiDiGioco   = $this->utilityClass->selectOptions($resultSistemiGiocoView, $PROG_SISTEMA_GIOCO_ID);
-            if ($PROG_SISTEMA_GIOCO_ID > 0) {
-                $flgDisabledAnnoRiferimento = "";
-                $resultAnno             = $model->retrievePrimoAnnoValido($COD_MITT, $PROG_SISTEMA_GIOCO_ID);
-                $resultAnni             = $this->utilityClass->getArrayAnni($resultAnno);
-                foreach ($resultAnni as $key => $conc) {
-                    $resultAnniView[$conc['ANNO_ID']] = $conc['ANNO'];
-                }
-            }
-
-            $selectAnni             = $this->utilityClass->selectOptions($resultAnniView, $p_anno600);
-        }
-
-        //$this->COD_FLUSSO                   = $COD_FLUSSO;
-        $response_data['selectConcessionari']            = $selectConcessionari;
-        $response_data['selectSistemiDiGioco']           = $selectSistemiDiGioco;
-        $response_data['selectAnniRiferimento']          = $selectAnni;
-
-        $response_data['flgDisabledSg']                  = $flgDisabledSg;
-        $response_data['flgDisabledAnnoRiferimento']     = $flgDisabledAnnoRiferimento;
-
-        // NAVIGATION BAR
-        $navbar = new NavigationBar();
-        $navbar->add_item("Gestione messaggi 607", "/php/videogiochi/gestione_messaggi_607/index.php", "Gestione messaggi 607");
-        $navbar->add_item("Creazione", "", "Creazione");
-
-        $response_data['displayMenuMonitorLinks']  = 'block';
-        $response_data['displayMenuMonitorLinks2'] = 'none';
-        $response_data['navbarArray']              = $navbar->ShowBar();
-        $response_data['application']              = $application;
-        $response_data['error']                    = $model->error;
-
-
-        $response->write(json_encode($response_data));
-
-        if (is_array($response_data)) {
-            $data = ["status" => "OK", "result" => $response_data];
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
             return $response->withJson($data, 200);
         } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero del monitoring"];
+            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei giochi"];
             return $response->withJson($data, 500);
         }
-    }*/
+    }
+    function _selGiochi($pars)
+    {
+        if (count($pars)) {
+            return $this->db->selGiochi($pars);
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * Costruisce option per menu a tendina scelta giochi.
+     *
+     * @param string $tipoConc Tipo Concessione.
+     *
+     * @return array $giochi Array con chiave=cod_gioco e valore=descr_gioco.
+     */
+    function giochiDisponibiliPerConcessione(Request $request, Response $response)
+    {
+        $request_data = $request->getParsedBody();
+        $tipoConc = $request_data['tipoConc'];
+        if ($tipoConc == 'T') {
+            $tipoConc = null;
+        }
+
+        $pars   = array(
+            'tipo_conc' => $tipoConc,
+            'tipo_rete' => null,
+            'cod_gioco' => null,
+            'anno'      => null,
+            'semestre'  => null,
+        );
+
+        $giochi = $this->db->selezioneGiochi($pars);
+        if ($giochi && is_array($giochi) && count($giochi)) {
+            $responseData['tipogiochi'] = array();
+            foreach ($giochi as $k => $v) {
+                $responseData['tipogiochi'][$v['COD_GIOCO']] = $v['DESCR_GIOCO'];
+            }
+        }
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei giochi disponibili"];
+            return $response->withJson($data, 500);
+        }
+    }
 }

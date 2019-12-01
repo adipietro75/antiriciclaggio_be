@@ -11,7 +11,7 @@ $container = $app->getContainer();
 $container['logger'] = function($c) {
     $today  = date('Ymd');
     $logger = new \Monolog\Logger('NIM_Logger');
-    $file_handler = new \Monolog\Handler\StreamHandler(sprintf('%s/gestione_messaggi_607/logs/debug_'.$today.'.log', PROJECT_DIRECTORY));
+    $file_handler = new \Monolog\Handler\StreamHandler(sprintf('%s/antiriciclaggio/logs/debug_'.$today.'.log', PROJECT_DIRECTORY));
     $logger->pushHandler($file_handler);
 
     return $logger;

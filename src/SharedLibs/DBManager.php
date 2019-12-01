@@ -521,6 +521,7 @@ class DBManager
     private function bindOut()
     {
         $conn = $this->getConn();
+        $pOut = null;
 
         if (is_array($this->getParametriOut()))
         {
