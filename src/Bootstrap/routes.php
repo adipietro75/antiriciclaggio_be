@@ -14,15 +14,4 @@ $app->group('', function () {
     $this->get('/selezioneGiochi',                  'mainAppController:selezioneGiochi');
     $this->get('/giochiDisponibiliPerConcessione',  'mainAppController:giochiDisponibiliPerConcessione');
 
-    //rc01_contenzioso.inc
-    $this->get('/controlla_valori1', 'mainAppController:controlla_valori1');
-    $this->get('/controlla_valori2', 'mainAppController:controlla_valori2');
-    $this->get('/controlla_valori3', 'mainAppController:controlla_valori3');
-
-    //rc01_model_decaduti.inc
-    $this->get('/CaricaDati', 'mainAppController:CaricaDati');
-
-    //rc01_decadenza.inc
-    $this->get('/checkFields', 'mainAppController:checkfields');
-
 })->add($container['AuthenticationMiddleware']);

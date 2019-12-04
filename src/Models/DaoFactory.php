@@ -2,6 +2,7 @@
 
 namespace NIM_Backend\Models;
 
+use Exception as Exception;
 use NIM_Backend\SharedLibs\DBManager;
 
 class DaoFactory
