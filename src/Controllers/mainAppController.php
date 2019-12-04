@@ -2,8 +2,10 @@
 
 namespace NIM_Backend\Controllers;
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+//use \Psr\Http\Message\ServerRequestInterface as Request;
+//use \Psr\Http\Message\ResponseInterface as Response;
+use Slim\Http\Request as Request;
+use Slim\Http\Response as Response;
 use NIM_Backend\Models\DaoFactory as DaoFactory;
 
 class mainAppController
@@ -638,7 +640,7 @@ class mainAppController
         );
 
         if (count($pars)) {
-            $retVal = $this->db->selGiochi($pars);
+            $retVal = $this->db->selezioneGiochi($pars);
             if ($this->db->getError() != "") {
                 $responseData['messaggio'] = $this->db->getError();
             } else if ($retVal == null) {
@@ -660,7 +662,7 @@ class mainAppController
     function _selGiochi($pars)
     {
         if (count($pars)) {
-            return $this->db->selGiochi($pars);
+            return $this->db->selezioneGiochi($pars);
         }else{
             return null;
         }
