@@ -993,7 +993,7 @@ class mainAppController
         }	
 	}
 
-	function checkFields($giorno, $mese, $anno ,$giorno_provv, $mese_provv, $anno_provv, $num_provv, $diritto, &$messaggio)
+	function checkFields(Request $request, Response $response)
 	{
 		$request_data  = $request->getParsedBody();
         $giorno = $request_data['giorno'];

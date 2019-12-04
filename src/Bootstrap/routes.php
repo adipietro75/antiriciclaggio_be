@@ -23,5 +23,6 @@ $app->group('', function () {
     $this->get('/CaricaDati', 'mainAppController:CaricaDati');
 
     //rc01_decadenza.inc
+    $this->get('/checkFields', 'mainAppController:checkfields');
 
 })->add($container['AuthenticationMiddleware']);
