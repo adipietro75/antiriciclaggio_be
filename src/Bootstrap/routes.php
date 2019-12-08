@@ -6,12 +6,29 @@ use NIM_Backend\Controllers\mainAppController;
 
 $app->group('', function () {
 
+
     $this->get('/',                                 'mainAppController:index');
     $this->get('/alive',                            'mainAppController:alive');
+    
+
+    //RC01_antiric.inc 
     $this->get('/selezionaConcessionari',           'mainAppController:selezionaConcessionari');
     $this->get('/getDatiTrasmessi',                 'mainAppController:getDatiTrasmessi');
     $this->get('/getDatiTrasmessiCSV',              'mainAppController:getDatiTrasmessiCSV');
     $this->get('/selezioneGiochi',                  'mainAppController:selezioneGiochi');
     $this->get('/giochiDisponibiliPerConcessione',  'mainAppController:giochiDisponibiliPerConcessione');
+
+    //RC01_antiric_monitoraggio.inc 
+    $this->get('/getForm',                          'mainAppController:getForm');
+    $this->get('/getResult',                        'mainAppController:getResult');
+    $this->get('/checkInput',                       'mainAppController:checkInput');
+    $this->get('/calcolaAnno',                      'mainAppController:calcolaAnno');
+    $this->get('/getCSV',                           'mainAppController:getCSV');
+    $this->get('/getResult1',                       'mainAppController:getResult1');
+    $this->get('/getCSV1',                          'mainAppController:getCSV1');
+    $this->get('/getResult1det',                    'mainAppController:getResult1det');
+    $this->get('/getCSV1Dett',                      'mainAppController:getCSV1Dett');
+    $this->get('/getResultNew',                     'mainAppController:getResultNew');
+    $this->get('/getCSVNew',                        'mainAppController:getCSVNew');
 
 })->add($container['AuthenticationMiddleware']);

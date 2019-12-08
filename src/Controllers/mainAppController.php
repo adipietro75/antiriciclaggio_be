@@ -774,9 +774,9 @@ class mainAppController
         }
 
 
-        $elencogiochi = $this->giochiDisponibiliPerConcessioneNew($tipo_conc);
+        $elencogiochi = $this->_giochiDisponibiliPerConcessioneNew($tipo_conc);
         if(!is_array($elencogiochi)) {
-            $giochi = $this->giochiDisponibiliPerConcessioneMonitoraggioInc($tipo_conc_visualizza);
+            $giochi = $this->_giochiDisponibiliPerConcessioneMonitoraggioInc($tipo_conc_visualizza);
         }
         $responseData['elencogiochi'] = $elencogiochi;
 
@@ -1168,7 +1168,7 @@ class mainAppController
         return $matriceI;
     }
 
-    function giochiDisponibiliPerConcessioneNew($tipoConc=null)
+    function _giochiDisponibiliPerConcessioneNew($tipoConc=null)
     {
           $pars = array(
                    'tipo_conc' => $tipoConc,
@@ -1189,7 +1189,7 @@ class mainAppController
         return $elencogiochi;
     }
 
-    function giochiDisponibiliPerConcessioneMonitoraggioInc($tipoConc)
+    function _giochiDisponibiliPerConcessioneMonitoraggioInc($tipoConc)
     {
         switch ($tipoConc) {
             case 'S':
