@@ -659,6 +659,7 @@ class mainAppController
             return $response->withJson($data, 500);
         }
     }
+
     function _selGiochi($pars)
     {
         if (count($pars)) {
@@ -709,8 +710,1235 @@ class mainAppController
         }
     }
 	
-	
-	
+    //RC01_antiric_monitoraggio.inc 
+    public function getForm(Request $request, Response $response)
+    {
+        $anno_r         = null;
+        $semestre_r     = null;
+        $tipogioco      = null;
+        $tiporete       = null;
+        $anno           = null;
+        $semestre  = null;
+        $tipoconc   = null;
+
+        $gioco_old      = null;
+        $anno_old       = null;
+
+        $request_data = $request->getParsedBody();
+        if (isset($request_data['anno_r'])) {
+            $anno_r = $request_data['anno_r'];
+        }
+
+        if (isset($request_data['semestre_r'])) {
+            $semestre_r = $request_data['semestre_r'];
+        }
+
+        if (isset($request_data['tipogioco'])) {
+            $tipogioco = $request_data['tipogioco'];
+        }
+
+        if (isset($request_data['tiporete'])) {
+            $tiporete = $request_data['tiporete'];
+        }
+
+        if (isset($request_data['anno'])) {
+            $anno = $request_data['anno'];
+        } else {
+            $anno = '-1';
+        }
+
+        if (isset($request_data['semestre'])) {
+            $semestre = $request_data['semestre'];
+        }
+
+        if (isset($request_data['tipoconc'])) {
+            $tipoconc = $request_data['tipoconc'];
+        }
+
+        $responseData['tipo_conc']        = $tipo_conc;
+        $responseData['tiporete']         = $tiporete;
+        $responseData['tipogioco']        = $tipogioco;
+        $responseData['anno']             = $anno;
+        $responseData['semestre']         = $semestre;
+        $responseData['tipoconcSelected'] = $tipo_conc;
+
+        if (isset($request_data['tipo_conc_visualizza'])) {
+            $tipo_conc_visualizza = $request_data['tipo_conc_visualizza'];
+        }
+
+        if (isset($request_data['visualizza']) && $request_data['visualizza'] == 'Visualizza>>') {
+            $responseData['tipoconc_visualizza'] = $tipo_conc;
+            $tipo_conc_visualizza                 = $tipo_conc;
+        } else {
+            $this->tpl_dat['tipoconc_visualizza'] = isset($this->clear_pars['tipoconc_visualizza']) ? $this->clear_pars['tipoconc_visualizza'] : null;
+        }
+
+
+        $elencogiochi = $this->giochiDisponibiliPerConcessioneNew($tipo_conc);
+        if(!is_array($elencogiochi)) {
+            $giochi = $this->giochiDisponibiliPerConcessioneMonitoraggioInc($tipo_conc_visualizza);
+        }
+        $responseData['elencogiochi'] = $elencogiochi;
+
+        $arrayBind   = array('allIn' => '1',);
+        $res         = $this->db->selezioneTipoConcessionari($arrayBind);
+        $tipoConcOpt = array();
+        foreach ($res as $k => $v) {
+            $tipoConcOpt[$v["TIPO_CONC"]] = $v['DESCRIZIONE'];
+        }
+        $responseData['tipoconcessioni'] = $tipoConcOpt;
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei concessionari"];
+            return $response->withJson($data, 500);
+        }
+        
+    }
+
+    public function getResult(Request $request, Response $response)
+    {
+        $request_data = $request->getParsedBody();
+        $anno             = $request_data['anno'];
+        $semestre         = $request_data['semestre'];
+        $tipoconc         = $request_data['tipoconc'];
+        $tipogioco        = $request_data['tipogioco']; 
+        $tiporete         = $request_data['tiporete'] ;
+
+
+        $responseData['anno']      = $anno;
+        $responseData['semestre']  = $semestre;
+        $responseData['tipoconc']  = $tipoconc;
+        $responseData['tipogioco'] = $tipogioco;
+
+        $cf         = $request_data['cf_utente'] ;
+        $responseData['tiporete'] = $tiporete;
+
+        if ($this->_checkGioco($tipo_conc, $tipogioco, $anno) == 0 ||
+        $this->_controllaPeriodoConcessione($tipo_conc, $semestre,
+                $anno, $tiporete, $tipogioco) == 0
+        || !$this->_vincoli($tipo_conc, $anno, $semestre, $tiporete)
+        ) {
+            $responseData['messaggio'] = 'Dati di ricerca incongruenti';
+            return -1;
+        } elseif ($this->_controllaPeriodoConcessione($tipo_conc, $semestre, $anno, $tiporete, $tipogioco) == -1) {
+            $responseData['messaggio'] = 'Non si possono effettuare ricerche per periodi non conclusi';
+            return -1;
+        }
+
+    }   
+
+    function _controllaPeriodoConcessione($tipoconc, $periodo, $anno, $tiporete, $codgioco)
+    {
+         $annoAttuale = date('y');
+         $meseAttuale = date('m');
+         // $meseAttuale = '07';
+ 
+         if ($codgioco == 7 && $tiporete == 'F') {
+             return 0;
+         }
+ 
+         // Caso I semestre non concluso oppure concluso.
+         if ($annoAttuale == substr($anno, 2) && $periodo == 1 &&
+         $meseAttuale <= '06') {
+             $step = 1;
+             return -1;
+         } else if ($annoAttuale == substr($anno, 2) && $periodo == 2) {
+             $step = 22;
+             return -1;
+         } elseif ($tiporete == 'F' && $tipoconc == 'GAD') {
+             $step = 3;
+             return 0;
+         } elseif (($tipoconc == 'VID' && $tiporete == 'D') ||
+         ($tipoconc == 'IDLG' && $tiporete == 'D')) {
+             return 0;
+         } else {
+             $step = 8;
+             return 1;
+         }
+    }
+    
+    function _checkGioco($tipoConc, $gioco, $anno=null) 
+    {
+
+       if ($gioco == -1) {
+           return 1;
+       }
+
+       switch ($tipoConc) {
+           case 'S':
+               if ($gioco != 6 && $gioco != 2 && $gioco != 5 && $gioco != 7) {
+                   return 0;
+               }
+           break;
+
+           case'I':
+               if ($gioco != 1 && $gioco != 2 && $gioco != 5 && $gioco != 7) {
+                   return 0;
+               }
+           break;
+
+           case'IDLG':
+               if ($gioco != 1 && $gioco != 5) {
+                   return 0;
+               }
+           break;
+
+           case 'IPP':
+           case 'AI':
+               if ($gioco != 1) {
+                   return 0;
+               }
+           break;
+
+           case 'AS':
+               if ($gioco != 6) {
+                   return 0;
+               }
+           break;
+
+           case 'B':
+               if ($gioco != 8) {
+                   return 0;
+               }
+           break;
+
+           case 'GAD':
+               if ($anno == 2011) {
+                   if ($gioco != 1 && $gioco != 5 && $gioco != 2 &&
+                   $gioco != 6 && $gioco != 7 && $gioco != 8) {
+                       return 0;
+                   }
+               } else {
+                   if ($gioco != 0) {
+                       return 0;
+                   }
+               }
+           break;
+
+           case 'VID':
+               if ($gioco != '10') {
+                   return 0;
+               }
+           break;
+
+           case'X':
+               if ($gioco != 1 && $gioco != 2 && $gioco != 5 && $gioco != 6) {
+                   return 0;
+               }
+           break;
+       }
+       
+       return 1;
+    }
+
+    function _vincoli($tipo_conc, $anno, $semestre, $tipo_rete) 
+    {
+        $result = null;
+        $step   = 0;
+        if ($tipo_rete == 'F' && $tipo_conc == 'GAD') {
+            $step   = 1;
+            $result = false;
+        } elseif ($anno == 2011 && $semestre == 1) {
+            if ($tipo_conc == 'GAD') {
+                $step   = 2;
+                // $result = false;
+                $result = true;
+            } else {
+                $step   = 3;
+                $result = true;
+            }
+        } elseif (($anno == 2011 && $semestre == 2) || $anno > 2011) {
+            if ($tipo_conc == 'GAD' && $tipo_rete == 'F') {
+                $step   = 4;
+                $result = false;
+            } elseif ($tipo_conc != 'GAD' && $tipo_rete == 'D') {
+                $step   = 5;
+                $result = false;
+            } elseif ($tipo_conc == 'GAD' && $tipo_rete == 'D') {
+                $step   = 6;
+                $result = true;
+            } elseif ($tipo_conc != 'GAD' && $tipo_rete == 'F') {
+                $step   = 7;
+                $result = true;
+            }
+        } elseif ($anno == -1 && $tipo_conc == 'GAD') {
+            $step   = 8;
+            $result = true;
+        }
+        // ECHO "\nstep=".$step;
+        // ECHO "\nresult=".$result;
+        return $result;
+    }
+
+    function checkInput(Request $request, Response $response)
+    {
+        $request_data = $request->getParsedBody();
+        $anno             = $request_data['anno'];
+        $semestre         = $request_data['semestre'];
+        $tipoconc         = $request_data['tipoconc'];
+        $tipogioco        = $request_data['tipogioco']; 
+        $tiporete         = $request_data['tiporete'] ;
+
+        if ($semestre != null && $semestre != '' &&
+                $anno != null &&  $anno != '' &&
+                $tipogioco != null &&$tipogioco != '' &&
+                $tipoconc != null && $tipoconc != '' &&
+                $tiporete != null && $tiporete != ''
+        ) 
+        {
+            $retval =  true;
+            $responseData['messaggio']="";
+        } 
+        else 
+        {
+            $retval =  false;
+            $responseData['messaggio'] = 'I Campi sono obbligatori';
+            return false;
+        }
+
+        $responseData['tipoconcessioni'] = $tipoConcOpt;
+        $responseData['retval'] = $retval;
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il controllo dei parametri"];
+            return $response->withJson($data, 500);
+        }
+    }
+
+    function calcolaAnno(Request $request, Response $response)
+    {
+        $anno     = date('y');
+        $arrAnno  = Array();
+        $partenza = 11;
+        $count    = 0;
+        while ($anno - $partenza >= 0) {
+            if ($anno > 9) {
+                $arrAnno['20'.$anno] = '20'.$anno;
+            } else {
+                $arrAnno['200'.$anno] = '200'.$anno;
+            }
+            $count++;
+            $anno--;
+        }
+
+        $responseData['arrAnno'] = $arrAnno;
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il controllo dei parametri"];
+            return $response->withJson($data, 500);
+        }
+
+    }
+
+    function getCSV(Request $request, Response $response) 
+    {
+
+        $request_data = $request->getParsedBody();
+        $anno             = $request_data['anno'];
+        $semestre         = $request_data['semestre'];
+        $tipoconc         = $request_data['tipoconc'];
+        $tipogioco        = $request_data['tipogioco']; 
+        $tiporete         = $request_data['tiporete'] ;
+        $paginaCSV         = $request_data['paginaCSV'] ;
+
+        $responseData['anno']      = $anno;
+        $responseData['semestre']  = $semestre;
+        $responseData['tipoconc']  = $tipoconc;
+        $responseData['tipogioco'] = $tipogioco;
+        $responseData['tiporete'] = $tiporete;
+
+
+        if (isset($paginaCSV) && $paginaCSV) {
+            $pagina = $paginaCSV;
+        } else {
+            $pagina                        = 1;
+            $responseData['paginaCSV'] = $pagina;
+        }
+
+        $arrayBind = array(
+            'tipo_concIn' => $tipo_conc,
+            'annoIn' => $anno,
+            'semestreIn' => $semestre,
+            'cod_giocoIn' => $tipogioco,
+            'tipo_reteIn' => $tiporete,
+            'cfaamsIn' => '',
+            'pagina' => null,
+            'num_res' => null
+        );
+
+        $paging    = 40;
+        $res  = $this->db->selElencoInadempienti($arrayBind);
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = $this->db->getError();
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = $this->db->getError();
+        } else {
+            if ($tipogioco != -1) {
+                $descr_gioco                       = $res[0]['DESCR_GIOCO'];
+                $responseData['tipo_concessione']  = $res[0]['DESCR'];
+                $campi                             = array(
+                                                      'COD_CONC' => 'Codice concessione',
+                                                      'RAG_SOC' => 'Ragione Sociale',
+                                                      'DATA_CONC' => 'Data stipula concessione'
+                                                     );
+            } else {
+                $descr_gioco                       = 'TUTTI';
+                $responseData['tipo_concessione']  = $res[0]['DESCR'];
+                $campi                             = array(
+                                                      'COD_CONC'    => 'Codice concessione',
+                                                      'RAG_SOC'     => 'Ragione Sociale',
+                                                      'DATA_CONC'   => 'Data stipula concessione',
+                                                      'DESCR_GIOCO' => 'Tipo gioco non trasmesso'
+                                                     );
+            }
+            if($tipo_conc == 'VID') {
+                if(is_array($res) && count($res)) {
+                    foreach($res as $k => $v) {
+                        $res[$k]['COD_CONC'] = 'ND';
+                    }
+                }
+            }
+
+            $res = $this->_trasposizioneMatrice($res, $campi);
+            $responseData['elenco'] = $res;
+            if ($tipo_conc != 'GAD') {
+                if ($tiporete == 'F') {
+                    $tiporeteSTR = '\n Tipo raccolta fisica \n';
+                } else {
+                    $tiporeteSTR = '\n Tipo raccolta a distanza \n';
+                }
+            } else {
+                $tiporeteSTR = '\n';
+            }
+
+            if ($semestre == 1) {
+                $semestreSTR = ' primo semestre';
+            } else {
+                $semestreSTR = ' secondo semestre';
+            }
+            
+            $annosemestre = " \n anno ".$anno.$semestreSTR;
+            $responseData['sezione'] = 'Antiriciclaggio - Elenco concessionari inadempienti '.
+            $responseData['tipo_concessione']."\n\n  "
+                    . $annosemestre . $tiporeteSTR . 'Tipo gioco ' . $descr_gioco;
+            $responseData['tpl_name']= 'Monitoraggio'.$responseData['tipo_concessione'];
+        }
+
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il reperimento csv"];
+            return $response->withJson($data, 500);
+        }
+    }
+ 
+    function _trasposizioneMatrice($matrice, $campi) 
+    {
+        foreach ($matrice as $key => $value) {
+            foreach ($campi as $key2 => $campo) {
+                if (isset($matrice[$key][$key2])) {
+                    $var = $matrice[$key][$key2];
+                    $var = str_replace('<br /><br />', ',', $var);
+                    $var = str_replace('-', '', $var);
+
+                    // $var=str_replace($var, '#', ' ');
+
+                    $matriceI[$campo][$key] = $var;
+                } else {
+                    $matriceI[$campo][$key] = " ";
+                }
+            }
+        }
+
+        return $matriceI;
+    }
+
+    function giochiDisponibiliPerConcessioneNew($tipoConc=null)
+    {
+          $pars = array(
+                   'tipo_conc' => $tipoConc,
+                   'tipo_rete' => null,
+                   'cod_gioco' => null,
+                   'anno'      => null,
+                   'semestre'  => null,
+                  );
+        $giochi = $this->_selGiochi($pars);
+        if ($giochi && is_array($giochi) && count($giochi)) {
+            $elencogiochi = array();
+            foreach ($giochi as $k => $v) {
+                $elencogiochi[$v['COD_GIOCO']] =
+                $v['DESCR_GIOCO'];
+            }
+        }
+
+        return $elencogiochi;
+    }
+
+    function giochiDisponibiliPerConcessioneMonitoraggioInc($tipoConc)
+    {
+        switch ($tipoConc) {
+            case 'S':
+                $elencogiochi =
+                array(
+                 '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                 '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                 '5' => 'IPPICA NAZIONALE',
+                 '7' => "GIOCHI DI ABILITA'",
+                );
+            break;
+
+            case'IDLG':
+                $elencogiochi =
+                array(
+                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                 '5' => 'IPPICA NAZIONALE',
+                );
+            break;
+
+            case 'I':
+                $elencogiochi =
+                array(
+                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                 '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                 '5' => 'IPPICA NAZIONALE',
+                 '7' => "GIOCHI DI ABILITA'",
+                );
+            break;
+
+            case 'AI':
+                $elencogiochi =
+                array(
+                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                );
+            break;
+
+            case 'IPP':
+                $elencogiochi =
+                array(
+                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                );
+            break;
+
+            case 'AS':
+                $elencogiochi =
+                array(
+                 '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                );
+            break;
+
+            case 'B':
+                $elencogiochi =
+                array(
+                 '8' => 'BINGO',
+                );
+            break;
+
+            case 'GAD':
+                $elencogiochi =
+                array(
+                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                 '5' => 'IPPICA NAZIONALE',
+                 '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                 '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                 '7' => "GIOCHI DI ABILITA'",
+                 '8' => 'BINGO',
+                 '0' => 'GIOCO A DISTANZA',
+                );
+            break;
+
+            case 'VID':
+                $elencogiochi = array(
+                                                  '10' => 'VIDEOGIOCHI',
+                                                 );
+            break;
+
+            case 'X':
+                $elencogiochi =
+                array(
+                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                 '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                 '5' => 'IPPICA NAZIONALE',
+                 '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                );
+            break;
+
+            default:
+            $elencogiochi =
+                array(
+                 '0'  => 'GIOCO A DISTANZA',
+                 '1'  => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                 '5'  => 'IPPICA NAZIONALE',
+                 '2'  => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                 '6'  => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                 '7'  => "GIOCHI DI ABILITA'",
+                 '8'  => 'BINGO',
+                 '10' => 'VIDEOGIOCHI',
+                );
+            break;
+        }
+
+        return $elencogiochi;
+    }
+
+
+    function getResult1(Request $request, Response $response) 
+    {
+        $request_data = $request->getParsedBody();
+        $anno_r             = $request_data['anno_r'];
+        $semestre_r         = $request_data['semestre_r'];
+        $cf_utente         = $request_data['cf_utente'];
+
+        $arrayBind                   = array(
+                                        'in_anno'     => $anno_r,
+                                        'in_semestre' => $semestre_r,
+                                        'cfaamsIn'    => $cf,
+                                       );
+
+        $res = $this->db->selProspetti($arrayBind);
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = $this->db->getError();
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = 'Prospetto riepilogativo selezionato non disponibile';
+        } else {
+            $responseData['dati_post']   = $this->clear_pars;
+            $responseData['show_ancora'] = 1;
+            $responseData['elenco']      = $res;
+        }
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del prospetto riepilogativo"];
+            return $response->withJson($data, 500);
+        }
+    }
+
+
+    function getCSV1(Request $request, Response $response) 
+    {
+        $request_data = $request->getParsedBody();
+        $anno_r             = $request_data['anno_r'];
+        $semestre_r         = $request_data['semestre_r'];
+        $cf_utente         = $request_data['cf_utente'];
+
+        $arrayBind                   = array(
+                                        'in_anno'     => $anno_r,
+                                        'in_semestre' => $semestre_r,
+                                        'cfaamsIn'    => $cf,
+                                       );
+
+        $res = $this->db->selProspetti($arrayBind);
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = $this->db->getError();
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = 'Prospetto riepilogativo selezionato non disponibile';
+        } else {
+            $campi = array(
+                'ANNO'                => 'Anno',
+                'SEMESTRE'            => 'Semestre',
+                'TOT_GP_OK_NON'       => 'Giochi Ippici e Sportivi non attivi che hanno trasmesso',
+                'TOT_BINGO_OK_NON'    => 'Bingo non attivi che hanno trasmesso',
+                'TOT_GAD_OK_NON'      => 'GAD non attivi che hanno trasmesso',
+                'TOT_VID_OK_NON'      => 'Apparecchi da intrattenimento non attivi che hanno trasmesso',
+                'TOT_OK_NON'          => 'non attivi che hanno trasmesso',
+                'TOT_GP_OK_DWH_OK'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_BINGO_OK_DWH_OK' => 'Bingo che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_GAD_OK_DWH_OK'   => 'GAD che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_VID_OK_DWH_OK'   => 'Apparecchi da intrattenimento che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_OK_DWH_OK'       => 'attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_GP_OK_DWH_KO'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_BINGO_OK_DWH_KO' => 'Bingo che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_GAD_OK_DWH_KO'   => 'GAD che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_VID_OK_DWH_KO'   => 'Apparecchi da intrattenimento che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_OK_DWH_KO'       => 'che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_GP_OK'           => 'Giochi Ippici e Sportivi che hanno trasmesso',
+                'TOT_BINGO_OK'        => 'Bingo che hanno trasmesso',
+                'TOT_GAD_OK'          => 'GAD che hanno trasmesso',
+                'TOT_VID_OK'          => 'Apparecchi da intrattenimento che hanno trasmesso',
+                'TOT_OK'              => 'che hanno trasmesso',
+                'TOT_GP_KO'           => 'Giochi Ippici e Sportivi inadempienti',
+                'TOT_BINGO_KO'        => 'Bingo inadempienti',
+                'TOT_GAD_KO'          => 'GAD inadempienti',
+                'TOT_VID_KO'          => 'Apparecchi da intrattenimento inadempienti',
+                'TOT_KO'              => 'inadempienti',
+                'TOT_GP_CONC'         => 'Giochi Ippici e Sportivi attivi',
+                'TOT_BINGO_CONC'      => 'Bingo attivi',
+                'TOT_GAD_CONC'        => 'GAD attivi',
+                'TOT_VID_CONC'        => 'Apparecchi da intrattenimento attivi',
+                'TOT_CONC'            => 'attivi'
+               );
+
+                $res = $this->_trasposizioneMatrice($res, $campi);
+                $responseData['show_ancora'] = 1;
+                $responseData['elenco']      = $res;
+                $responseData['sezione']     = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio \n\n ANNO '
+                                                .$anno? $anno : 'tutti'.' SEMESTRE '. $semestre? $semestre : 'tutti';
+                $responseData['tpl_name']    = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio';
+        }
+    }
+
+    function getResult1det(Request $request, Response $response) 
+    {
+        $request_data = $request->getParsedBody();
+        $dettLinkAnno             = $request_data['dettLinkAnno'];
+        $dettLinkSem         = $request_data['dettLinkSem'];
+        $dettlink         = $request_data['dettlink'];
+        $cf_utente         = $request_data['cf_utente'];
+        $paging                = 40;
+
+        if (isset($request_data['pagina']) && $request_data['pagina']) {
+            $pagina = $request_data['pagina'];
+        } else {
+            $pagina                     = 1;
+            $responseData['pagina'] = $pagina;
+        }
+        /*
+         * Trucchetto per mantenere il numero di pagina quando si richiede il CSV,
+         * Faccio questo perché altrimenti perderei il parametro pagina
+         */
+        if ($pagina != null && $pagina != '') {
+            $responseData['paginaCSV'] = $pagina;
+        }
+        /*
+          End Trucchetto
+        */
+
+        if( isset($request_data['forn_ord_campo']) && $request_data['forn_ord_campo']){
+            if( $request_data['verso_ord'] == 'desc' ){
+                $responseData['verso_ord']           = 'asc';
+                $responseData['forn_ord_campo_corr'] = $request_data['forn_ord_campo'];
+                $verso_ord                            = 'desc';
+            } else {
+                $responseData['verso_ord']           = 'desc';
+                $responseData['forn_ord_campo_corr'] = $request_data['forn_ord_campo'];
+                $verso_ord                            = 'asc';
+            }
+            $forn_ord_campo = $request_data['forn_ord_campo'];
+        } else {
+            if ( !isset($request_data['verso_ord']) ) {
+                $responseData['verso_ord'] = 'desc';
+                $verso_ord                  = 'asc';
+            } else {
+                if($this->clear_pars['verso_ord'] == 'desc'){
+                    $responseData['verso_ord'] = 'asc';
+                    $verso_ord                  = 'desc';
+                } else {
+                    $responseData['verso_ord'] = 'desc';
+                    $verso_ord                  = 'asc';
+                }
+            }
+            $forn_ord_campo                       = '';
+            $responseData['forn_ord_campo_corr'] = 'TIPO_CONC';
+        }
+
+        $arrayBind = array(
+            'anno_in'              => $dett_anno_r,
+            'semestre_in'          => $dett_semestre_r,
+            'tipodett_in'          => $tipodett,
+            'pagina_in'            => $pagina,
+            'num_res_in'           => $paging,
+            'campo_ordinamento_in' => $forn_ord_campo,
+            'verso_ordinamento_in' => $verso_ord,
+            'cfaamsIn'             => $cf,
+           );
+        $res = $this->db->calcolaStatDett($arrayBind);
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = 'Disallineamento tabella dettaglio';
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = 'Nessun concessionario per i parametri selezionati';
+        } else {
+            $responseData['dati_post']           = $this->clear_pars;
+
+            $responseData['show_ancora']         = 1;
+            $totale_parziale                      = count($res);
+
+            $totale_generale                      = $res[0]['ROWS_TOT'];
+            $totConcDist                          = $res[0]['ROWS_TOT2'];
+            $nButton                              = ceil(($totale_generale / $paging));
+            $responseData['elenco']['risultati'] = $res;
+            $responseData['elenco']['pagestot']  = $nButton + 1;
+            $responseData['starting_from']       = ($paging * $pagina - ($paging - 1) -1);// Valore del counter start nel tpl
+            $responseData['table_caption']       = 'Anno: ' . $dett_anno_r .
+                                                    ' Semestre: '.$dett_semestre_r.'<br>' .
+                                                    'Elenco Concessionari ';
+            $responseData['dett_anno_r']         = $dett_anno_r;
+            $responseData['dett_semestre_r']     = $dett_semestre_r;
+            $responseData['dettlink_r']          = $tipodett;
+            
+            
+            $tipoGiochi = array(
+                            'TOT_GP_OK_NON'       =>
+                'Giochi Ippici e Sportivi non attivi che hanno trasmesso',
+                            'TOT_BINGO_OK_NON'    =>
+                'Bingo non attivi che hanno trasmesso',
+                            'TOT_GAD_OK_NON'      =>
+                'GAD non attivi che hanno trasmesso',
+                            'TOT_VID_OK_NON'      =>
+                'Apparecchi da intrattenimento non attivi che hanno trasmesso',
+                            'TOT_OK_NON'          =>
+                'non attivi che hanno trasmesso',
+                            'TOT_GP_OK_DWH_OK'    =>
+                'Giochi Ippici e Sportivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                            'TOT_BINGO_OK_DWH_OK' =>
+                'Bingo che hanno trasmesso dati coincidenti con DataWareHouse',
+                            'TOT_GAD_OK_DWH_OK'   =>
+                'GAD che hanno trasmesso dati coincidenti con DataWareHouse',
+                            'TOT_VID_OK_DWH_OK'   =>
+                'Apparecchi da intrattenimento che hanno trasmesso dati coincidenti con DataWareHouse',
+                            'TOT_OK_DWH_OK'       =>
+                'attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                            'TOT_GP_OK_DWH_KO'    =>
+                'Giochi Ippici e Sportivi che hanno trasmesso dati diversi da DataWareHouse',
+                            'TOT_BINGO_OK_DWH_KO' =>
+                'Bingo che hanno trasmesso dati diversi da DataWareHouse',
+                            'TOT_GAD_OK_DWH_KO'   =>
+                'GAD che hanno trasmesso dati diversi da DataWareHouse',
+                            'TOT_VID_OK_DWH_KO'   =>
+                'Apparecchi da intrattenimento che hanno trasmesso dati diversi da DataWareHouse',
+                            'TOT_OK_DWH_KO'       =>
+                'che hanno trasmesso dati diversi da DataWareHouse',
+                            'TOT_GP_OK'           =>
+                'Giochi Ippici e Sportivi che hanno trasmesso',
+                            'TOT_BINGO_OK'        =>
+                'Bingo che hanno trasmesso',
+                            'TOT_GAD_OK'          =>
+                'GAD che hanno trasmesso',
+                            'TOT_VID_OK'          =>
+                'Apparecchi da intrattenimento che hanno trasmesso',
+                            'TOT_OK'              =>
+                'che hanno trasmesso',
+                            'TOT_GP_KO'           =>
+                'Giochi Ippici e Sportivi inadempienti',
+                            'TOT_BINGO_KO'        =>
+                'Bingo inadempienti',
+                            'TOT_GAD_KO'          =>
+                'GAD inadempienti',
+                            'TOT_VID_KO'          =>
+                'Apparecchi da intrattenimento inadempienti',
+                            'TOT_KO'              =>
+                'inadempienti',
+                            'TOT_GP_CONC'         =>
+                'Giochi Ippici e Sportivi attivi',
+                            'TOT_BINGO_CONC'      =>
+                'Bingo attivi',
+                            'TOT_GAD_CONC'        =>
+                'GAD attivi',
+                            'TOT_VID_CONC'        =>
+                'Apparecchi da intrattenimento attivi',
+                            'TOT_CONC'            =>
+                'attivi',
+                );
+
+                $responseData['table_caption']      .= $tipoGiochi[$tipodett].
+                '<br>TOTALE CONCESSIONARI: '.$totConcDist;
+        }
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
+            return $response->withJson($data, 500);
+        }
+        
+    }
+
+    function getCSV1Dett(Request $request, Response $response) 
+    {
+        $request_data = $request->getParsedBody();
+        $dettLinkAnno             = $request_data['dettLinkAnno'];
+        $dettLinkSem         = $request_data['dettLinkSem'];
+        $dettlink         = $request_data['dettlink'];
+        $cf_utente         = $request_data['cf_utente'];
+
+        $arrayBind             = array(
+                                  'anno_in'              => $dett_anno_r,
+                                  'semestre_in'          => $dett_semestre_r,
+                                  'tipodett_in'          => $tipodett,
+                                  'pagina_in'            => null,
+                                  'num_res_in'           => null,
+                                  'campo_ordinamento_in' => null,
+                                  'verso_ordinamento_in' => null,
+                                  'cfaamsIn'             => $cf,
+                                 );
+        $res = $this->db->calcolaStatDett($arrayBind);
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = 'Disallineamento tabella dettaglio';
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = 'Nessun concessionario per i parametri selezionati';
+        } 
+        else 
+        {
+            $campi                        = array(
+                'TIPO_CONC'                    => 'TIPO CONCESSIONE',
+                'COD_CONC'                     => 'CODICE CONCESSIONE',
+                'RAG_SOC'                      => 'RAGIONE SOCIALE',
+                'STATO'                        => 'STATO',
+                'DATA_STIPULA'                 => 'DATA STIPULA',
+                'DATA_FINE'                    => 'DATA FINE',
+                'TELEFONO'                     => 'TELEFONO',
+                'EMAIL'                        => 'EMAIL',
+                'DT_TRASMISSIONE'              => 'DATA TRASMISSIONE'
+               );
+                $res                          = $this->_trasposizioneMatrice($res, $campi);
+
+                $tipoGiochi                   = array(
+                                'TOT_GP_OK_NON'       => 'Giochi Ippici e Sportivi non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_BINGO_OK_NON'    => 'Bingo non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_GAD_OK_NON'      => 'GAD non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_VID_OK_NON'      => 'Apparecchi da intrattenimento non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_OK_NON'          => 'non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_GP_KO_NON'       => 'Giochi Ippici e Sportivi non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_BINGO_KO_NON'    => 'Bingo non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_GAD_KO_NON'      => 'GAD non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_VID_KO_NON'      => 'Apparecchi da intrattenimento non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_KO_NON'          => 'non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_GP_OK_DWH_OK'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_BINGO_OK_DWH_OK' => 'Bingo che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_GAD_OK_DWH_OK'   => 'GAD che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_VID_OK_DWH_OK'   => 'Apparecchi da intrattenimento che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_OK_DWH_OK'       => 'attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                                'TOT_GP_OK_DWH_KO'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_BINGO_OK_DWH_KO' => 'Bingo che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_GAD_OK_DWH_KO'   => 'GAD che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_VID_OK_DWH_KO'   => 'Apparecchi da intrattenimento che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_OK_DWH_KO'       => 'che hanno trasmesso dati diversi da DataWareHouse',
+                                'TOT_GP_OK'           => 'Giochi Ippici e Sportivi che hanno trasmesso',
+                                'TOT_BINGO_OK'        => 'Bingo che hanno trasmesso',
+                                'TOT_GAD_OK'          => 'GAD che hanno trasmesso',
+                                'TOT_VID_OK'          => 'Apparecchi da intrattenimento che hanno trasmesso',
+                                'TOT_OK'              => 'che hanno trasmesso',
+                                'TOT_GP_KO'           => 'Giochi Ippici e Sportivi inadempienti',
+                                'TOT_BINGO_KO'        => 'Bingo inadempienti',
+                                'TOT_GAD_KO'          => 'GAD inadempienti',
+                                'TOT_VID_KO'          => 'Apparecchi da intrattenimento inadempienti',
+                                'TOT_KO'              => 'inadempienti',
+                                'TOT_GP_CONC'         => 'Giochi Ippici e Sportivi attivi',
+                                'TOT_BINGO_CONC'      => 'Bingo attivi',
+                                'TOT_GAD_CONC'        => 'GAD attivi',
+                                'TOT_VID_CONC'        => 'Apparecchi da intrattenimento attivi',
+                                'TOT_CONC'            => 'attivi',
+                            );
+                $responseData['show_ancora'] = 1;
+
+                $responseData['elenco']  = $res;
+                $responseData['sezione'] = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio\nn'.
+                            " ANNO: $dett_anno_r SEMESTRE: $dett_semestre_r \n\n".
+                            'Elenco Concessionari '.$tipoGiochi[$tipodett].'\n';
+                $responseData['tpl_name']           = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio';           
+        }
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
+            return $response->withJson($data, 500);
+        }
+
+    }
+
+    function getResultNew()
+    {
+        $request_data = $request->getParsedBody();
+        $anno             = $request_data['anno'];
+        $semestre         = $request_data['semestre'];
+        $tipoconc         = $request_data['tipoconc'];
+        $tipogioco        = $request_data['tipogioco']; 
+        $tiporete         = $request_data['tiporete'] ;
+        $tipoDettGP            = array(
+                                  'AI',
+                                  'AS',
+                                  'I',
+                                  'IDLG',
+                                  'IPP',
+                                  'S',
+                                  'X',
+                                  'A',
+                                 );
+        if ($tipo_conc == 'B') {
+            $tipo_dett_in = 'TOT_BINGO_KO';
+        } elseif ($tipo_conc == 'GAD') {
+            $tipo_dett_in = 'TOT_GAD_KO';
+        } elseif ($tipo_conc == 'VID') {
+            $tipo_dett_in = 'TOT_VID_KO';
+        } elseif (in_array($tipo_conc, $tipoDettGP)) {
+            $tipo_dett_in = 'TOT_GP_KO';
+        } else {
+            $tipo_dett_in = null;
+        }
+
+        $responseData['anno']      = $anno;
+        $responseData['semestre']  = $semestre;
+        $responseData['tipo_conc'] = $tipo_conc;
+        $responseData['tipogioco'] = $tipogioco;
+        $cf                         = $request_data['cf_utente'];
+        $responseData['tiporete']  = $tiporete;
+
+        /*
+            If ($this->checkGioco($tipo_conc, $tipogioco, $anno) == 0 ||
+            $this->controllaPeriodoConcessione($tipo_conc, $semestre, $anno,
+            $tiporete, $tipogioco) == 0 || !$this->vincoli($tipo_conc, $anno,
+            $semestre, $tiporete)) {
+            *
+        */
+
+        if ($tipogioco == -1) {
+            $codGioco = null;
+        } else {
+            $codGioco = $tipogioco;
+        }
+
+        if ($semestre == -1) {
+            $sem = null;
+        } else {
+            $sem = $semestre;
+        }
+
+        $pars = array(
+                 'tipo_conc' => $tipo_conc,
+                 'tipo_rete' => $tiporete,
+                 'cod_gioco' => $codGioco,
+                 'anno'      => $anno,
+                 'semestre'  => $sem,
+                );
+        if (!$this->_selGiochi($pars) ||
+        $this->_controllaPeriodoConcessione($tipo_conc, $semestre, $anno,
+        $tiporete, $tipogioco) == 0) {
+            $responseData['messaggio'] = 'Dati di ricerca incongruenti';
+            return -1;
+        } elseif (
+                $this->_controllaPeriodoConcessione($tipo_conc, $semestre,
+        $anno, $tiporete, $tipogioco) == -1) {
+            $responseData['messaggio'] =
+            'Non si possono effettuare ricerche per periodi non conclusi';
+            return -1;
+        }
+
+        $paging = 40;
+        if (isset($request_data['pagina']) && $request_data['pagina']) {
+            $pagina = $request_data['pagina'];
+        } else {
+            $pagina                     = 1;
+            $responseData['pagina'] = $pagina;
+        }
+
+        // Salvo numero pagina in caso di richiesta CSV.
+        if ($pagina != null && $pagina != '') {
+            $responseData['paginaCSV'] = $pagina;
+        }
+
+        $arrayBind = array(
+                      'tipodett_in'  => $tipo_dett_in,
+                      'tipo_conc_in' => $tipo_conc,
+                      'anno_in'      => $anno,
+                      'semestre_in'  => $semestre,
+                      'cod_gioco_in' => $tipogioco,
+                      'tipo_rete_in' => $tiporete,
+                      'cfaams_in'    => $cf,
+                      'pagina_in'    => $pagina,
+                      'num_res_in'   => $paging,
+                     );
+        $res = $this->db->selElencoInadempientiNew($arrayBind);
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = 'Errore procedura selElencoInadempientiNew';
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = 'Nessun concessionario inadempiente per i parametri selezionati';
+        } 
+        else 
+        {         
+            $nConc                        = $res['ROWS_TOT2'][0];
+            $nRows                        = $res['ROWS_TOT'][0];
+            $nButton                      = ceil(($nRows / $paging));
+            $responseData['dati_post']   = $this->clear_pars;
+            $responseData['show_ancora'] = 1;
+            $responseData['tot_result']  = $this->db->num_cn;
+            $res['pagestot']              = $nButton + 1;
+            $responseData['elenco']      = $res;
+            
+        }       
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
+            return $response->withJson($data, 500);
+        }
+
+    }
+
+    function getCSVNew()
+    {
+        $request_data = $request->getParsedBody();
+        $anno             = $request_data['anno'];
+        $semestre         = $request_data['semestre'];
+        $tipoconc         = $request_data['tipoconc'];
+        $tipogioco        = $request_data['tipogioco']; 
+        $tiporete         = $request_data['tiporete'] ;
+
+
+        $responseData['anno']      = $anno;
+        $responseData['semestre']  = $semestre;
+        $responseData['tipoconc']  = $tipoconc;
+        $responseData['tipogioco'] = $tipogioco;
+        $responseData['tiporete'] = $tiporete;
+
+        $tipoDettGP            = array(
+                                  'AI',
+                                  'AS',
+                                  'I',
+                                  'IDLG',
+                                  'IPP',
+                                  'S',
+                                  'X',
+                                  'A',
+                                 );
+        if ($tipo_conc == 'B') {
+            $tipo_dett_in = 'TOT_BINGO_KO';
+        } elseif ($tipo_conc == 'GAD') {
+            $tipo_dett_in = 'TOT_GAD_KO';
+        } elseif ($tipo_conc == 'VID') {
+            $tipo_dett_in = 'TOT_VID_KO';
+        } elseif (in_array($tipo_conc, $tipoDettGP)) {
+            $tipo_dett_in = 'TOT_GP_KO';
+        } else {
+            $tipo_dett_in = null;
+        }
+
+        $responseData['anno']      = $anno;
+        $responseData['semestre']  = $semestre;
+        $responseData['tipo_conc'] = $tipo_conc;
+        $responseData['tipogioco'] = $tipogioco;
+        $responseData['tiporete']  = $tiporete;
+        if (isset($request_data['paginaCSV']) &&
+        $request_data['paginaCSV']) {
+            $pagina = $request_data['paginaCSV'];
+        } else {
+            $pagina                        = 1;
+            $responseData['paginaCSV'] = $pagina;
+        }
+
+        $paging    = 40;
+        $arrayBind = array(
+                      'tipodett_in'  => $tipo_dett_in,
+                      'tipo_conc_in' => $tipo_conc,
+                      'anno_in'      => $anno,
+                      'semestre_in'  => $semestre,
+                      'cod_gioco_in' => $tipogioco,
+                      'tipo_rete_in' => $tiporete,
+                      'cfaams_in'    => '',
+                      'pagina_in'    => null,
+                      'num_res_in'   => null,
+                     );
+        $res = $this->db->selElencoInadempientiNew($arrayBind);
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = 'Errore procedura selElencoInadempientiNew';
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = 'Nessun concessionario inadempiente per i parametri selezionati';
+        } 
+        else 
+        {         
+            if ($tipogioco != -1) {
+                $descr_gioco                       = $res[0]['DESCR_GIOCO'];
+                $responseData['tipo_concessione'] = $res[0]['DESCR'];
+                $campi                             = array(
+                                                      'COD_CONC'  =>
+                    'Codice concessione',
+                                                      'RAG_SOC'   =>
+                    'Ragione Sociale',
+                                                      'DATA_CONC' =>
+                    'Data stipula concessione',
+                                                     );
+            } 
+            else 
+            {
+                $descr_gioco                       = 'TUTTI';
+                $responseData['tipo_concessione'] = $res[0]['DESCR'];
+                $campi                             = array(
+                                                      'COD_CONC'    => 'Codice concessione',
+                                                      'RAG_SOC'     => 'Ragione Sociale',
+                                                      'DATA_CONC'   => 'Data stipula concessione',
+                                                      'DESCR_GIOCO' => 'Tipo gioco non trasmesso',
+                                                     );
+            }
+
+            if ($tipo_conc == 'VID') {
+                if (is_array($res) && count($res)) {
+                    foreach($res as $k => $v) {
+                        $res[$k]['COD_CONC'] = 'ND';
+                    }
+                }
+            }
+
+            $res                     = $this->_trasposizioneMatrice($res, $campi);
+            $responseData['elenco'] = $res;
+            if ($tipo_conc != 'GAD') {
+                if ($tiporete == 'F') {
+                    $tiporeteSTR = '\n Tipo raccolta fisica \n';
+                } else {
+                    $tiporeteSTR = '\n Tipo raccolta a distanza \n';
+                }
+            } else {
+                $tiporeteSTR = '\n';
+            }
+
+            if ($semestre == 1) {
+                $semestreSTR = ' primo semestre';
+            } else {
+                $semestreSTR = ' secondo semestre';
+            }
+
+            $annosemestre              = ' \n anno '.$anno.$semestreSTR;
+            $responseData['sezione']  =
+            'Antiriciclaggio - Elenco concessionari inadempienti ';
+            $responseData['sezione'] .=
+            $responseData['tipo_concessione'].'\n\n  '.$annosemestre;
+            $responseData['sezione'] .= $tiporeteSTR.'Tipo gioco ';
+            $responseData['sezione'] .= $descr_gioco;
+            $responseData['tpl_name'] = 'Monitoraggio ';
+            $responseData['tpl_name'] .= $this->tpl_dat['tipo_concessione'];
+            
+        }    
+        
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
+            return $response->withJson($data, 500);
+        }
+ 
+    }
+    //FINE --- RC01_antiric_monitoraggio.inc 
+
+
+
+}
+
+
+    /*
 	function controlla_valori1(Request $request, Response $response)
     {
         $result        = true;
@@ -1070,6 +2298,5 @@ class mainAppController
             $data = ["status" => "NOK", "message" => "Errore durante il check fields"];
             return $response->withJson($data, 500);
         }
-	}
-
-}
+    }
+    */

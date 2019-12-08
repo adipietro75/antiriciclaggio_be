@@ -141,4 +141,60 @@ class DaoFactory
 
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
+
+    public function selElencoInadempienti($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".selElencoInadempienti",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
+
+    public function selProspetti($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".selProspetti",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
+
+    public function calcolaStatDett($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".calcolaStatDett",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
+
+    public function selElencoInadempientiNew($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".selElencoInadempientiNew",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
 }
