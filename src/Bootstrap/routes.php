@@ -31,4 +31,10 @@ $app->group('', function () {
     $this->get('/getResultNew',                     'mainAppController:getResultNew');
     $this->get('/getCSVNew',                        'mainAppController:getCSVNew');
 
+    //antiric_XLS_elenco_societa.inc 
+    $this->get('/antiric_XLS_elenco_societa',       'mainAppController:antiric_XLS_elenco_societa');
+
+    //antiric_XLS_elenco_operazioni.inc 
+    $this->get('/antiric_XLS_elenco_operazioni',    'mainAppController:antiric_XLS_elenco_operazioni');
+
 })->add($container['AuthenticationMiddleware']);

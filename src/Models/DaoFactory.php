@@ -198,4 +198,32 @@ class DaoFactory
 
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
+
+    public function ListaGiochi($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".ListaGiochi",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
+
+    public function ElencoInvii($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".ElencoInvii",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
 }
