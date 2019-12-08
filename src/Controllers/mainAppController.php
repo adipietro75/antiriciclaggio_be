@@ -1657,7 +1657,7 @@ class mainAppController
 
     }
 
-    function getResultNew()
+    function getResultNew(Request $request, Response $response)
     {
         $request_data = $request->getParsedBody();
         $anno             = $request_data['anno'];
@@ -1788,7 +1788,7 @@ class mainAppController
 
     }
 
-    function getCSVNew()
+    function getCSVNew(Request $request, Response $response)
     {
         $request_data = $request->getParsedBody();
         $anno             = $request_data['anno'];
@@ -1935,368 +1935,354 @@ class mainAppController
 
 
 
+    //XLS_elenco_societa
+    function antiric_XLS_elenco_societa(Request $request, Response $response)
+    {
+        $request_data = $request->getParsedBody();
+
+        $format_titolo = array(
+            'font_family' => 'Arial',
+            'font_size'   => 10,
+            'font_color'  => 'white',
+            'font_weight' => 'B',
+            'align'       => 'C',
+            'fgcolor'     => 'red',
+            'bgcolor'     => 'white',
+            'border'      => 0,
+            'num_format'  => 0,
+        );
+
+        $format_sotto_titolo = array(
+            'font_family' => 'Arial',
+            'font_size'   => 10,
+            'font_color'  => 'white',
+            'font_weight' => 'B',
+            'align'       => 'C',
+            'fgcolor'     => 'green',
+            'bgcolor'     => 'white',
+            'border'      => 0,
+            'num_format'  => 0,
+        );
+
+        $format_intestazioni = array(
+            'font_family' => 'Arial',
+            'font_size'   => 10,
+            'font_color'  => 'black',
+            'font_weight' => 'B',
+            'align'       => 'C',
+            'fgcolor'     => 'silver',
+            'bgcolor'     => 'white',
+            'column_size' => 22,
+        );
+
+        $arrayBind       = array();
+        $responseData['resGiochi'] = $this->db->ListaGiochi($arrayBind);
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = 'Errore procedura ListaGiochi';
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = 'Nessun record presente';
+        } 
+
+        $arrayBind       = array(
+            'cod_fisc'    => $request_data['codFisc'],
+            'annoSel'     => $request_data['annoRicerca'],
+            'semestreSel' => $request_data['semestreRicerca'],
+            'TipoOpe'     => '4',
+            'CF_utente'   => '',
+        );
+        $resInvii = $this->db->ElencoInvii($arrayBind);
+        $responseData['resInvii'] = $resInvii;
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = 'Errore procedura ListaGiochi';
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = 'Nessun record presente';
+        } 
+
+
+
+        $responseData['save_file']    = 0;
+        $responseData['freeze_panes'] = 0;
+
+        $responseData['nome_file_excel'] = 'Elenco_invii_documentazione.xls';
+
+        $responseData['title_excel']['title']['testo']  =
+        'Agenzia delle Dogane e dei Monopoli - Rapporto Concessorio - Antiriciclaggio - Monitoraggio';
+        $responseData['title_excel']['title']['format'] = $format_titolo;
+
+        $titoloTab                                          =
+        'Invio documentazione per concessione e per gioco';
+        $titoloTab                                         .=
+        ' - Codice Fiscale: '.$resInvii['COD_FISC'][0];
+        $titoloTab                                         .=
+        ' - Ragione Sociale: '.$resInvii['RAG_SOC'][0];
+        $titoloTab                                         .=
+        ' - Anno: '.ucfirst($request_data['annoRicerca']);
+        $titoloTab                                         .=
+        ' - Semestre: '.ucfirst($request_data['semestreRicerca']);
+        $responseData['title_excel']['newtitle']['testo']  = $titoloTab;
+        $responseData['title_excel']['newtitle']['format'] = $format_sotto_titolo;
+
+        $responseData['array_dati'][0] = $resInvii['TIPO_CONC'];
+        $responseData['array_dati'][1] = $resInvii['TIPO_DIRITTO'];
+        $responseData['array_dati'][2] = $resInvii['COD_CONC'];
+
+        $colnna = 3;
+        if($request_data['annoRicerca'] === 'tutti') {
+            $responseData['array_dati'][$colnna] = $resInvii['ANNO'];
+        $colnna++;
+        }
+
+        if($request_data['semestreRicerca'] === "tutti") {
+            $responseData['array_dati'][$colnna] = $resInvii['SEMESTRE'];
+        $colnna++;
+        }
+
+        $responseData['array_dati'][$colnna] = $resInvii['G0XLS'];
+
+        $colnna++;
+        $responseData['array_dati'][$colnna] = $resInvii['G1XLS'];
+
+        $colnna++;
+        $responseData['array_dati'][$colnna] =$resInvii['G10XLS'];
+
+        $colnna++;
+        $responseData['array_dati'][$colnna] = $resInvii['G11XLS'];
+
+        $colnna++;
+        $responseData['array_dati'][$colnna] = $resInvii['G12XLS'];
+
+        $colnna++;
+        $responseData['array_dati'][$colnna] = $resInvii['G2XLS'];
+
+        $colnna++;
+        $responseData['array_dati'][$colnna] = $resInvii['G5XLS'];
+
+        $colnna++;
+        $responseData['array_dati'][$colnna] = $resInvii['G6XLS'];
+
+        $colnna++;
+        $responseData['array_dati'][$colnna] = $resInvii['G7XLS'];
+
+        $colnna++;
+        $responseData['array_dati'][$colnna] = $resInvii['G8XLS'];
+
+
+        $responseData['title_excel'][0]['testo']  = 'Tipo_concessione';
+        $responseData['title_excel'][0]['format'] = $format_intestazioni;
+        $responseData['title_excel'][1]['testo']  = 'Tipo_diritto';
+        $responseData['title_excel'][1]['format'] = $format_intestazioni;
+        $responseData['title_excel'][2]['testo']  = 'Codice_Concessione';
+        $responseDatat['title_excel'][2]['format'] = $format_intestazioni;
+
+        $colnna = 3;
+        if($request_data['annoRicerca'] === 'tutti') {
+            $responseData['title_excel'][$colnna]['testo']  = 'Anno';
+            $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+        $colnna++;
+        }
+
+        if($request_data['semestreRicerca'] === 'tutti') {
+            $responseData['title_excel'][$colnna]['testo']  = 'Semestre';
+            $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+        $colnna++;
+        }
+
+        $responseData['title_excel'][$colnna]['testo']  = 'GIOCO_A_DISTANZA';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $colnna++;
+        $responseData['title_excel'][$colnna]['testo']  =
+        'SCOMMESSE_IPPICHE_A_TOTALIZZATORE_E_A_QUOTA_FISSA';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $colnna++;
+        $responseData['title_excel'][$colnna]['testo']  = 'VIDEOGIOCHI';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $colnna++;
+        $responseData['title_excel'][$colnna]['testo']  = 'SCOMMESSE_SU_EVENTI_VIRTUALI';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $colnna++;
+        $responseData['title_excel'][$colnna]['testo']  = 'BETTING_EXCHANGE';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $colnna++;
+        $responseData['title_excel'][$colnna]['testo']  =
+        'SCOMMESSE_A_TOTALIZZATORE_NON_IPPICHE';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $colnna++;
+        $responseData['title_excel'][$colnna]['testo']  = 'IPPICA_NAZIONALE';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $colnna++;
+        $responseData['title_excel'][$colnna]['testo']  = 'SCOMMESSE_A_QUOTA_FISSA_NON_IPPICHE';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $colnna++;
+        $responseData['title_excel'][$colnna]['testo']  = 'GIOCHI_DI_ABILITA\'';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $colnna++;
+        $responseData['title_excel'][$colnna]['testo']  = 'BINGO';
+        $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
+            return $response->withJson($data, 500);
+        }
+    }
+    //FINE -- XLS_elenco_societa
+
+
+    //XLS_elenco_operazioni
+    function antiric_XLS_elenco_operazioni(Request $request, Response $response)
+    {
+        $request_data = $request->getParsedBody();
+
+ 
+        $format_titolo = array(
+            'font_family' => 'Arial',
+            'font_size'   => 10,
+            'font_color'  => 'white',
+            'font_weight' => 'B',
+            'align'       => 'C',
+            'fgcolor'     => 'red',
+            'bgcolor'     => 'white',
+            'border'      => 0,
+            'num_format'  => 0,
+        );
+
+        $format_sotto_titolo = array(
+                'font_family' => 'Arial',
+                'font_size'   => 10,
+                'font_color'  => 'white',
+                'font_weight' => 'B',
+                'align'	      => 'C',
+                'fgcolor'     => 'green',
+                'bgcolor'     => 'white',
+                'border'      => 0,
+                'num_format'  => 0,
+                );
+
+        $format_intestazioni = array(
+                'font_family' => 'Arial',
+                'font_size'   => 10,
+                'font_color'  => 'black',
+                'font_weight' => 'B',
+                'align'       => 'C',
+                'fgcolor'     => 'silver',
+                'bgcolor'     => 'white',
+                'column_size' => 42,
+                );
+
+        $arrayBind = array(
+        'tipo_concIn' => $request_data['tipo_conc'],
+        'cod_concIn'  => $request_data['cod_conc'],
+        'annoIn'      => $request_data['annoRicerca'],
+        'semestreIn'  => $request_data['semestreRicerca'],
+        'cod_giocoIn' => $request_data['cod_gioco'],
+        'tipo_reteIn' => $request_data['tipo_rete'],
+        );
+
+        $resQuery = $this->db->selezioneDatiTrasmessiCSV($arrayBind);
+        $responseData['resQuery'] = $resQuery;
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = 'Errore procedura ListaGiochi';
+        } else if ($retVal == null) {
+            $responseData['messaggio'] = 'Nessun record presente';
+        } 
+
+
+        $responseData['save_file']       = 0;
+        $responseData['freeze_panes']    = 0;
+        $responseData['nome_file_excel'] = 'Elenco_operazioni.xls';
+
+        $responseData['title_excel']['title']['testo']  = 'Agenzia delle Dogane e dei Monopoli - Rapporto Concessorio - Antiriciclaggio - Monitoraggio';
+        $responseData['title_excel']['title']['format'] = $format_titolo;
+
+        $titoloTab  = 'Invio documentazione per concessione e per gioco';
+        $titoloTab .= ' - Codice Fiscale: '.$request_data['codFisc'];
+        $titoloTab .= ' - Ragione Sociale: '.$request_data['ragSoc'];
+        $titoloTab .= ' - Anno: '.$request_data['annoRicerca'];
+        $semestre   = 'Primo';
+        if($request_data['semestreRicerca'] === 2) {
+            $semestre = 'Secondo';
+        }
+
+        $titoloTab                                         .= ' - Semestre: '.$semestre;
+        $responseData['title_excel']['newtitle']['testo']  = $titoloTab;
+        $responseData['title_excel']['newtitle']['format'] = $format_sotto_titolo;
+
+        $arrayTitle = array(
+        0  => 'CODICE CONCESSIONE',
+        1  => 'TIPO CONCESSIONE',
+        2  => 'GIOCO',
+        3  => 'Tipo raccolta',
+        4  => 'CODICE FORNITURA',
+        5  => 'DATA TRASMISSIONE',
+        6  => 'GIOCATE SUPERIORI A 1000 EURO',
+        7  => 'VINCITE SUPERIORI A 1000 EURO',
+        8  => 'OPERAZIONI FRAZIONATE',
+        9  => 'OPERAZIONI SOSPETTE',
+        10 => 'GIOCATE DWH',
+        11 => 'VINCITE DWH',
+        12 => 'OPERAZIONI FRAZIONATE DWH',
+        13 => 'OPERAZIONI SOSPETTE DWH',
+        );
+
+        for($i = 0; $i < 14; $i++) 
+        {
+            if(isset($resQuery[$arrayTitle[$i]][0])) {
+                $valorecampo = strtolower($resQuery[$arrayTitle[$i]][0]);
+        
+                switch ($valorecampo) {
+                    case 'nd':
+                        $valorecampo = 'Non disponibile';
+                    break;
+        
+                    case 'ne':
+                        $valorecampo = 'Non esiste';
+                    break;
+        
+                    case 'dwh':
+                        $valorecampo = 'Data WareHouse';
+                    break;
+                }
+                
+                $arrayValue[$i] = ucfirst($valorecampo);
+            }
+            else {
+                $arrayValue[$i] = 'Non disponibile';
+            }
+        }
+
+
+        $responseData['array_dati'][0] = $arrayTitle;
+        $responseData['array_dati'][1] = $arrayValue;
+
+        $responseData['title_excel'][0]['testo']  = 'Operazioni';
+        $responseData['title_excel'][0]['format'] = $format_intestazioni;
+
+        $responseData['title_excel'][1]['testo']  = 'Valori';
+        $responseData['title_excel'][1]['format'] = $format_intestazioni;
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
+            return $response->withJson($data, 500);
+        }
+    }
+    //FINE -- XLS_elenco_operazioni
+
+
 }
 
-
-    /*
-	function controlla_valori1(Request $request, Response $response)
-    {
-        $result        = true;
-		$tpl_dat       = "";
-		$request_data  = $request->getParsedBody();
-        $concessionario = $request_data['concessionario'];
-		$tipo_conc = $request_data['tipo_conc'];
-		$num_provv = $request_data['num_provv'];
-		$data_provv = $request_data['data_provv'];		
-		$tipo_provv = $request_data['tipo_provv'];	
-
-
-
-		
-        //$this->clear_pars['concessionario'] = 'aa';
-        if ((isset($concessionario) && 
-                $concessionario != '')){
-            if (!is_numeric($concessionario)){
-                $result = false;
-                $tpl_dat = 'Valore codice concessionario non valido';
-            }
-        }
-        //$this->clear_pars['tipo_conc'] = 'aaa';
-        if ((isset($tipo_conc) && 
-                $tipo_conc != '') && $result == true){
-            if ($tipo_conc != 'A' && $tipo_conc != 'S'
-                && $tipo_conc != 'I' && $tipo_conc != 'GAD' 
-                && $tipo_conc != 'X') {
-                $result = false;
-                $tpl_dat = 'Valore tipo concessione non valido';
-            }  
-        }
-        if ((isset($num_provv) && 
-                $num_provv != '') && $result == true){
-            if (!is_numeric($num_provv)){
-                $result = false;
-                $tpl_dat = 'Valore numero provvedimento adm non valido';
-            }  
-        }
-        
-        if ((isset($data_provv) && 
-                $data_provv != '') && $result == true){
-            $giorno = substr($data_provv,0,2);
-            $mese = substr($data_provv,3,2);
-            $anno = substr($data_provv,6,4);
-            
-            if (strlen($data_provv) == 10) {
-                if (checkdate($mese,$giorno,$anno) == false) {
-                    $result = false;
-                    $tpl_dat = 'Valore data provvedimento adm non valido';
-                }
-            }else {
-                $result = false;
-                $tpl_dat = 'Valore data provvedimento adm non valido';
-            }
-        }
-        if ((isset($tipo_provv) && 
-                $tipo_provv != '') && $result == true){
-            if ($tipo_provv != 'RTI' && $tipo_provv != 'RTS'
-                && $tipo_provv != 'RTX' && $tipo_provv != 'RTA' 
-                && $tipo_provv != 'D' && $tipo_provv != 'DD' && $tipo_provv != 'R') {
-                $result = false;
-                $tpl_dat = 'Valore tipo provvedimento non valido';
-            }  
-        }
-        
-        $responseData['tpl_dat'] = $tpl_dat;
-        $responseData['result'] = $result;
-		
-		
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il controllo dei valori1"];
-            return $response->withJson($data, 500);
-        }
-    }
-	
-	
-	 function controlla_valori2(Request $request, Response $response)
-    {
-        $result        = true;
-		$tpl_dat       = "";
-		$request_data  = $request->getParsedBody();
-        $numero_cont = $request_data['numero_cont'];
-		$anno_cont = $request_data['anno_cont'];
-		$num_provv = $request_data['codice_cont'];
-
-        
-        
-        
-        if ((isset($numero_cont) && 
-                $numero_cont != '') && $result == true){
-            if (strlen($numero_cont) < 9) {
-                if (!is_numeric($numero_cont)){
-                    $result = false;
-                    $tpl_dat = 'Valore numero contenzioso non valido';
-                }
-            }else{
-                $result = false;
-                $tpl_dat = 'Valore numero contenzioso non valido';
-            }
-        }
-        if ((isset($anno_cont) && 
-                $anno_cont != '') && $result == true){
-            if (strlen($anno_cont) < 5) {
-                if (!is_numeric($anno_cont)){
-                    $result = false;
-                    $tpl_dat = 'Valore numero contenzioso non valido';
-                }
-            }else{
-                $result = false;
-                $tpl_dat = 'Valore numero contenzioso non valido';
-            }
-        }
-        if ((isset($num_provv) && 
-                $num_provv] != '') && $result == true){
-            if (strlen($num_provv) == 1) {
-                if (!is_numeric($num_provv)){
-                    $result = false;
-                    $tpl_dat = 'Valore codice contenzioso non valido';
-                }
-            }else{
-                $result = false;
-                $tpl_dat = 'Valore codice contenzioso non valido';
-            }
-        }
-		
-		
-        $responseData['tpl_dat'] = $tpl_dat;
-        $responseData['result'] = $result;
-		
-		
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il controllo dei valori2"];
-            return $response->withJson($data, 500);
-        }
-    }
-
-
-	 function controlla_valori3(Request $request, Response $response)
-    {
-        $result        = true;
-		$tpl_dat       = "";
-		$request_data  = $request->getParsedBody();
-        $cod_provv_giud = $request_data['cod_provv_giud'];
-		$num_provv_giud = $request_data['num_provv_giud'];
-		$data_provv_giud = $request_data['data_provv_giud'];
-		$dt_dec_prov_giud = $request_data['dt_dec_prov_giud'];
-	    $esito = $request_data['esito'];
-        
-        if ((isset($cod_provv_giud ) && 
-                $cod_provv_giud  != '') && $result == true){
-            if (strlen($cod_provv_giud ) == 1) {
-                if (!is_numeric($cod_provv_giud )){
-                    $result = false;
-                    $tpl_dat = 'Valore codice provvedimento giudiziario non valido';
-                }
-            }else{
-                $result = false;
-                $tpl_dat = 'Valore codice provvedimento giudiziario non valido';
-            }
-        }
-        
-
-        if ((isset($num_provv_giud) && 
-                $num_provv_giud != '') && $result == true){
-            if (strlen($num_provv_giud) < 9) {
-                if (!is_numeric($num_provv_giud)){
-                    $result = false;
-                    $tpl_dat = 'Valore numero provvedimento giudiziario non valido';
-                }
-            }else{
-                    $result = false;
-                    $tpl_dat = 'Valore numero provvedimento giudiziario non valido';
-            }
-            
-        }
-        if ((isset($data_provv_giud) && 
-                $data_provv_giud != '') && $result == true){
-            $giorno = substr($data_provv_giud,0,2);
-            $mese = substr($data_provv_giud,3,2);
-            $anno = substr($data_provv_giud,6,4);
-            if (strlen($data_provv_giud) == 10) {
-                if (checkdate($mese,$giorno,$anno) == false) {
-                    $result = false;
-                    tpl_dat =  'Valore data provvedimento giudiziario non valido';
-                }
-            }else {
-                $result = false;
-                tpl_dat = 'Valore data provvedimento giudiziario non valido';
-            }
-        }
-        
-        if ((isset($dt_dec_prov_giud) && 
-                $dt_dec_prov_giud != '') && $result == true){
-            $giorno = substr($dt_dec_prov_giud,0,2);
-            $mese = substr($dt_dec_prov_giud,3,2);
-            $anno = substr($dt_dec_prov_giud,6,4);
-            if (strlen($dt_dec_prov_giud) == 10) {
-                if (checkdate($mese,$giorno,$anno) == false) {
-                    $result = false;
-                    tpl_dat =  'Valore data decorrenza provvedimento giudiziario non valido';
-                }
-            }else {
-                $result = false;
-                tpl_dat =  'Valore data decorrenza provvedimento giudiziario non valido';
-            }
-        }
-        
-        if ((isset($esito) && 
-                $esito != '') && $result == true){
-            if (strlen($esito) == 1 ) {
-                if (!is_numeric($esito)){
-                    $result = false;
-                    $esito = 'Valore esito del provvedimento giudiziario non valido';
-                }
-            }else{
-                    $result = false;
-                    $esito = 'Valore esito del provvedimento giudiziario non valido';
-            }
-            
-        }
-		
-		
-        $responseData['tpl_dat'] = $tpl_dat;
-        $responseData['result'] = $result;
-		
-		
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il controllo dei valori3"];
-            return $response->withJson($data, 500);
-        }
-    }
-
-
-	function CaricaDati(Request $request, Response $response)
-	{
-		
-		$request_data  = $request->getParsedBody();
-        $tipoconc = $request_data['tipoconc'];
-		$codconc = $request_data['codconc'];
-		$coddir = $request_data['coddir'];
-		$ragsoc = $request_data['ragsoc'];
-	    $tipodecad = $request_data['tipodecad'];
-	    $coddecad = $request_data['coddecad'];
-	    $datadecad = $request_data['datadecad'];
-	    $dataall = $request_data['dataall'];
-	    $stat = $request_data['stat'];
-	    $cumu = $request_data['cumu'];
-		
-	    $responseData['tipoconc'] = $tipoconc;
-        $responseData['codconc'] = $codconc;
-        $responseData['coddir'] = $coddir;
-        $responseData['ragsoc'] = $ragsoc;
-        $responseData['tipodecad'] = $tipodecad;
-        $responseData['coddecad'] = $coddecad;
-        $responseData['datadecad'] = $datadecad;
-        $responseData['dataall'] = $dataall;
-        $responseData['stat'] = $stat;
-        $responseData['cumu'] = $cumu;
-		
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il caricamento dei dati"];
-            return $response->withJson($data, 500);
-        }	
-	}
-
-	function checkFields(Request $request, Response $response)
-	{
-		$request_data  = $request->getParsedBody();
-        $giorno = $request_data['giorno'];
-		$mese = $request_data['mese'];
-		$anno = $request_data['anno'];
-		$giorno_provv = $request_data['giorno_provv'];
-	    $mese_provv = $request_data['mese_provv'];
-	    $anno_provv = $request_data['anno_provv'];
-	    $num_provv = $request_data['num_provv'];
-	    $diritto = $request_data['diritto'];
-	    $messaggio = $request_data['messaggio'];
-
-		
-		
-		$flag_check = 0;
-		if(strlen($mese.$giorno.$anno) != 8)
-		{
-			$flag_check = 1;
-			$messaggio = "<FONT style='font-size: 14pt'>Data di decorrenza decadenza obbligatoria per il diritto ".$diritto."<br />";
-		}
-		elseif($mese and $giorno and $anno
-		and $mese != "" and $giorno != "" and $anno != ""
-		and !checkdate($mese, $giorno, $anno))
-		{
-			$flag_check = 1;
-			$messaggio = "<FONT style='font-size: 14pt'>Data di decorrenza decadenza errata per il diritto ".$diritto."<br />";
-		}
-		elseif(date("Ymd") >=$anno.$mese.$giorno)
-		{
-			//controllo data decadenza > data di sistema KO ricarico lista
-			$flag_check = 1;
-			$messaggio = "<FONT style='font-size: 14pt'>Data di decorrenza deve essere maggiore data odierna per il diritto ".$diritto."<br />";
-		}
-		elseif(strlen($mese_provv.$giorno_provv.$anno_provv) != 8)
-		{
-			$flag_check = 1;
-			$messaggio = "<FONT style='font-size: 14pt'>Data del provvedimento obbligatoria per il diritto ".$diritto."<br />";
-		}
-		elseif($mese_provv and $giorno_provv and $anno_provv
-		and $mese_provv != "" and $giorno_provv != "" and $anno_provv != ""
-		and !checkdate($mese_provv, $giorno_provv, $anno_provv))
-		{
-			$flag_check = 1;
-			$messaggio = "<FONT style='font-size: 14pt'>Data del provvedimento errata per il diritto ".$diritto."<br />";
-		}
-		elseif(date("Ymd") <$anno_provv.$mese_provv.$giorno_provv)
-		{
-			//controllo data provvedimento < data di sistema KO ricarico lista
-			$flag_check = 1;
-			$messaggio = "<FONT style='font-size: 14pt'>Data del provvedimento deve essere minore data odierna per il diritto ".$diritto."<br />";
-		}
-		elseif ($num_provv =='')
-        {
-  	        //controllo numero provvedimento obbligatorio
-			$flag_check = 1;
-			$messaggio = "<FONT style='font-size: 14pt'>Numero del provvedimento obbligatorio per il diritto ".$diritto."<br />";
-        }
-        elseif (!is_numeric($num_provv))
-		{
-		    //controllo numero provvedimento numerico
-			$flag_check = 1;
-	   		$messaggio = "<FONT style='font-size: 14pt'>Numero del provvedimento deve essere numerico per il diritto ".$diritto."<br />";
-		} 
-		
-        $responseData['flag_check'] = $flag_check;
-        $responseData['messaggio'] = $messaggio;
-		
-		
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il check fields"];
-            return $response->withJson($data, 500);
-        }
-    }
-    */
