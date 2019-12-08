@@ -212,9 +212,9 @@ class mainAppController
             $GiocoPuntuale = $request_data['tipogiocoPuntuale'];
         }
 
-        if (isset($request_data) && array_key_exists('F', $request_data) && $request_data['F'] == 'Raccolta fisica') {
+        if (isset($request_data) && is_array($request_data) && array_key_exists('F', $request_data) && $request_data['F'] == 'Raccolta fisica') {
             $tipoRetePuntuale = 'F';
-        } else if (isset($request_data) && array_key_exists('D', $request_data) && $request_data['D'] == 'Raccolta a distanza') {
+        } else if (isset($request_data) && is_array($request_data)  && array_key_exists('D', $request_data) && $request_data['D'] == 'Raccolta a distanza') {
             $tipoRetePuntuale = 'D';
         }
 
@@ -607,7 +607,7 @@ class mainAppController
 
         $responseData['titolo_tabella'] = 'Rapporto Concessorio - Monitoraggio<br>Storia della concessione';
         $responseData['tpl_name'] = $conctmp;
-        
+
         $response->write(json_encode($responseData));
         if (is_array($responseData)) {
             $data = ["status" => "OK", "result" => $responseData];
@@ -664,7 +664,7 @@ class mainAppController
     {
         if (count($pars)) {
             return $this->db->selezioneGiochi($pars);
-        }else{
+        } else {
             return null;
         }
     }
