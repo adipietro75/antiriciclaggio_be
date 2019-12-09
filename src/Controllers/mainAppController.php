@@ -755,26 +755,26 @@ class mainAppController
             $tipoconc = $request_data['tipoconc'];
         }
 
-        $responseData['tipo_conc']        = $tipo_conc;
+        $responseData['tipo_conc']        = $tipoconc;
         $responseData['tiporete']         = $tiporete;
         $responseData['tipogioco']        = $tipogioco;
         $responseData['anno']             = $anno;
         $responseData['semestre']         = $semestre;
-        $responseData['tipoconcSelected'] = $tipo_conc;
+        $responseData['tipoconcSelected'] = $tipoconc;
 
         if (isset($request_data['tipo_conc_visualizza'])) {
             $tipo_conc_visualizza = $request_data['tipo_conc_visualizza'];
         }
 
         if (isset($request_data['visualizza']) && $request_data['visualizza'] == 'Visualizza>>') {
-            $responseData['tipoconc_visualizza'] = $tipo_conc;
-            $tipo_conc_visualizza                 = $tipo_conc;
+            $responseData['tipoconc_visualizza'] = $tipoconc;
+            $tipo_conc_visualizza                 = $tipoconc;
         } else {
             $this->tpl_dat['tipoconc_visualizza'] = isset($this->clear_pars['tipoconc_visualizza']) ? $this->clear_pars['tipoconc_visualizza'] : null;
         }
 
 
-        $elencogiochi = $this->_giochiDisponibiliPerConcessioneNew($tipo_conc);
+        $elencogiochi = $this->_giochiDisponibiliPerConcessioneNew($tipoconc);
         if(!is_array($elencogiochi)) {
             $giochi = $this->_giochiDisponibiliPerConcessioneMonitoraggioInc($tipo_conc_visualizza);
         }
@@ -817,14 +817,14 @@ class mainAppController
         $cf         = $request_data['cf_utente'] ;
         $responseData['tiporete'] = $tiporete;
 
-        if ($this->_checkGioco($tipo_conc, $tipogioco, $anno) == 0 ||
-        $this->_controllaPeriodoConcessione($tipo_conc, $semestre,
+        if ($this->_checkGioco($tipoconc, $tipogioco, $anno) == 0 ||
+        $this->_controllaPeriodoConcessione($tipoconc, $semestre,
                 $anno, $tiporete, $tipogioco) == 0
-        || !$this->_vincoli($tipo_conc, $anno, $semestre, $tiporete)
+        || !$this->_vincoli($tipoconc, $anno, $semestre, $tiporete)
         ) {
             $responseData['messaggio'] = 'Dati di ricerca incongruenti';
             return -1;
-        } elseif ($this->_controllaPeriodoConcessione($tipo_conc, $semestre, $anno, $tiporete, $tipogioco) == -1) {
+        } elseif ($this->_controllaPeriodoConcessione($tipoconc, $semestre, $anno, $tiporete, $tipogioco) == -1) {
             $responseData['messaggio'] = 'Non si possono effettuare ricerche per periodi non conclusi';
             return -1;
         }
@@ -1068,7 +1068,7 @@ class mainAppController
         }
 
         $arrayBind = array(
-            'tipo_concIn' => $tipo_conc,
+            'tipo_concIn' => $tipoconc,
             'annoIn' => $anno,
             'semestreIn' => $semestre,
             'cod_giocoIn' => $tipogioco,
@@ -1082,7 +1082,7 @@ class mainAppController
         $res  = $this->db->selElencoInadempienti($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = $this->db->getError();
-        } else if ($retVal == null) {
+        } else if ($res == null) {
             $responseData['messaggio'] = $this->db->getError();
         } else {
             if ($tipogioco != -1) {
@@ -1103,7 +1103,7 @@ class mainAppController
                                                       'DESCR_GIOCO' => 'Tipo gioco non trasmesso'
                                                      );
             }
-            if($tipo_conc == 'VID') {
+            if($tipoconc == 'VID') {
                 if(is_array($res) && count($res)) {
                     foreach($res as $k => $v) {
                         $res[$k]['COD_CONC'] = 'ND';
@@ -1113,7 +1113,7 @@ class mainAppController
 
             $res = $this->_trasposizioneMatrice($res, $campi);
             $responseData['elenco'] = $res;
-            if ($tipo_conc != 'GAD') {
+            if ($tipoconc != 'GAD') {
                 if ($tiporete == 'F') {
                     $tiporeteSTR = '\n Tipo raccolta fisica \n';
                 } else {
@@ -1306,13 +1306,13 @@ class mainAppController
         $arrayBind                   = array(
                                         'in_anno'     => $anno_r,
                                         'in_semestre' => $semestre_r,
-                                        'cfaamsIn'    => $cf,
+                                        'cfaamsIn'    => $cf_utente,
                                        );
 
         $res = $this->db->selProspetti($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = $this->db->getError();
-        } else if ($retVal == null) {
+        } else if ($res == null) {
             $responseData['messaggio'] = 'Prospetto riepilogativo selezionato non disponibile';
         } else {
             $responseData['dati_post']   = $this->clear_pars;
@@ -1341,13 +1341,13 @@ class mainAppController
         $arrayBind                   = array(
                                         'in_anno'     => $anno_r,
                                         'in_semestre' => $semestre_r,
-                                        'cfaamsIn'    => $cf,
+                                        'cfaamsIn'    => $cf_utente,
                                        );
 
         $res = $this->db->selProspetti($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = $this->db->getError();
-        } else if ($retVal == null) {
+        } else if ($res == null) {
             $responseData['messaggio'] = 'Prospetto riepilogativo selezionato non disponibile';
         } else {
             $campi = array(
