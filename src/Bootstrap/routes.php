@@ -36,5 +36,10 @@ $app->group('', function () {
 
     //antiric_XLS_elenco_operazioni.inc 
     $this->get('/antiric_XLS_elenco_operazioni',    'mainAppController:antiric_XLS_elenco_operazioni');
+    
+    //antiric_deroga.inc 
+    $this->get('/getFormDeroga',    'mainAppController:getFormDeroga');
+    $this->get('/getFormMon',       'mainAppController:getFormMon');
+    $this->get('/putFormMon',    'mainAppController:putFormMon');
 
 })->add($container['AuthenticationMiddleware']);

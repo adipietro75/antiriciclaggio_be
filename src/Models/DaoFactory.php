@@ -226,4 +226,61 @@ class DaoFactory
 
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
+
+
+    public function ScriviDeroga($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".ScriviDeroga",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
+
+    public function selConcDeroga($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".selConcDeroga",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
+
+    public function selTipoConc($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".selTipoConc",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
+
+    public function CercaDeroga($arrayParams)
+    {
+        $retVal = $this->commonCall(
+            $this->package . ".CercaDeroga",
+            $arrayParams,
+            ['res', 'ERR', 'ERRCODE'],
+            null,
+            null,
+            ['res']
+        );
+
+        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
 }

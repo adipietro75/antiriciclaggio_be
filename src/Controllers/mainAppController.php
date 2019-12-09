@@ -351,7 +351,7 @@ class mainAppController
                         'semestre'  => null,
                     );
                     if (!$giochi = $this->_selGiochi($pars)) {
-                        $giochi = $this->calcolaGiochi2($tipo_conc, $traccolta);
+                        $giochi = $this->_calcolaGiochi2($tipo_conc, $traccolta);
                     }
 
                     $caption .= '<br /> Tipo gioco Tutti';
@@ -364,7 +364,7 @@ class mainAppController
                         'semestre'  => null,
                     );
                     if (!$giochi = $this->_selGiochi($pars)) {
-                        $giochi = $this->calcolaGiochi3($tipo_conc, $gioco);
+                        $giochi = $this->_calcolaGiochi3($tipo_conc, $gioco);
                     }
 
                     $responseData['larghezzatabella'] = '40%';
@@ -381,9 +381,9 @@ class mainAppController
                 */
 
                 if ($anno == -1) {
-                    $anni = $this->calcolaAnni2($res);
+                    $anni = $this->_calcolaAnni2($responseData,$res);
                 } else {
-                    $anni = $this->calcolaAnni3($res, $anno, $semestre);
+                    $anni = $this->_calcolaAnni3($responseData,$res, $anno, $semestre);
                 }
 
                 $responseData['result'] = $res;
@@ -429,6 +429,318 @@ class mainAppController
         }
     }
 
+    function _mappaturaAnni($responseData,$res)
+    {
+        $count = 0;
+        $anni  = array();
+        foreach ($res as $value) {
+            $search = $value['ANNO'].$value['SEMESTRE'];
+            if (array_search($search, $anni) === false) {
+                $anni[$search] = $search;
+                $count++;
+            }
+        }
+
+        if ($anni != null) {
+            $responseData['mappaturaAnni'] = $anni;
+        }
+    }
+
+    function _calcolaAnni2($responseData,$res)
+    {
+        $this->_mappaturaAnni($responseData,$res);
+        $anno                          = date('y');
+        $mese                          = date('m');
+        $this->tpl_dat['annoCorrente'] = '20'.$anno;
+        if ($mese <= 6) {
+            $responseData['semestreCorrente'] = 1;
+            $anno--;
+        } else if ($mese >= 7) {
+            $responseData['semestreCorrente'] = 2;
+        }
+
+        $data = null;
+        if ($res != null && $res[0] != null && array_key_exists('DATA_CONC',
+        $res[0])) {
+            $data = $res[0]['DATA_CONC'];
+        }
+
+        if ($data != null) {
+            $stipulaAnno     = substr($data, strlen($data) - 2, strlen($data));
+            $stipulaSemestre = substr($data, strlen($data) - 7, 2);
+            if ($stipulaSemestre > '06') {
+                $stipulaSemestre = 1;
+            } else {
+                $stipulaAnno--;
+                $stipulaSemestre = 2;
+            }
+        }
+
+        $annoPartenza = '11';
+        if (isset($stipulaAnno) && $stipulaAnno != null && $stipulaAnno > 9) {
+            $stipulaAnno = '20'.$stipulaAnno;
+        } elseif (isset($stipulaAnno) && $stipulaAnno != null &&
+        $stipulaAnno < 10) {
+            $stipulaAnno = '20'.$stipulaAnno;
+        }
+
+        if (isset($stipulaSemestre)) {
+            $responseData['semestreStipula'] = $stipulaSemestre;
+        }
+
+        if (isset($stipulaAnno)) {
+            $responseData['annoStipula'] = $stipulaAnno;
+        }
+
+        $arrAnno = array();
+        $count   = 0;
+        while ($annoPartenza <= $anno) {
+            if ($annoPartenza > 9) {
+                $arrAnno[$count] = '20'.$annoPartenza;
+            } else {
+                $arrAnno[$count] = '200'.$annoPartenza;
+            }
+
+            $count++;
+            $annoPartenza++;
+        }
+
+        return $arrAnno;
+    }
+
+
+    function _calcolaAnni3($responseData,$res, $anno, $semestre)
+    {
+        $responseData['tipoanno'] = 'S';
+        $responseData['annoOggi'] = date('Y');
+        $this->_mappaturaAnni($responseData,$res);
+        $anno                          = substr($anno, 2, 3);
+        $mese                          = date('m');
+        $responseData['annoCorrente'] = '20'.$anno;
+        if ($mese <= 6) {
+            $responseData['semestreCorrente'] = 1;
+        } elseif ($mese >= 7) {
+            $responseData['semestreCorrente'] = 2;
+        }
+
+        $data = null;
+        if ($res != null && $res[0] != null) {
+            $data = isset($res[0]['DATA_CONC']) ? $res[0]['DATA_CONC'] : null;
+        }
+
+        if ($data != null) {
+            $stipulaAnno     = substr($data, strlen($data) - 2, strlen($data));
+            $stipulaSemestre =
+            substr($data, strlen($data) - 7, strlen($data) - 5);
+            if ($stipulaSemestre > 6) {
+                $stipulaSemestre = 1;
+            } else {
+                $stipulaSemestre = 2;
+                $stipulaAnno--;
+            }
+        }
+
+        if ($anno == 11 && ($semestre == 1 || $semestre == -1)) {
+            $annoPartenza     = '11';
+            $semestrePartenza = 1;
+        } else {
+            $annoPartenza = $anno;
+            if ($semestre != 2) {
+                $semestrePartenza = 1;
+            } else {
+                $semestrePartenza = 2;
+            }
+        }
+
+        if (isset($stipulaAnno) && $stipulaAnno != null && $stipulaAnno > 9) {
+            $stipulaAnno = '20'.$stipulaAnno;
+        } elseif (isset($stipulaAnno) && $stipulaAnno != null &&
+        $stipulaAnno < 10) {
+            $stipulaAnno = '20'.$stipulaAnno;
+        }
+
+        $responseData['semestreStipula'] =
+        isset($stipulaSemestre) ? $stipulaSemestre : null;
+        $responseData['annoStipula']     =
+        isset($stipulaAnno) ? $stipulaAnno : null;
+        $arrAnno                          = array();
+        $count                            = 0;
+        while ($annoPartenza <= $anno) {
+            if ($annoPartenza > 9) {
+                $arrAnno[$count] = '20'.$annoPartenza;
+            } else {
+                $arrAnno[$count] = '200'.$annoPartenza;
+            }
+
+            $count++;
+            $annoPartenza++;
+        }
+
+        return $arrAnno;
+    }
+
+    function _calcolaGiochi2($tipoconc, $tiporete)
+    {
+        $giochi['COD_GIOCO'] = array();
+        switch ($tipoconc) {
+            case 'S':
+                $giochi['COD_GIOCO'][0]   = 6;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+                $giochi['COD_GIOCO'][1]   = 2;
+                $giochi['DESCR_GIOCO'][1] =
+                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+                $giochi['COD_GIOCO'][2]   = 5;
+                $giochi['DESCR_GIOCO'][2] = 'IPPICA NAZIONALE';
+                if ($tiporete != 'F') {
+                    $giochi['COD_GIOCO'][3]   = 7;
+                    $giochi['DESCR_GIOCO'][3] = "GIOCHI DI ABILITA'";
+                }
+            break;
+
+            // MOD LP 10/01/2012.
+            case 'IDLG':
+                $giochi['COD_GIOCO'][0]   = 1;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+                $giochi['COD_GIOCO'][1]   = 5;
+                $giochi['DESCR_GIOCO'][1] = 'IPPICA NAZIONALE';
+            break;
+
+            case 'I':
+                $giochi['COD_GIOCO'][0]   = 1;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+                $giochi['COD_GIOCO'][1]   = 2;
+                $giochi['DESCR_GIOCO'][1] =
+                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+                $giochi['COD_GIOCO'][2]   = 5;
+                $giochi['DESCR_GIOCO'][2] = 'IPPICA NAZIONALE';
+                if ($tiporete != 'F') {
+                    $giochi['COD_GIOCO'][3]   = 7;
+                    $giochi['DESCR_GIOCO'][3] = "GIOCHI DI ABILITA'";
+                }
+            break;
+
+            case 'AI':
+            case 'IPP':
+                $giochi['COD_GIOCO'][0]   = 1;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+            break;
+
+            case 'AS':
+                $giochi['COD_GIOCO'][0]   = 6;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+            break;
+
+            case 'B':
+                $giochi['COD_GIOCO'][0]   = 8;
+                $giochi['DESCR_GIOCO'][0] = 'BINGO';
+            break;
+
+            case 'GAD':
+                $giochi['COD_GIOCO'][0]   = 1;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+                $giochi['COD_GIOCO'][1]   = 2;
+                $giochi['DESCR_GIOCO'][1] =
+                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+                $giochi['COD_GIOCO'][2]   = 5;
+                $giochi['DESCR_GIOCO'][2] = 'IPPICA NAZIONALE';
+                $giochi['COD_GIOCO'][4]   = 7;
+                $giochi['DESCR_GIOCO'][4] = "GIOCHI DI ABILITA'";
+                $giochi['COD_GIOCO'][3]   = 6;
+                $giochi['DESCR_GIOCO'][3] = 'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+                $giochi['COD_GIOCO'][5]   = 8;
+                $giochi['DESCR_GIOCO'][5] = 'BINGO';
+                $giochi['COD_GIOCO'][6]   = 0;
+                $giochi['DESCR_GIOCO'][6] = 'GIOCO A DISTANZA';
+            break;
+
+            case 'VID':
+                $giochi['COD_GIOCO'][0]   = 10;
+                $giochi['DESCR_GIOCO'][0] = 'VIDEOGIOCHI';
+            break;
+
+            case 'X':
+            case 'A':
+                $giochi['COD_GIOCO'][0]   = 1;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+                $giochi['COD_GIOCO'][1]   = 2;
+                $giochi['DESCR_GIOCO'][1] =
+                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+                $giochi['COD_GIOCO'][2]   = 5;
+                $giochi['DESCR_GIOCO'][2] = 'IPPICA NAZIONALE';
+                $giochi['COD_GIOCO'][3]   = 6;
+                $giochi['DESCR_GIOCO'][3] =
+                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+            break;
+
+            default:
+                // Azione non prevista.
+            break;
+        }
+
+        return $giochi;
+    }
+
+    function _calcolaGiochi3($tipoconc, $cod_gioco)
+    {
+        $giochi['COD_GIOCO'] = array();
+        switch ($cod_gioco) {
+            case 0:
+                $giochi['COD_GIOCO'][0]   = 0;
+                $giochi['DESCR_GIOCO'][0] = 'GIOCO A DISTANZA';
+            break;
+
+            case 1:
+                $giochi['COD_GIOCO'][0]   = 1;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+            break;
+
+            case 2:
+                $giochi['COD_GIOCO'][0]   = 2;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+            break;
+
+            case 5:
+                $giochi['COD_GIOCO'][0]   = 5;
+                $giochi['DESCR_GIOCO'][0] = 'IPPICA NAZIONALE';
+            break;
+
+            case 6:
+                $giochi['COD_GIOCO'][0]   = 6;
+                $giochi['DESCR_GIOCO'][0] =
+                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+            break;
+
+            case 7:
+                $giochi['COD_GIOCO'][0]   = 7;
+                $giochi['DESCR_GIOCO'][0] = "GIOCHI DI ABILITA'";
+            break;
+
+            case 8:
+                $giochi['COD_GIOCO'][0]   = 8;
+                $giochi['DESCR_GIOCO'][0] = 'BINGO';
+            break;
+
+            case 10:
+                $giochi['COD_GIOCO'][0]   = 10;
+                $giochi['DESCR_GIOCO'][0] = 'VIDEOGIOCHI';
+            break;
+
+            default:
+                // Azione non prevista.
+            break;
+        }
+
+        return $giochi;
+    }
 
     function getDatiTrasmessiCSV(Request $request, Response $response)
     {
@@ -1000,7 +1312,6 @@ class mainAppController
             return false;
         }
 
-        $responseData['tipoconcessioni'] = $tipoConcOpt;
         $responseData['retval'] = $retval;
 
         $response->write(json_encode($responseData));
@@ -1389,7 +1700,7 @@ class mainAppController
                 $responseData['show_ancora'] = 1;
                 $responseData['elenco']      = $res;
                 $responseData['sezione']     = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio \n\n ANNO '
-                                                .$anno? $anno : 'tutti'.' SEMESTRE '. $semestre? $semestre : 'tutti';
+                                                .$anno_r? $anno_r : 'tutti'.' SEMESTRE '. $semestre_r? $semestre_r : 'tutti';
                 $responseData['tpl_name']    = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio';
         }
     }
@@ -1397,10 +1708,10 @@ class mainAppController
     function getResult1det(Request $request, Response $response) 
     {
         $request_data = $request->getParsedBody();
-        $dettLinkAnno             = $request_data['dettLinkAnno'];
-        $dettLinkSem         = $request_data['dettLinkSem'];
-        $dettlink         = $request_data['dettlink'];
-        $cf_utente         = $request_data['cf_utente'];
+        $dett_anno_r             = $request_data['dettLinkAnno'];
+        $dett_semestre_r         = $request_data['dettLinkSem'];
+        $tipodett         = $request_data['dettlink'];
+        $cf         = $request_data['cf_utente'];
         $paging                = 40;
 
         if (isset($request_data['pagina']) && $request_data['pagina']) {
@@ -1461,7 +1772,7 @@ class mainAppController
         $res = $this->db->calcolaStatDett($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Disallineamento tabella dettaglio';
-        } else if ($retVal == null) {
+        } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun concessionario per i parametri selezionati';
         } else {
             $responseData['dati_post']           = $this->clear_pars;
@@ -1564,10 +1875,10 @@ class mainAppController
     function getCSV1Dett(Request $request, Response $response) 
     {
         $request_data = $request->getParsedBody();
-        $dettLinkAnno             = $request_data['dettLinkAnno'];
-        $dettLinkSem         = $request_data['dettLinkSem'];
-        $dettlink         = $request_data['dettlink'];
-        $cf_utente         = $request_data['cf_utente'];
+        $dett_anno_r             = $request_data['dettLinkAnno'];
+        $dett_semestre_r         = $request_data['dettLinkSem'];
+        $tipodett         = $request_data['dettlink'];
+        $cf         = $request_data['cf_utente'];
 
         $arrayBind             = array(
                                   'anno_in'              => $dett_anno_r,
@@ -1582,7 +1893,7 @@ class mainAppController
         $res = $this->db->calcolaStatDett($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Disallineamento tabella dettaglio';
-        } else if ($retVal == null) {
+        } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun concessionario per i parametri selezionati';
         } 
         else 
@@ -1662,7 +1973,7 @@ class mainAppController
         $request_data = $request->getParsedBody();
         $anno             = $request_data['anno'];
         $semestre         = $request_data['semestre'];
-        $tipoconc         = $request_data['tipoconc'];
+        $tipo_conc         = $request_data['tipoconc'];
         $tipogioco        = $request_data['tipogioco']; 
         $tiporete         = $request_data['tiporete'] ;
         $tipoDettGP            = array(
@@ -1761,7 +2072,7 @@ class mainAppController
         $res = $this->db->selElencoInadempientiNew($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Errore procedura selElencoInadempientiNew';
-        } else if ($retVal == null) {
+        } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun concessionario inadempiente per i parametri selezionati';
         } 
         else 
@@ -1793,14 +2104,14 @@ class mainAppController
         $request_data = $request->getParsedBody();
         $anno             = $request_data['anno'];
         $semestre         = $request_data['semestre'];
-        $tipoconc         = $request_data['tipoconc'];
+        $tipo_conc         = $request_data['tipoconc'];
         $tipogioco        = $request_data['tipogioco']; 
         $tiporete         = $request_data['tiporete'] ;
 
 
         $responseData['anno']      = $anno;
         $responseData['semestre']  = $semestre;
-        $responseData['tipoconc']  = $tipoconc;
+        $responseData['tipoconc']  = $tipo_conc;
         $responseData['tipogioco'] = $tipogioco;
         $responseData['tiporete'] = $tiporete;
 
@@ -1854,7 +2165,7 @@ class mainAppController
         $res = $this->db->selElencoInadempientiNew($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Errore procedura selElencoInadempientiNew';
-        } else if ($retVal == null) {
+        } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun concessionario inadempiente per i parametri selezionati';
         } 
         else 
@@ -1976,10 +2287,11 @@ class mainAppController
         );
 
         $arrayBind       = array();
-        $responseData['resGiochi'] = $this->db->ListaGiochi($arrayBind);
+        $res= $this->db->ListaGiochi($arrayBind);
+        $responseData['resGiochi'] = $res;
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Errore procedura ListaGiochi';
-        } else if ($retVal == null) {
+        } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun record presente';
         } 
 
@@ -1994,7 +2306,7 @@ class mainAppController
         $responseData['resInvii'] = $resInvii;
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Errore procedura ListaGiochi';
-        } else if ($retVal == null) {
+        } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun record presente';
         } 
 
@@ -2194,7 +2506,7 @@ class mainAppController
         $responseData['resQuery'] = $resQuery;
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Errore procedura ListaGiochi';
-        } else if ($retVal == null) {
+        } else if ($resQuery == null) {
             $responseData['messaggio'] = 'Nessun record presente';
         } 
 
@@ -2282,6 +2594,477 @@ class mainAppController
         }
     }
     //FINE -- XLS_elenco_operazioni
+
+
+    //INIZIO -- antiric_deroga.inc
+    function getFormDeroga(Request $request, Response $response)
+    {
+        $request_data = $request->getParsedBody();
+        $concessionario = null;
+        $anno           = null;
+        $semestre       = null;
+        $datadal        = null;
+        $dataal         = null;
+        
+        if (isset($request_data['option_giorno_dal']) and isset($request_data['option_mese_dal']) and isset($request_data['option_anno_dal'])) 
+            $datadal = str_pad($request_data['option_giorno_dal'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_mese_dal'],2,'0',STR_PAD_LEFT)
+	        .str_pad($request_data['option_anno_dal'],2,'0',STR_PAD_LEFT);
+	    if (isset($request_data['option_giorno_al']) and isset($request_data['option_mese_al']) and isset($request_data['option_anno_al']))     
+	        $dataal  = str_pad($request_data['option_giorno_al'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_mese_al'],2,'0',STR_PAD_LEFT).
+	        str_pad($request_data['option_anno_al'],2,'0',STR_PAD_LEFT);
+        
+        if (isset($request_data['concessionario'])) {
+            $concessionario = $request_data['concessionario'];
+        }
+        if (isset($request_data['anno'])) {
+            $anno = $request_data['anno'];
+        }
+        if (isset($request_data['semestre'])) {
+            $semestre = $request_data['semestre'];
+        }
+        $responseData['concessionario'] = $concessionario;
+        $responseData['semestre']       = $semestre;
+        $responseData['anno']           = $anno;
+        $responseData['flag_autorizza']  = 0; //vedi tasto autorizza
+        
+        $responseData['pars']           = $this->clear_pars;
+        
+        if (isset($request_data['tipoconc'])) {
+            $tipo = $request_data['tipoconc'];
+        } else {
+            $tipo = 'T';
+        }
+        
+        $responseData['tipoconc']         = $tipo;
+                        
+        if (isset($request_data['autorizza']) && $request_data['autorizza'] == 'Autorizza') 
+         {
+	      //echo "\nautorizza";
+	      $rit = $this->_checkForm($request_data);
+	      //echo "\nrit=".$rit;
+	      if($rit == '0')
+	      {  
+                $arrayBind = array('tipo_conc'  => $tipo,
+                                'cod_conc'   => $concessionario,
+                                'anno'       => $anno,
+                                'semestre'   => $semestre,
+                                'datadal'    => $datadal,
+                                'dataal'     => $dataal,
+                                'cfaams_in' => $this->clear_pars['cf_utente']);
+                $resQuery = $this->db->ScriviDeroga($arrayBind);
+                $responseData['resQuery'] = $resQuery;
+                if ($this->db->getError() != "") {
+                    $responseData['messaggio'] = 'Operazione terminata con errore - Contattare assistenza';
+                } else 
+                {
+                    $responseData['messaggio'] = 'Deroga correttamente autorizzata ';
+                }                  
+
+                
+                $responseData['flag_autorizza']  = 1; //nascondi tasto autorizza  
+          }  
+          else
+            $this->tpl_dat['messaggio']=$rit;  
+            
+            
+	      //caricamento elenco concessioni
+          $arrayBind = array('tipo_conc' => $tipo);
+          $res = $this->db->selConcDeroga($arrayBind);
+          $responseData['resQuery'] = $res;
+          if ($this->db->getError() != "") {
+              $responseData['messaggio'] = 'Errore procedura Deroga';
+          } else if ($res == null) {
+            $responseData['messaggioConcessionari']='Non sono presenti concessionari per i parametri di ';
+            $responseData['messaggioConcessionari'] .= 'ricerca selezionati';
+          } 
+
+	     
+	      $concOpt = array();
+	      if ($this->db->errcode == 0 && $res != null) {
+	          foreach ($res['COD_CONC'] as $k => $v) {
+	              if ($res['TIPO_CONC'][$k] == 'VID') {
+	                    $concOpt[$res['TIPO_CONC'][$k].$v] =
+	                    (isset($res['RAG_SOC'][$k])? $res['RAG_SOC'][$k] : '');
+	                } else {
+	                 $concOpt[$v] = $v.' - '.(isset($res['RAG_SOC'][$k])?$res['RAG_SOC'][$k] : '');
+	                }
+	            }
+	       }
+	
+           $responseData['tipoconcSelected'] = $tipo;
+           $responseData['concessionari']    = $concOpt;
+	      
+	      
+          
+         }
+         
+        if (isset($request_data['visualizza']) && $request_data['visualizza'] == 'Visualizza>>') 
+         {  
+	        if (isset($request_data['tipoconc']) && $request_data['tipoconc'] == '') 
+	         {
+                $responseData['messaggio']='Selezionare tipologia di concessione';
+             }
+	        else
+	         { 
+	           //caricamento elenco concessioni
+                $arrayBind = array('tipo_conc' => $tipo);
+                $res = $this->db->selConcDeroga($arrayBind);
+                $responseData['resQuery'] = $res;
+                if ($this->db->getError() != "") {
+                    $responseData['messaggio'] = 'Errore procedura Deroga';
+                } else if ($res == null) {
+                  $responseData['messaggioConcessionari']='Non sono presenti concessionari per i parametri di ';
+                  $responseData['messaggioConcessionari'] .= 'ricerca selezionati';
+                } 
+
+         
+	            $concOpt = array();
+	            if ($this->db->errcode == 0 && $res != null) {
+	                foreach ($res['COD_CONC'] as $k => $v) {
+	                    if ($res['TIPO_CONC'][$k] == 'VID') {
+	                        $concOpt[$res['TIPO_CONC'][$k].$v] =
+	                        (isset($res['RAG_SOC'][$k])? $res['RAG_SOC'][$k] : '');
+	                    } else {
+	                     $concOpt[$v] = $v.' - '.(isset($res['RAG_SOC'][$k])?$res['RAG_SOC'][$k] : '');
+	                    }
+	                }
+	            }
+	
+	            $responseData['tipoconcSelected'] = $tipo;
+	            $responseData['concessionari']    = $concOpt;
+             }    
+         }
+
+        //caricamento tipologia di concessione
+        $arrayBind   = array('allIn' => '1',);
+        $res = $this->db->selTipoConc($arrayBind);
+        $tipoConcOpt = array();
+        foreach ($res['TIPO_CONC'] as $k => $v) {
+            $tipoConcOpt[$v] = $res['DESCRIZIONE'][$k];
+        }
+
+        $responseData['tipoconcessioni'] = $tipoConcOpt;
+        if ($this->db->errcode == 0) {
+            if (isset($concOpt)) {
+                $responseData['select_concessionari'] = $concOpt;
+            }
+        } else {
+            $responseData['messaggio'] = $this->db->err;
+        }
+        //caricamento giorno data inizio
+        $giorno_dal    = array();
+        $giorno_dal[0] = '';
+        for($gg=1;$gg<=31;$gg++) {
+          $giorno_dal[$gg] = str_pad($gg, 2, "0", STR_PAD_LEFT);
+        }
+        $responseData['giorno_dal'] = $giorno_dal;
+        //caricamento mese data inizio
+        $mese_dal    = array();
+        $mese_dal[0] = '';
+        for($mm=1;$mm<=12;$mm++){
+          $mese_dal[$mm] = str_pad($mm, 2, "0", STR_PAD_LEFT);
+        }
+        $responseData['mese_dal'] = $mese_dal;
+        //caricamento anno data inizio
+        $anno_dal    = array();
+        $anno_dal[0] = '';
+        for($aa=date("Y");$aa<=date("Y")+2;$aa++) {
+          $anno_dal[$aa] = $aa;
+        }
+        $responseData['anno_dal'] = $anno_dal;
+        //caricamento giorno data fine
+        $giorno_al    = array();
+        $giorno_al[0] = '';
+        for($gg=1;$gg<=31;$gg++) {
+          $giorno_al[$gg] = str_pad($gg, 2, "0", STR_PAD_LEFT);
+        }
+        $responseData['giorno_al'] = $giorno_al;
+        //caricamento mese data fine
+        $mese_al    = array();
+        $mese_al[0] = '';
+        for($mm=1;$mm<=12;$mm++){
+          $mese_al[$mm] = str_pad($mm, 2, "0", STR_PAD_LEFT);
+        }
+        $responseData['mese_al'] = $mese_al;
+        //caricamento anno data fine
+        $anno_al    = array();
+        $anno_al[0] = '';
+        for($aa=date("Y");$aa<=date("Y")+2;$aa++) {
+          $anno_al[$aa] = $aa;
+        }
+        $responseData['anno_al'] = $anno_al;
+        if (isset($request_data['option_giorno_dal'])) 
+            $responseData['giorno_dal_sel'] = $request_data['option_giorno_dal'];
+        if (isset($request_data['option_mese_dal']))   
+            $responseData['mese_dal_sel'] = $request_data['option_mese_dal'];
+        if (isset($request_data['option_anno_dal']))   
+            $responseData['anno_dal_sel'] = $request_data['option_anno_dal'];
+        if (isset($request_data['option_giorno_al']))   
+            $responseData['giorno_al_sel'] = $request_data['option_giorno_al'];
+        if (isset($request_data['option_mese_al']))   
+            $responseData['mese_al_sel'] = $request_data['option_mese_al'];
+        if (isset($request_data['option_anno_al']))   
+            $responseData['anno_al_sel'] = $request_data['option_anno_al'];
+
+        
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
+            return $response->withJson($data, 500);
+        }   
+    }
+
+    function getFormMon(Request $request, Response $response)
+    {
+        $request_data = $request->getParsedBody();
+        $concessionario = null;
+        $anno           = null;
+        $semestre           = null;
+       
+        
+        if (isset($request_data['concessionario'])) {
+            $concessionario = $request_data['concessionario'];
+        }
+        if (isset($request_data['anno'])) {
+            $anno = $request_data['anno'];
+        }
+        if (isset($request_data['semestre'])) {
+            $semestre = $request_data['semestre'];
+        } 
+        $responseData['concessionario'] = $concessionario;
+        $responseData['tiporaccolta']   = $request_data['traccolta'];
+        $responseData['semestre']       = $semestre;
+        $responseData['anno']           = $anno;
+        $responseData['pars']           = $this->clear_pars;
+        if (isset($request_data['tipoconc'])) {
+            $tipo = $request_data['tipoconc'];
+        } else {
+            $tipo = 'T';
+        }
+
+        $responseData['tipoconc']         = $tipo;
+    
+        $arrayBind = array('tipo_conc'    => $tipo);
+        $res = $this->db->selConcDeroga($arrayBind);
+        $responseData['resQuery'] = $res;
+        if ($this->db->getError() != "") {
+            $responseData['messaggio'] = 'Errore procedura Deroga';
+        } else if ($res == null) {
+            $responseData['messaggioConcessionari']='Non sono presenti concessionari per i parametri di ';
+            $responseData['messaggioConcessionari'] .= 'ricerca selezionati';
+        } 
+
+
+        $concOpt = array();
+        if ($this->db->errcode == 0 && $res != null) {
+            foreach ($res['COD_CONC'] as $k => $v) {
+                if ($res['TIPO_CONC'][$k] == 'VID') {
+                    $concOpt[$res['TIPO_CONC'][$k].$v] =
+                    (isset($res['RAG_SOC'][$k])? $res['RAG_SOC'][$k] : '');
+                } else {
+
+                    $concOpt[$v] = $v.' - '.(isset($res['RAG_SOC'][$k])?$res['RAG_SOC'][$k] : '');
+                }
+            }
+        }
+
+        $responseData['tipoconcSelected'] = $tipo;
+        $responseData['concessionari']    = $concOpt;
+        //}
+
+        $arrayBind   = array('allIn' => '1',);
+        $res = $this->db->selTipoConc($arrayBind);
+        $tipoConcOpt = array();
+        foreach ($res['TIPO_CONC'] as $k => $v) {
+            $tipoConcOpt[$v] = $res['DESCRIZIONE'][$k];
+        }
+
+        $responseData['tipoconcessioni'] = $tipoConcOpt;
+        if ($this->db->errcode == 0) {
+            if (isset($concOpt)) {
+                $responseData['select_concessionari'] = $concOpt;
+            }
+        } else {
+            $responseData['messaggio'] = $this->db->err;
+        }
+
+        
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
+            return $response->withJson($data, 500);
+        }
+        
+    }
+
+    function _checkForm($request_data)
+    {
+	 //echo "\ncheckform";
+	 //echo "\ndata_odierna=".date("Ymd"); 
+	 //echo "\ndata_inizio=".$this->clear_pars['option_anno_dal'].str_pad($this->clear_pars['option_mese_dal'],2,'0',STR_PAD_LEFT).str_pad($this->clear_pars['option_giorno_dal'],2,'0',STR_PAD_LEFT); 
+	 //echo "\ndata_fine=".$this->clear_pars['option_anno_al'].str_pad($this->clear_pars['option_mese_al'],2,'0',STR_PAD_LEFT).str_pad($this->clear_pars['option_giorno_al'],2,'0',STR_PAD_LEFT);
+	 //print_r($this->clear_pars);  
+	 if ($request_data['option_mese_dal'] == 0 or $request_data['option_giorno_dal'] == 0 or $request_data['option_anno_dal']==0) 
+	 {
+	  return 'Data inizio trasmissione obbligatoria';  
+     } 
+	 elseif (!checkdate($request_data['option_mese_dal'], $request_data['option_giorno_dal'],$request_data['option_anno_dal']) )
+	 {
+	  return 'Data inizio trasmissione errata'; 
+     } 
+	 elseif ($request_data['option_mese_al'] == 0 or $request_data['option_giorno_al'] == 0 or $request_data['option_anno_al']==0) 
+	 {
+	  return 'Data fine trasmissione obbligatoria';  
+     } 
+	 elseif (!checkdate($request_data['option_mese_al'], $request_data['option_giorno_al'],$request_data['option_anno_al']) )
+	 {
+	  return 'Data fine trasmissione errata';   
+     } 
+	 elseif(date("Ymd") > $request_data['option_anno_dal'].str_pad($request_data['option_mese_dal'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_giorno_dal'],2,'0',STR_PAD_LEFT) )
+	 {
+	   return 'Data inizio trasmissione non deve essere minore della data odierna';   
+     } 
+     elseif($request_data['option_anno_dal'].str_pad($request_data['option_mese_dal'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_giorno_dal'],2,'0',STR_PAD_LEFT)
+      > $request_data['option_anno_al'].str_pad($request_data['option_mese_al'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_giorno_al'],2,'0',STR_PAD_LEFT))
+	 {
+	  return 'Data inizio trasmissione non deve essere maggiore della data fine trasmissione';   
+     }
+     elseif($request_data['concessionario'] == '')
+	 {
+	  return 'Concessione obbligatoria';   
+     }
+	 else 
+	  return '0';
+    } 
+
+
+    function putFormMon(Request $request, Response $response)
+    {
+        $request_data = $request->getParsedBody();
+        $concessionario = null;
+        $anno           = null;
+        $semestre       = null;
+                
+        if (isset($request_data['concessionario'])) {
+            $concessionario = $request_data['concessionario'];
+        }
+        if (isset($request_data['anno'])) {
+            $anno = $request_data['anno'];
+        }
+        if (isset($request_data['semestre'])) {
+            $semestre = $request_data['semestre'];
+        } else {
+            $semestre = '-1';
+        }
+        if (isset($request_data['tipoconc'])) {
+            $tipo = $request_data['tipoconc'];
+        } else {
+            $tipo = 'T';
+        }
+        
+        
+        if ($anno == 'T')
+             $responseData['anno']           = 'Tutti';
+        else 
+        $responseData['anno']           = $anno;
+        if ($semestre == 'T')
+        $responseData['semestre']       = 'Tutti';
+        else 
+        $responseData['semestre']       = $semestre; 
+        if ($concessionario == 'T')
+        $responseData['concessionario'] = 'Tutti';
+        else 
+        $responseData['concessionario'] = $concessionario;  
+        if ($tipo == 'T')
+        $responseData['tipoconc'] = 'Tutti';
+        else 
+        $responseData['tipoconc'] = $this->_calcolaDescTipoConc($tipo);   
+         
+        $responseData['pars']           = $this->clear_pars;
+        
+        //echo "\ntipo=".$tipo;
+        //echo "\nconcessionario=".$concessionario;
+                
+        if (isset($request_data['cerca']) && $request_data['cerca'] == 'Cerca') 
+         {
+                //echo "\ncerca";
+                $arrayBind = array('tipo_conc'  => $tipo,
+                                    'cod_conc'   => $concessionario,
+                                    'anno'       => $anno,
+                                    'semestre'   => $semestre);
+                $res = $this->db->CercaDeroga($arrayBind);
+                $responseData['resQuery'] = $res;
+
+                if ($res == null) 
+                {
+                    $responseData['messaggio']='Non sono presenti deroghe per i parametri di ';
+                    $responseData['messaggio'] .= 'ricerca selezionati';
+                    $responseData['return']= 0;
+                }
+
+                $responseData['fine'] = count($res['COD_CONC']);     
+                $responseData['elenco'] = $res; 
+                //print_r($this->tpl_dat['dati']['ANNO']);
+                 
+         }    
+        $responseData['return']=1;
+
+        $response->write(json_encode($responseData));
+        if (is_array($responseData)) {
+            $data = ["status" => "OK", "result" => $responseData];
+            return $response->withJson($data, 200);
+        } else {
+            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
+            return $response->withJson($data, 500);
+        } 
+    }
+
+    function _calcolaDescTipoConc($tipoconc)
+    {
+        switch ($tipoconc) {
+            case 'GAD':
+                return 'GAD';
+            break;
+
+            case 'I':
+                return 'GIOCHI PUBBLICI IPPICA';
+            break;
+
+            case 'VID':
+                return 'VIDEOGIOCHI';
+            break;
+
+            case 'AI':
+                return 'AGENZIA I';
+            break;
+
+            case 'AS':
+                return 'AGENZIA SPORTIVA';
+            break;
+
+            case 'S':
+                return 'GIOCHI PUBBLICI SPORT';
+            break;
+
+            case 'B':
+                return 'BINGO';
+            break;
+
+           case 'IDLG':
+                return 'GIOCHI PUBBLICI IPPICA D.L. 149/08';
+            break;
+
+            default:
+                // Azione non prevista.
+            break;
+        }
+    }
 
 
 }
