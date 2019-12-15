@@ -35,6 +35,155 @@ class mainAppController
         session_destroy();
     }
 
+
+    public function commonResponse(Response $response, array $data)
+    {
+        $response->write(json_encode($data));
+        if (is_array($data)) {
+            return $response->withJson(["status" => "OK", "result" => $data], 200)
+                ->withHeader('Content-type', 'application/json')
+                ->withStatus(200)
+                ->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Access-Control-Allow-Credentials', true)
+                ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
+        } else {
+            return $response->withJson(["status" => "NOK", "message" => "Errore durante il recupero dei dati"], 500)
+                ->withHeader('Content-type', 'application/json')
+                ->withStatus(500)
+                ->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Access-Control-Allow-Credentials', true)
+                ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
+        }
+    }
+
+    public function getMokups(Request $request, Response $response)
+    {
+
+        return $this->commonResponse($response, $this->db->getMockups());
+    }
+
+    public function sessionStart()
+    {
+        session_start();
+    }
+
+    public function sessionDestroy()
+    {
+        // session_destroy();
+    }
+
+    public function getBreadcrumb(Request $request, Response $response) //, $args)
+    {
+        $this->logger->info('Inizio mainAppController::getBreadcrumb');
+        $request_data = $request->getParsedBody();
+        $nomeRotta = $request_data['nomeRotta'];
+        $vars = [
+            [
+                "class" => "",
+                "label" => "Home",
+                "url" => "/"
+            ],
+            [
+                "class" => "",
+                "label" => "Giochi Pubblici",
+                "url" => "/giochipubblici"
+            ],
+            [
+                "class" => "",
+                "label" => "Comma6",
+                "url" => "/giochipubblici/comma6"
+            ]
+        ];
+
+        $this->logger->info("mainAppController::getBreadcrumb - Rotta: $nomeRotta");
+        $vars[] = [
+            "class" => "home" == $nomeRotta ? "active" : "",
+            "label" => "Antiriciclaggio",
+            "url" => "/"
+        ];
+
+        if ("creazione" == $nomeRotta) { // || "risultatoRicerca" == $nomeRotta || $nomeRotta == "storico") {
+            $vars[] = [
+                "class" => "creazione" == $nomeRotta ? "active" : "",
+                "label" => "Creazione",
+                // "url" => "/giochipubblici/comma6/uurr_mon/ricerca"
+                "url" => "/creazione"
+            ];
+        }
+
+        if ("monitor" == $nomeRotta) { //} || $nomeRotta == "storico") {
+            $vars[] = [
+                "class" => "monitor" == $nomeRotta ? "active" : "",
+                "label" => "Monitor",
+                // "url" => "/giochipubblici/comma6/uurr_mon/risultatoRicerca"
+                "url" => "/monitor"
+            ];
+        }
+
+        if ($nomeRotta == "cruscotto") {
+            $vars[] = [
+                "class" => "cruscotto" == $nomeRotta ? "active" : "",
+                "label" => "Cruscotto",
+                // "url" => "/giochipubblici/comma6/uurr_mon/storico"
+                "url" => "/cruscotto"
+            ];
+        }
+
+        $data = ["status" => "OK", "result" => $vars];
+        $this->logger->info('Fine mainAppController::getBreadcrumb');
+        return $response->withJson($data, 200);
+    }
+
+    public function getMenuLeft(Request $request, Response $response) //, $args)
+    {
+        $this->logger->debug('Inizio mainAppController::getMenuLeft');
+        $vars = [
+            'idMenu' => 'menu-left',
+            'label' => 'Antiriciclaggio',
+            'context' => '',
+            'menuType' => 'navbar-light',
+            'menuOptions' => ['items-indent'],
+            'leftMenuItems' => [
+                [
+                    'exact' => "true",
+                    'label' => 'Home',
+                    'path' => '/',
+                    'icon' => '',
+                ],
+                [
+                    'exact' => "true",
+                    'label' => 'Dati trasmessi',
+                    'path' => '/Dati trasmessi',
+                    'icon' => '',
+                ],
+                [
+                    'exact' => "true",
+                    'label' => 'Grafici',
+                    'path' => '/Grafici',
+                    'icon' => '',
+                ],
+                [
+                    'exact' => "true",
+                    'label' => 'Monitoraggio',
+                    'path' => '/getForm',
+                    'icon' => '',
+                ],
+                [
+                    'exact' => "true",
+                    'label' => 'Deroga',
+                    'path' => '/Deroga',
+                    'icon' => '',
+                ]
+            ]
+        ];
+
+        $data = ["status" => "OK", "result" => $vars];
+        return $response->withJson($data, 200);
+    }
+
+
     public function index(Request $request, Response $response)
     {
         $data = ["status" => "OK", "result" => $this->config['defres']];
@@ -176,14 +325,9 @@ class mainAppController
         }
         $responseData['tipoconcessioni'] = $tipoConcOpt;
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei concessionari"];
-            return $response->withJson($data, 500);
-        }
+
+        return $this->commonResponse($response, $responseData);
+      
     }
 
     function getDatiTrasmessi(Request $request, Response $response)
@@ -419,14 +563,7 @@ class mainAppController
 
         $responseData['caption'] = $caption;
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
     }
 
     function _mappaturaAnni($responseData,$res)
@@ -920,14 +1057,7 @@ class mainAppController
         $responseData['titolo_tabella'] = 'Rapporto Concessorio - Monitoraggio<br>Storia della concessione';
         $responseData['tpl_name'] = $conctmp;
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
     }
 
     /**
@@ -962,14 +1092,7 @@ class mainAppController
             }
         }
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei giochi"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
     }
 
     function _selGiochi($pars)
@@ -1012,14 +1135,7 @@ class mainAppController
             }
         }
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei giochi disponibili"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
     }
 	
     //RC01_antiric_monitoraggio.inc 
@@ -1100,14 +1216,7 @@ class mainAppController
         }
         $responseData['tipoconcessioni'] = $tipoConcOpt;
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei concessionari"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
         
     }
 
@@ -1140,6 +1249,8 @@ class mainAppController
             $responseData['messaggio'] = 'Non si possono effettuare ricerche per periodi non conclusi';
             return -1;
         }
+
+        return $this->commonResponse($response, $responseData);
 
     }   
 
@@ -1314,14 +1425,7 @@ class mainAppController
 
         $responseData['retval'] = $retval;
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il controllo dei parametri"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
     }
 
     function calcolaAnno(Request $request, Response $response)
@@ -1342,14 +1446,7 @@ class mainAppController
 
         $responseData['arrAnno'] = $arrAnno;
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il controllo dei parametri"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
 
     }
 
@@ -1448,14 +1545,7 @@ class mainAppController
         }
 
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il reperimento csv"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
     }
  
     function _trasposizioneMatrice($matrice, $campi) 
@@ -1631,14 +1721,7 @@ class mainAppController
             $responseData['elenco']      = $res;
         }
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del prospetto riepilogativo"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
     }
 
 
@@ -1703,6 +1786,8 @@ class mainAppController
                                                 .$anno_r? $anno_r : 'tutti'.' SEMESTRE '. $semestre_r? $semestre_r : 'tutti';
                 $responseData['tpl_name']    = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio';
         }
+
+        return $this->commonResponse($response, $responseData);
     }
 
     function getResult1det(Request $request, Response $response) 
@@ -1861,14 +1946,7 @@ class mainAppController
                 '<br>TOTALE CONCESSIONARI: '.$totConcDist;
         }
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
         
     }
 
@@ -1957,14 +2035,7 @@ class mainAppController
                 $responseData['tpl_name']           = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio';           
         }
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
 
     }
 
@@ -2088,14 +2159,7 @@ class mainAppController
             
         }       
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
 
     }
 
@@ -2232,14 +2296,7 @@ class mainAppController
             
         }    
         
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
  
     }
     //FINE --- RC01_antiric_monitoraggio.inc 
@@ -2440,14 +2497,7 @@ class mainAppController
         $responseData['title_excel'][$colnna]['testo']  = 'BINGO';
         $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
     }
     //FINE -- XLS_elenco_societa
 
@@ -2584,14 +2634,7 @@ class mainAppController
         $responseData['title_excel'][1]['testo']  = 'Valori';
         $responseData['title_excel'][1]['format'] = $format_intestazioni;
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il reperimento del dettaglio"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
     }
     //FINE -- XLS_elenco_operazioni
 
@@ -2807,14 +2850,7 @@ class mainAppController
             $responseData['anno_al_sel'] = $request_data['option_anno_al'];
 
         
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
-            return $response->withJson($data, 500);
-        }   
+        return $this->commonResponse($response, $responseData);  
     }
 
     function getFormMon(Request $request, Response $response)
@@ -2891,15 +2927,7 @@ class mainAppController
             $responseData['messaggio'] = $this->db->err;
         }
 
-        
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
-            return $response->withJson($data, 500);
-        }
+        return $this->commonResponse($response, $responseData);
         
     }
 
@@ -3015,14 +3043,7 @@ class mainAppController
          }    
         $responseData['return']=1;
 
-        $response->write(json_encode($responseData));
-        if (is_array($responseData)) {
-            $data = ["status" => "OK", "result" => $responseData];
-            return $response->withJson($data, 200);
-        } else {
-            $data = ["status" => "NOK", "message" => "Errore durante il recupero dei dati trasmessi"];
-            return $response->withJson($data, 500);
-        } 
+        return $this->commonResponse($response, $responseData);
     }
 
     function _calcolaDescTipoConc($tipoconc)

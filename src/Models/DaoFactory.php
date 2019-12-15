@@ -12,6 +12,7 @@ class DaoFactory
     protected $package;
     protected $nomignolo;
     protected $msgError;
+    private   $mock = true;
 
     public function __construct(\Monolog\Logger $logger, $dbMan)
     {
@@ -49,9 +50,13 @@ class DaoFactory
             return null;
         }
 
-        if ($rst['ERRCODE'] != 0) {
-            $this->msgError = $rst['ERR'];
-            $this->logger->error($rst['ERR']);
+        if ($rst['ERRCODE'] == 2) {
+            $this->msgError = $rst['ERRTEXT'];
+            $this->logger->error($rst['ERRTEXT']);
+        }
+        if ($rst['ERRCODE'] == 1) {
+            $this->msgError = 'Si &egrave; verificato un errore, contattare l&rsquo;amministratore del sistema.';
+            $this->logger->error($this->msgError);
         }
         if ($this->config['debug'] === true) {
             $this->logger->debug("Called: " . $nomeProcedura);
@@ -70,217 +75,373 @@ class DaoFactory
 
     public function selezioneConcessionari($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selConcNew",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selConcNew",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
 
         if ($retVal == null) {
             $this->msgError = 'Non sono presenti concessionari per i parametri di ';
             $this->msgError .= 'ricerca selezionati';
         }        
 
-        return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+       
+        return (isset($retVal)) ? $retVal['P_RECORDSET'] : null;
     }
 
     public function selezioneTipoConcessionari($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selTipoConc",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selTipoConc",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
+
 
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selezioneDatiTrasmessi($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selDatiTrasmessi",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selDatiTrasmessi",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
 
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selezioneDatiTrasmessiCSV($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selDatiTrasmessiCSV",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selDatiTrasmessiCSV",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selezioneGiochi($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selGiochi",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selGiochi",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selElencoInadempienti($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selElencoInadempienti",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selElencoInadempienti",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selProspetti($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selProspetti",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selProspetti",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+
+
     }
 
     public function calcolaStatDett($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".calcolaStatDett",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".calcolaStatDett",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+
+
     }
 
     public function selElencoInadempientiNew($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selElencoInadempientiNew",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selElencoInadempientiNew",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function ListaGiochi($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".ListaGiochi",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".ListaGiochi",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function ElencoInvii($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".ElencoInvii",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
 
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".ElencoInvii",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
-
     public function ScriviDeroga($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".ScriviDeroga",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".ScriviDeroga",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selConcDeroga($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selConcDeroga",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selConcDeroga",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selTipoConc($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".selTipoConc",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
 
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".selTipoConc",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function CercaDeroga($arrayParams)
     {
-        $retVal = $this->commonCall(
-            $this->package . ".CercaDeroga",
-            $arrayParams,
-            ['res', 'ERR', 'ERRCODE'],
-            null,
-            null,
-            ['res']
-        );
-
+        if (!$this->mock) 
+        {
+            $retVal = $this->commonCall(
+                $this->package . ".CercaDeroga",
+                $arrayParams,
+                ['res', 'ERR', 'ERRCODE'],
+                null,
+                null,
+                ['res']
+            );
+        }
+        else
+        {
+            $retVal = ['P_RECORDSET' => [
+                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
+    }
+
+    public function getMockups()
+    {
+        $retVal = [];
+        //$retVal["retrieveListConc"] = $this->retrieveListConc();
+        // $retVal["retrieve_prod"] = $this->retrieve_prod("A", "14"); //$P_COD_MITT = null, $P_PK_SG = null)
+        // $retVal["retrieveSg"] = $this->retrieveSg("A"); //$COD_MITT = null, $P_PK_PROD = null)
+        // $retVal["retrievePrimoAnnoValido"] = $this->retrievePrimoAnnoValido("A", "14"); //$COD_MITT = null, $P_PK_SG = null)
+        // $retVal["verifyCreazioneFlusso"] = $this->verifyCreazioneFlusso("A", "14", "2015");
+        //$retVal["creaFlusso"] = $this->creaFlusso("A", "14", "01/01/2020", "1", "2015", "01/02/2020", "03/02/2020", "", "", ""); //$P_COD_MITT, $P_PROG_SISTEMA_GIOCO_ID, $p_data_fine_invio607, $p_numero_totale_607, $p_anno600, $p_data_ritrasm_600, $p_data_replica, $filename_content, $file_allegato_content, $p_cf_operatore)
+        // $retVal["retrieveFlussi"] = $this->retrieveFlussi(null, null, null, null); //$COD_MITT, $COD_PROD, $P_PK_SG, $statoFlusso)
+        //  $retVal["retrieveFlussiCruscotto"] = $this->retrieveFlussiCruscotto();
+        //  $retVal["retrieveFlusso"] = $this->retrieveFlusso(46); //$p_pk_607_flusso)
+        //  $retVal["retrieve_607_ok"] = $this->retrieve_607_ok(46); //$p_pk_607_flusso)
+        //  $retVal["retrieve_607_nok"] = $this->retrieve_607_nok(46); //$p_pk_607_flusso)
+        //  $retVal["retrieve_num_600_annullati"] = $this->retrieve_num_600_annullati(46); //$p_pk_607_flusso)
+
+        //$retVal["report_600_annullati"] = $this->report_600_annullati(null, null, 46); //$p_periodo, $p_tipo_componente, $p_pk_607_flusso)
+
+        //  $retVal["retrieve_num_600_ritrasm"] = $this->retrieve_num_600_ritrasm(46); //$p_pk_607_flusso)
+        //  $retVal["retrieve_num_600_non_ritrasm"] = $this->retrieve_num_600_non_ritrasm(46); //$p_pk_607_flusso)
+
+        // $retVal["report_600_ritrasmessi"] = $this->report_600_ritrasmessi(null, null, 46); //$p_periodo, $p_tipo_componente, $p_pk_607_flusso)
+        //$retVal["report_600_non_ritrasmessi"] = $this->report_600_non_ritrasmessi(null, null, 46); //$p_periodo, $p_tipo_componente, $p_pk_607_flusso)
+        return $retVal;
     }
 }
