@@ -104,30 +104,39 @@ class mainAppController
             "url" => "/"
         ];
 
-        if ("creazione" == $nomeRotta) { // || "risultatoRicerca" == $nomeRotta || $nomeRotta == "storico") {
+        if ("dati-trasmessi" == $nomeRotta) { // || "risultatoRicerca" == $nomeRotta || $nomeRotta == "storico") {
             $vars[] = [
-                "class" => "creazione" == $nomeRotta ? "active" : "",
-                "label" => "Creazione",
+                "class" => "dati-trasmessi" == $nomeRotta ? "active" : "",
+                "label" => "Dati trasmessi",
                 // "url" => "/giochipubblici/comma6/uurr_mon/ricerca"
-                "url" => "/creazione"
+                "url" => "/dati-trasmessi"
             ];
         }
 
-        if ("monitor" == $nomeRotta) { //} || $nomeRotta == "storico") {
+        if ("grafici" == $nomeRotta) { //} || $nomeRotta == "storico") {
+            $vars[] = [
+                "class" => "grafici" == $nomeRotta ? "active" : "",
+                "label" => "Grafici",
+                // "url" => "/giochipubblici/comma6/uurr_mon/risultatoRicerca"
+                "url" => "/grafici"
+            ];
+        }
+
+        if ($nomeRotta == "acquisizione-dati") {
+            $vars[] = [
+                "class" => "acquisizione-dati" == $nomeRotta ? "active" : "",
+                "label" => "Acquisizione Dati",
+                // "url" => "/giochipubblici/comma6/uurr_mon/storico"
+                "url" => "/acquisizione-dati"
+            ];
+        }
+
+        if ($nomeRotta == "monitor") {
             $vars[] = [
                 "class" => "monitor" == $nomeRotta ? "active" : "",
-                "label" => "Monitor",
-                // "url" => "/giochipubblici/comma6/uurr_mon/risultatoRicerca"
-                "url" => "/monitor"
-            ];
-        }
-
-        if ($nomeRotta == "cruscotto") {
-            $vars[] = [
-                "class" => "cruscotto" == $nomeRotta ? "active" : "",
-                "label" => "Cruscotto",
+                "label" => "Monitoraggio",
                 // "url" => "/giochipubblici/comma6/uurr_mon/storico"
-                "url" => "/cruscotto"
+                "url" => "/monitor"
             ];
         }
 
@@ -155,25 +164,25 @@ class mainAppController
                 [
                     'exact' => "true",
                     'label' => 'Dati trasmessi',
-                    'path' => '/Dati trasmessi',
+                    'path' => '/dati-trasmessi',
                     'icon' => '',
                 ],
                 [
                     'exact' => "true",
                     'label' => 'Grafici',
-                    'path' => '/Grafici',
+                    'path' => '/grafici',
+                    'icon' => '',
+                ],
+                [
+                    'exact' => "true",
+                    'label' => 'Acquisizione Dati',
+                    'path' => '/acquisizione-dati',
                     'icon' => '',
                 ],
                 [
                     'exact' => "true",
                     'label' => 'Monitoraggio',
-                    'path' => '/getForm',
-                    'icon' => '',
-                ],
-                [
-                    'exact' => "true",
-                    'label' => 'Deroga',
-                    'path' => '/Deroga',
+                    'path' => '/monitor',
                     'icon' => '',
                 ]
             ]
@@ -189,6 +198,8 @@ class mainAppController
         $data = ["status" => "OK", "result" => $this->config['defres']];
         return $response->withJson($data, 200);
     }
+
+   
 
     public function alive(Request $request, Response $response)
     {

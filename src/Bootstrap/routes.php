@@ -12,7 +12,13 @@ $app->group('', function () {
     
 
     //RC01_antiric.inc 
-    $this->get('/selezionaConcessionari',           'mainAppController:selezionaConcessionari');
+    
+    $this->map(['GET', 'OPTIONS', 'POST'], '/selezionaConcessionari',                'mainAppController:selezionaConcessionari');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getBreadcrumb',                'mainAppController:getBreadcrumb');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getMenuLeft',                'mainAppController:getMenuLeft');
+
+    
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getMokups',                'mainAppController:getMokups');
     $this->get('/getDatiTrasmessi',                 'mainAppController:getDatiTrasmessi');
     $this->get('/getDatiTrasmessiCSV',              'mainAppController:getDatiTrasmessiCSV');
     $this->get('/selezioneGiochi',                  'mainAppController:selezioneGiochi');

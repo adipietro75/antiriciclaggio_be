@@ -88,8 +88,36 @@ class DaoFactory
         }
         else
         {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            $retVal = ['res' => [
+                [
+                    "RAG_SOC"=> "COGETECH GAMING S.R.L. - SOCIO UNICO",
+                    "COD_CONC"=> "1",
+                    "DESCR"=> "AGENZIA SPORTIVA",
+                    "TIPO_CONC"=> "AS",
+                    "ID_CONC"=> "1"
+                ],
+                [
+                    "RAG_SOC"=> "BINGO NEMICO SRL",
+                    "COD_CONC"=> "1",
+                    "DESCR"=> "BINGO",
+                    "TIPO_CONC"=> "B",
+                    "ID_CONC"=> "2"
+                ],
+                [
+                    "RAG_SOC"=> null,
+                    "COD_CONC"=> "1",
+                    "DESCR"=> "APPARECCHI DA INTRATTENIMENTO",
+                    "TIPO_CONC"=> "VID",
+                    "ID_CONC"=> "2"
+                ],
+                [
+                    "RAG_SOC"=> "CITES SPA",
+                    "COD_CONC"=> "2",
+                    "DESCR"=> "BINGO",
+                    "TIPO_CONC"=> "B",
+                    "ID_CONC"=> "2"
+                ]                
+
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
 
@@ -99,7 +127,7 @@ class DaoFactory
         }        
 
        
-        return (isset($retVal)) ? $retVal['P_RECORDSET'] : null;
+        return (isset($retVal)) ? $retVal['res'] : null;
     }
 
     public function selezioneTipoConcessionari($arrayParams)
@@ -117,8 +145,16 @@ class DaoFactory
         }
         else
         {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            $retVal = ['res' => [
+                [
+                    "TIPO_CONC"=> "1",
+                    "DESCRIZIONE"=> "TIPO CONCESSIONARIO 1"
+                ],
+                [
+                    "TIPO_CONC"=> "2",
+                    "DESCRIZIONE"=> "TIPO CONCESSIONARIO 2"
+                ],
+
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
 
@@ -422,7 +458,16 @@ class DaoFactory
     public function getMockups()
     {
         $retVal = [];
-        //$retVal["retrieveListConc"] = $this->retrieveListConc();
+        $retVal["selezioneConcessionari"] = $this->selezioneConcessionari(array(
+            'tipo_conc'    => '',
+            'anno'         => '',
+            'semestre'     => '',
+            'tipogioco'    => '',
+            'tiporaccolta' => ''
+        ));
+
+        $retVal["selezioneTipoConcessionari"] = $this->selezioneTipoConcessionari(array('allIn' => '',));
+
         // $retVal["retrieve_prod"] = $this->retrieve_prod("A", "14"); //$P_COD_MITT = null, $P_PK_SG = null)
         // $retVal["retrieveSg"] = $this->retrieveSg("A"); //$COD_MITT = null, $P_PK_PROD = null)
         // $retVal["retrievePrimoAnnoValido"] = $this->retrievePrimoAnnoValido("A", "14"); //$COD_MITT = null, $P_PK_SG = null)
