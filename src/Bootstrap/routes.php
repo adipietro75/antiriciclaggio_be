@@ -16,10 +16,10 @@ $app->group('', function () {
     $this->map(['GET', 'OPTIONS', 'POST'], '/selezionaConcessionari',                'mainAppController:selezionaConcessionari');
     $this->map(['GET', 'OPTIONS', 'POST'], '/getBreadcrumb',                'mainAppController:getBreadcrumb');
     $this->map(['GET', 'OPTIONS', 'POST'], '/getMenuLeft',                'mainAppController:getMenuLeft');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getDatiTrasmessi',                'mainAppController:getDatiTrasmessi');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getMokups',                'mainAppController:getMokups');
 
     
-    $this->map(['GET', 'OPTIONS', 'POST'], '/getMokups',                'mainAppController:getMokups');
-    $this->get('/getDatiTrasmessi',                 'mainAppController:getDatiTrasmessi');
     $this->get('/getDatiTrasmessiCSV',              'mainAppController:getDatiTrasmessiCSV');
     $this->get('/selezioneGiochi',                  'mainAppController:selezioneGiochi');
     $this->get('/giochiDisponibiliPerConcessione',  'mainAppController:giochiDisponibiliPerConcessione');

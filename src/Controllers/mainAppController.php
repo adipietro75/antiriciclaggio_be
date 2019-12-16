@@ -461,7 +461,7 @@ class mainAppController
         $responseData['concessione']    = $conctmp;
         $responseData['tiporaccolta']   = $traccolta;
         $responseData['semestre']       = $semestre;
-        $responseData['tipogioco']      = "$gioco";
+        $responseData['tipogioco']      = $gioco;
         $responseData['anno']           = $anno;
         $responseData['tipoconc']       = $tipo_conc;
         $cf                              = $request_data['cf_utente'];
@@ -472,7 +472,7 @@ class mainAppController
             'cod_concIn'  => $conctmp,
             'annoIn'      => $anno,
             'semestreIn'  => $semestre,
-            'cod_giocoIn' => "$gioco",
+            'cod_giocoIn' => $gioco,
             'tipo_reteIn' => $traccolta,
             'DWHFlag'     => $DWHFlag,
             'cfaamsIn'    => $cf,
@@ -506,7 +506,7 @@ class mainAppController
                         'semestre'  => null,
                     );
                     if (!$giochi = $this->_selGiochi($pars)) {
-                        $giochi = $this->_calcolaGiochi2($tipo_conc, $traccolta);
+                        $giochi = $this->_calcolaGiochi2("S","F"); //$tipo_conc, $traccolta SANDRO
                     }
 
                     $caption .= '<br /> Tipo gioco Tutti';
@@ -519,7 +519,7 @@ class mainAppController
                         'semestre'  => null,
                     );
                     if (!$giochi = $this->_selGiochi($pars)) {
-                        $giochi = $this->_calcolaGiochi3($tipo_conc, $gioco);
+                        $giochi = $this->_calcolaGiochi3($tipo_conc, 0); //$gioco SANDRO
                     }
 
                     $responseData['larghezzatabella'] = '40%';
@@ -546,7 +546,7 @@ class mainAppController
                 $responseData['anni']   = $anni;
             }
         } else {
-            $responseData['messaggio'] = $this->db->getError();
+            $responseData['messaggio'] =$this->db->getError();
         }
 
         if (isset($tipoRetePuntuale)) {
@@ -555,7 +555,7 @@ class mainAppController
                 'cod_concIn'  => $conctmp,
                 'annoIn'      => $annoPuntuale,
                 'semestreIn'  => $semestrePuntuale,
-                'cod_giocoIn' => "$GiocoPuntuale",
+                'cod_giocoIn' => $GiocoPuntuale,
                 'tipo_reteIn' => $tipoRetePuntuale,
                 'DWHFlag'     => $DWHFlag,
                 'cfaamsIn'    => $cf,
@@ -1109,7 +1109,7 @@ class mainAppController
     function _selGiochi($pars)
     {
         if (count($pars)) {
-            return $this->db->selezioneGiochi($pars);
+            return 1; // $this->db->selezioneGiochi($pars); SANDRO
         } else {
             return null;
         }

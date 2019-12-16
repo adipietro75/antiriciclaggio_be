@@ -147,12 +147,12 @@ class DaoFactory
         {
             $retVal = ['res' => [
                 [
-                    "TIPO_CONC"=> "1",
-                    "DESCRIZIONE"=> "TIPO CONCESSIONARIO 1"
+                    "TIPO_CONC"=> "A",
+                    "DESCRIZIONE"=> "TITOLARE RACCOLTA SCOMMESSE"
                 ],
                 [
-                    "TIPO_CONC"=> "2",
-                    "DESCRIZIONE"=> "TIPO CONCESSIONARIO 2"
+                    "TIPO_CONC"=> "AI",
+                    "DESCRIZIONE"=> "AGENZIA IPPICA"
                 ],
 
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
@@ -177,10 +177,15 @@ class DaoFactory
         }
         else
         {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+            $retVal = ['res' => [
+                ["ANNO" => "2001", "SEMESTRE" => "1"], ["ANNO" => "2001", "SEMESTRE" => "2"]
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
+        
+        if ($retVal == null) {
+            $this->msgError = 'Non sono presenti dati trasmessi per i parametri di ';
+            $this->msgError .= 'ricerca selezionati';
+        }  
 
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
@@ -222,7 +227,7 @@ class DaoFactory
         }
         else
         {
-            $retVal = ['P_RECORDSET' => [
+            $retVal = ['res' => [
                 ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
@@ -467,6 +472,18 @@ class DaoFactory
         ));
 
         $retVal["selezioneTipoConcessionari"] = $this->selezioneTipoConcessionari(array('allIn' => '',));
+
+        $retVal["result"] = $this->selezioneDatiTrasmessi( array(
+            'tipo_concIn' => '',
+            'cod_concIn'  => '',
+            'annoIn'      => '',
+            'semestreIn'  => '',
+            'cod_giocoIn' => '',
+            'tipo_reteIn' => '',
+            'DWHFlag'     => '',
+            'cfaamsIn'    => '',
+            'subarea'     => 1,
+        ));
 
         // $retVal["retrieve_prod"] = $this->retrieve_prod("A", "14"); //$P_COD_MITT = null, $P_PK_SG = null)
         // $retVal["retrieveSg"] = $this->retrieveSg("A"); //$COD_MITT = null, $P_PK_PROD = null)
