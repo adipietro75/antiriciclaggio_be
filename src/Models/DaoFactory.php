@@ -75,8 +75,7 @@ class DaoFactory
 
     public function selezioneConcessionari($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selConcNew",
                 $arrayParams,
@@ -85,38 +84,36 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
+        } else {
             $retVal = ['res' => [
                 [
-                    "RAG_SOC"=> "COGETECH GAMING S.R.L. - SOCIO UNICO",
-                    "COD_CONC"=> "1",
-                    "DESCR"=> "AGENZIA SPORTIVA",
-                    "TIPO_CONC"=> "AS",
-                    "ID_CONC"=> "1"
+                    "RAG_SOC" => "COGETECH GAMING S.R.L. - SOCIO UNICO",
+                    "COD_CONC" => "1",
+                    "DESCR" => "AGENZIA SPORTIVA",
+                    "TIPO_CONC" => "AS",
+                    "ID_CONC" => "1"
                 ],
                 [
-                    "RAG_SOC"=> "BINGO NEMICO SRL",
-                    "COD_CONC"=> "1",
-                    "DESCR"=> "BINGO",
-                    "TIPO_CONC"=> "B",
-                    "ID_CONC"=> "2"
+                    "RAG_SOC" => "BINGO NEMICO SRL",
+                    "COD_CONC" => "1",
+                    "DESCR" => "BINGO",
+                    "TIPO_CONC" => "B",
+                    "ID_CONC" => "2"
                 ],
                 [
-                    "RAG_SOC"=> null,
-                    "COD_CONC"=> "1",
-                    "DESCR"=> "APPARECCHI DA INTRATTENIMENTO",
-                    "TIPO_CONC"=> "VID",
-                    "ID_CONC"=> "2"
+                    "RAG_SOC" => null,
+                    "COD_CONC" => "1",
+                    "DESCR" => "APPARECCHI DA INTRATTENIMENTO",
+                    "TIPO_CONC" => "VID",
+                    "ID_CONC" => "2"
                 ],
                 [
-                    "RAG_SOC"=> "CITES SPA",
-                    "COD_CONC"=> "2",
-                    "DESCR"=> "BINGO",
-                    "TIPO_CONC"=> "B",
-                    "ID_CONC"=> "2"
-                ]                
+                    "RAG_SOC" => "CITES SPA",
+                    "COD_CONC" => "2",
+                    "DESCR" => "BINGO",
+                    "TIPO_CONC" => "B",
+                    "ID_CONC" => "2"
+                ]
 
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
@@ -124,16 +121,15 @@ class DaoFactory
         if ($retVal == null) {
             $this->msgError = 'Non sono presenti concessionari per i parametri di ';
             $this->msgError .= 'ricerca selezionati';
-        }        
+        }
 
-       
+
         return (isset($retVal)) ? $retVal['res'] : null;
     }
 
     public function selezioneTipoConcessionari($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selTipoConc",
                 $arrayParams,
@@ -142,17 +138,15 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
+        } else {
             $retVal = ['res' => [
                 [
-                    "TIPO_CONC"=> "A",
-                    "DESCRIZIONE"=> "TITOLARE RACCOLTA SCOMMESSE"
+                    "TIPO_CONC" => "A",
+                    "DESCRIZIONE" => "TITOLARE RACCOLTA SCOMMESSE"
                 ],
                 [
-                    "TIPO_CONC"=> "AI",
-                    "DESCRIZIONE"=> "AGENZIA IPPICA"
+                    "TIPO_CONC" => "AI",
+                    "DESCRIZIONE" => "AGENZIA IPPICA"
                 ],
 
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
@@ -164,8 +158,7 @@ class DaoFactory
 
     public function selezioneDatiTrasmessi($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selDatiTrasmessi",
                 $arrayParams,
@@ -174,26 +167,92 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
+        } else {
             $retVal = ['res' => [
-                ["ANNO" => "2001", "SEMESTRE" => "1"], ["ANNO" => "2001", "SEMESTRE" => "2"]
+                [
+                    "TIPO_CONC"                 => "A",
+                    "RAG_SOC"                 => "RAGIONE SOCIALE 1",
+                    "COD_CONC"                 => "1",
+                    "DESCRIZIONE"             => "CONCESSIONARIO 1",
+                    "ANNO"                     => "2015",
+                    "SEMESTRE"                 => "1",
+                    "GIOCATE_DWH"             => "1",
+                    "VINCITE_DWH"             => "2",
+                    "FLAG_DWH"                 => "1",
+                    "OPERAZ_FRAZ_DWH"         => "1",
+                    "RICARICHE_1000_DWH"     => "2",
+                    "RICARICHE_15000_DWH"     => "3",
+                    "PRELIEVI_1000_DWH"         => "4",
+                    "PRELIEVI_15000_DWH"     => "5",
+                    "CARTE_1000_DWH"         => "6",
+                    "CARTE_15000_DWH"         => "7",
+                    "CARTE_TORNEO_15000_DWH" => "8",
+                    "FLAG_DWH"                 => "1",
+                    "GIOCATE"                 => "2",
+                    "VINCITE"                 => "3",
+                    "OPERAZ_FRAZ"             => "4",
+                    "RICARICHE_1000"         => "5",
+                    "RICARICHE_15000"         => "6",
+                    "PRELIEVI_1000"             => "7",
+                    "PRELIEVI_15000"         => "8",
+                    "CARTE_1000"             => "9",
+                    "CARTE_15000"             => "12",
+                    "CARTE_TORNEO_15000"     => "11",
+                    "OPERAZ_SOSP"             => "1",
+                    "COD_GIOCO"                 => "1",
+                    "DESCR_GIOCO"             => "GIOCO 1",
+                    "TIPO_RETE"                 => "TIPO RETE 1",
+                    "DATA_CONC"                => "01/01/2015"
+                ],
+                [
+                    "TIPO_CONC"                 => "L",
+                    "RAG_SOC"                 => "RAGIONE SOCIALE 2",
+                    "COD_CONC"                 => "2",
+                    "DESCRIZIONE"             => "CONCESSIONARIO 2",
+                    "ANNO"                     => "2016",
+                    "SEMESTRE"                 => "2",
+                    "GIOCATE_DWH"             => "4",
+                    "VINCITE_DWH"             => "5",
+                    "FLAG_DWH"                 => "0",
+                    "OPERAZ_FRAZ_DWH"         => "2",
+                    "RICARICHE_1000_DWH"     => "4",
+                    "RICARICHE_15000_DWH"     => "1",
+                    "PRELIEVI_1000_DWH"         => "3",
+                    "PRELIEVI_15000_DWH"     => "4",
+                    "CARTE_1000_DWH"         => "5",
+                    "CARTE_15000_DWH"         => "6",
+                    "CARTE_TORNEO_15000_DWH" => "7",
+                    "FLAG_DWH"                 => "0",
+                    "GIOCATE"                 => "2",
+                    "VINCITE"                 => "3",
+                    "OPERAZ_FRAZ"             => "4",
+                    "RICARICHE_1000"         => "5",
+                    "RICARICHE_15000"         => "6",
+                    "PRELIEVI_1000"             => "7",
+                    "PRELIEVI_15000"         => "8",
+                    "CARTE_1000"             => "9",
+                    "CARTE_15000"             => "12",
+                    "CARTE_TORNEO_15000"     => "11",
+                    "OPERAZ_SOSP"             => "1",
+                    "COD_GIOCO"                 => "1",
+                    "DESCR_GIOCO"             => "GIOCO 2",
+                    "TIPO_RETE"                 => "TIPO RETE 2",
+                    "DATA_CONC"                => "01/01/2016"
+                ]
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
-        
+
         if ($retVal == null) {
             $this->msgError = 'Non sono presenti dati trasmessi per i parametri di ';
             $this->msgError .= 'ricerca selezionati';
-        }  
+        }
 
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selezioneDatiTrasmessiCSV($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selDatiTrasmessiCSV",
                 $arrayParams,
@@ -202,11 +261,104 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+        } else {
+            $retVal = ['res' => [
+                [
+                    "TIPO CONCESSIONE"                    => "1",
+                    "CODICE CONCESSIONE"                => "1",
+                    "ANNO"                                => "2015",
+                    "SEMESTRE"                            => "1",
+                    "Q1"                                => "0",
+                    "Q2"                                => "0",
+                    "Q3"                                => "0",
+                    "Q4"                                => "0",
+                    "Q5"                                => "0",
+                    "Q6"                                => "0",
+                    "Q7"                                => "0",
+                    "Q8"                                => "0",
+                    "Q1 DWH"                            => "0",
+                    "Q2 DWH"                            => "0",
+                    "Q3 DWH"                            => "0",
+                    "Q4 DWH"                            => "0",
+                    "Q5 DWH"                            => "0",
+                    "Q6 DWH"                            => "0",
+                    "Q7 DWH"                            => "0",
+                    "Q8 DWH"                            => "0",
+                    "GIOCATE SUPERIORI A 1000 EURO"        => "0",
+                    "VINCITE SUPERIORI A 1000 EURO"        => "0",
+                    "OPERAZIONI FRAZIONATE"                => "0",
+                    "OPERAZIONI SOSPETTE"                => "0",
+                    "GIOCATE DWH"                        => "0",
+                    "VINCITE DWH"                        => "0",
+                    "OPERAZIONI FRAZIONATE DWH"            => "0",
+                    "OPERAZIONI SOSPETTE DWH"            => "0",
+                    "Ricariche 1000"                    => "0",
+                    "Ricariche 15000"                    => "0",
+                    "PRELIEVI 1000"                        => "0",
+                    "PRELIEVI 15000"                    => "0",
+                    "CARTE 1000"                        => "0",
+                    "CARTE 15000"                        => "0",
+                    "CARTE TORNEO 15000"                => "0",
+                    "RICARICHE 1000 DWH"                => "0",
+                    "RICARICHE 15000 DWH"                => "0",
+                    "PRELIEVI 1000 DWH"                    => "0",
+                    "PRELIEVI 15000 DWH"                => "0",
+                    "CARTE 1000 DWH"                    => "0",
+                    "CARTE 15000 DWH"                    => "0",
+                    "CARTE TORNEO 15000 DWH"            => "0",
+                    "GIOCO"                                => "Gioco 1",
+                    "Tipo raccolta"                        => "Tipo Raccolta 1",
+                    "CODICE FORNITURA"                    => "1",
+                    "DATA TRASMISSIONE"                 => "01/01/2015"
+                ],
+                [
+                    "TIPO CONCESSIONE"                    => "2",
+                    "CODICE CONCESSIONE"                => "2",
+                    "ANNO"                                => "2016",
+                    "SEMESTRE"                            => "1",
+                    "Q1"                                => "0",
+                    "Q2"                                => "0",
+                    "Q3"                                => "0",
+                    "Q4"                                => "0",
+                    "Q5"                                => "0",
+                    "Q6"                                => "0",
+                    "Q7"                                => "0",
+                    "Q8"                                => "0",
+                    "Q1 DWH"                            => "0",
+                    "Q2 DWH"                            => "0",
+                    "Q3 DWH"                            => "0",
+                    "Q4 DWH"                            => "0",
+                    "Q5 DWH"                            => "0",
+                    "Q6 DWH"                            => "0",
+                    "Q7 DWH"                            => "0",
+                    "Q8 DWH"                            => "0",
+                    "GIOCATE SUPERIORI A 1000 EURO"        => "0",
+                    "VINCITE SUPERIORI A 1000 EURO"        => "0",
+                    "OPERAZIONI FRAZIONATE"                => "0",
+                    "OPERAZIONI SOSPETTE"                => "0",
+                    "GIOCATE DWH"                        => "0",
+                    "VINCITE DWH"                        => "0",
+                    "OPERAZIONI FRAZIONATE DWH"            => "0",
+                    "OPERAZIONI SOSPETTE DWH"            => "0",
+                    "Ricariche 1000"                    => "0",
+                    "Ricariche 15000"                    => "0",
+                    "PRELIEVI 1000"                        => "0",
+                    "PRELIEVI 15000"                    => "0",
+                    "CARTE 1000"                        => "0",
+                    "CARTE 15000"                        => "0",
+                    "CARTE TORNEO 15000"                => "0",
+                    "RICARICHE 1000 DWH"                => "0",
+                    "RICARICHE 15000 DWH"                => "0",
+                    "PRELIEVI 1000 DWH"                    => "0",
+                    "PRELIEVI 15000 DWH"                => "0",
+                    "CARTE 1000 DWH"                    => "0",
+                    "CARTE 15000 DWH"                    => "0",
+                    "CARTE TORNEO 15000 DWH"            => "0",
+                    "GIOCO"                                => "Gioco 2",
+                    "Tipo raccolta"                        => "Tipo Raccolta 2",
+                    "CODICE FORNITURA"                    => "2",
+                    "DATA TRASMISSIONE"                 => "01/01/2016"
+                ]
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
@@ -214,8 +366,7 @@ class DaoFactory
 
     public function selezioneGiochi($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selGiochi",
                 $arrayParams,
@@ -224,11 +375,9 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
+        } else {
             $retVal = ['res' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
+                ["COD_GIOCO" => "1", "DESCR_GIOCO" => "Gioco 1"], ["COD_GIOCO" => "2", "DESCR_GIOCO" => "Gioco 2"], ["COD_GIOCO" => "3", "DESCR_GIOCO" => "Gioco 3"]
             ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
@@ -236,8 +385,7 @@ class DaoFactory
 
     public function selElencoInadempienti($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selElencoInadempienti",
                 $arrayParams,
@@ -246,20 +394,15 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selProspetti($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selProspetti",
                 $arrayParams,
@@ -268,22 +411,15 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
-
-
     }
 
     public function calcolaStatDett($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".calcolaStatDett",
                 $arrayParams,
@@ -292,22 +428,15 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
-
-
     }
 
     public function selElencoInadempientiNew($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selElencoInadempientiNew",
                 $arrayParams,
@@ -316,20 +445,15 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function ListaGiochi($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".ListaGiochi",
                 $arrayParams,
@@ -338,12 +462,8 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
@@ -351,8 +471,7 @@ class DaoFactory
     public function ElencoInvii($arrayParams)
     {
 
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".ElencoInvii",
                 $arrayParams,
@@ -361,20 +480,15 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function ScriviDeroga($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".ScriviDeroga",
                 $arrayParams,
@@ -383,20 +497,15 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function selConcDeroga($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selConcDeroga",
                 $arrayParams,
@@ -405,12 +514,8 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
@@ -418,8 +523,7 @@ class DaoFactory
     public function selTipoConc($arrayParams)
     {
 
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".selTipoConc",
                 $arrayParams,
@@ -428,20 +532,15 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
 
     public function CercaDeroga($arrayParams)
     {
-        if (!$this->mock) 
-        {
+        if (!$this->mock) {
             $retVal = $this->commonCall(
                 $this->package . ".CercaDeroga",
                 $arrayParams,
@@ -450,12 +549,8 @@ class DaoFactory
                 null,
                 ['res']
             );
-        }
-        else
-        {
-            $retVal = ['P_RECORDSET' => [
-                ["COD_MITT" => "A", "DENOMINAZIONE" => "CIRSA ITALIA S.P.A."], ["COD_MITT" => "B", "DENOMINAZIONE" => "SISAL ENTERTAINMENT S.P.A."], ["COD_MITT" => "C", "DENOMINAZIONE" => "LOTTOMATICA VIDEOLOT RETE S.P.A."], ["COD_MITT" => "D", "DENOMINAZIONE" => "ADMIRAL GAMING NETWORK S.R.L."], ["COD_MITT" => "E", "DENOMINAZIONE" => "CODERE NETWORK S.P.A."], ["COD_MITT" => "F", "DENOMINAZIONE" => "HBG CONNEX SPA"], ["COD_MITT" => "G", "DENOMINAZIONE" => "GLOBAL STARNET LIMITED"], ["COD_MITT" => "H", "DENOMINAZIONE" => "GAMENET S.P.A."], ["COD_MITT" => "I", "DENOMINAZIONE" => "COGETECH S.P.A."], ["COD_MITT" => "L", "DENOMINAZIONE" => "SNAITECH SPA"], ["COD_MITT" => "M", "DENOMINAZIONE" => "NETWIN ITALIA S.P.A."], ["COD_MITT" => "N", "DENOMINAZIONE" => "NTS NETWORK S.P.A."], ["COD_MITT" => "P", "DENOMINAZIONE" => "INTRALOT GAMING MACHINES S.P.A."]
-            ], 'ERRCODE' => 0, 'ERRTEXT' => ''];
+        } else {
+            $retVal = ['res' => [], 'ERRCODE' => 0, 'ERRTEXT' => ''];
         }
         return (isset($retVal) && isset($retVal['res'])) ? $retVal['res'] : null;
     }
@@ -473,7 +568,7 @@ class DaoFactory
 
         $retVal["selezioneTipoConcessionari"] = $this->selezioneTipoConcessionari(array('allIn' => '',));
 
-        $retVal["result"] = $this->selezioneDatiTrasmessi( array(
+        $retVal["result"] = $this->selezioneDatiTrasmessi(array(
             'tipo_concIn' => '',
             'cod_concIn'  => '',
             'annoIn'      => '',

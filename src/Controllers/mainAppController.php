@@ -199,7 +199,7 @@ class mainAppController
         return $response->withJson($data, 200);
     }
 
-   
+
 
     public function alive(Request $request, Response $response)
     {
@@ -338,7 +338,6 @@ class mainAppController
 
 
         return $this->commonResponse($response, $responseData);
-      
     }
 
     function getDatiTrasmessi(Request $request, Response $response)
@@ -506,7 +505,7 @@ class mainAppController
                         'semestre'  => null,
                     );
                     if (!$giochi = $this->_selGiochi($pars)) {
-                        $giochi = $this->_calcolaGiochi2("S","F"); //$tipo_conc, $traccolta SANDRO
+                        $giochi = $this->_calcolaGiochi2("S", "F"); //$tipo_conc, $traccolta SANDRO
                     }
 
                     $caption .= '<br /> Tipo gioco Tutti';
@@ -536,9 +535,9 @@ class mainAppController
                 */
 
                 if ($anno == -1) {
-                    $anni = $this->_calcolaAnni2($responseData,$res);
+                    $anni = $this->_calcolaAnni2($responseData, $res);
                 } else {
-                    $anni = $this->_calcolaAnni3($responseData,$res, $anno, $semestre);
+                    $anni = $this->_calcolaAnni3($responseData, $res, $anno, $semestre);
                 }
 
                 $responseData['result'] = $res;
@@ -546,7 +545,7 @@ class mainAppController
                 $responseData['anni']   = $anni;
             }
         } else {
-            $responseData['messaggio'] =$this->db->getError();
+            $responseData['messaggio'] = $this->db->getError();
         }
 
         if (isset($tipoRetePuntuale)) {
@@ -577,12 +576,12 @@ class mainAppController
         return $this->commonResponse($response, $responseData);
     }
 
-    function _mappaturaAnni($responseData,$res)
+    function _mappaturaAnni($responseData, $res)
     {
         $count = 0;
         $anni  = array();
         foreach ($res as $value) {
-            $search = $value['ANNO'].$value['SEMESTRE'];
+            $search = $value['ANNO'] . $value['SEMESTRE'];
             if (array_search($search, $anni) === false) {
                 $anni[$search] = $search;
                 $count++;
@@ -594,12 +593,12 @@ class mainAppController
         }
     }
 
-    function _calcolaAnni2($responseData,$res)
+    function _calcolaAnni2($responseData, $res)
     {
-        $this->_mappaturaAnni($responseData,$res);
+        $this->_mappaturaAnni($responseData, $res);
         $anno                          = date('y');
         $mese                          = date('m');
-        $this->tpl_dat['annoCorrente'] = '20'.$anno;
+        $this->tpl_dat['annoCorrente'] = '20' . $anno;
         if ($mese <= 6) {
             $responseData['semestreCorrente'] = 1;
             $anno--;
@@ -608,8 +607,10 @@ class mainAppController
         }
 
         $data = null;
-        if ($res != null && $res[0] != null && array_key_exists('DATA_CONC',
-        $res[0])) {
+        if ($res != null && $res[0] != null && array_key_exists(
+            'DATA_CONC',
+            $res[0]
+        )) {
             $data = $res[0]['DATA_CONC'];
         }
 
@@ -626,10 +627,12 @@ class mainAppController
 
         $annoPartenza = '11';
         if (isset($stipulaAnno) && $stipulaAnno != null && $stipulaAnno > 9) {
-            $stipulaAnno = '20'.$stipulaAnno;
-        } elseif (isset($stipulaAnno) && $stipulaAnno != null &&
-        $stipulaAnno < 10) {
-            $stipulaAnno = '20'.$stipulaAnno;
+            $stipulaAnno = '20' . $stipulaAnno;
+        } elseif (
+            isset($stipulaAnno) && $stipulaAnno != null &&
+            $stipulaAnno < 10
+        ) {
+            $stipulaAnno = '20' . $stipulaAnno;
         }
 
         if (isset($stipulaSemestre)) {
@@ -644,9 +647,9 @@ class mainAppController
         $count   = 0;
         while ($annoPartenza <= $anno) {
             if ($annoPartenza > 9) {
-                $arrAnno[$count] = '20'.$annoPartenza;
+                $arrAnno[$count] = '20' . $annoPartenza;
             } else {
-                $arrAnno[$count] = '200'.$annoPartenza;
+                $arrAnno[$count] = '200' . $annoPartenza;
             }
 
             $count++;
@@ -657,14 +660,14 @@ class mainAppController
     }
 
 
-    function _calcolaAnni3($responseData,$res, $anno, $semestre)
+    function _calcolaAnni3($responseData, $res, $anno, $semestre)
     {
         $responseData['tipoanno'] = 'S';
         $responseData['annoOggi'] = date('Y');
-        $this->_mappaturaAnni($responseData,$res);
+        $this->_mappaturaAnni($responseData, $res);
         $anno                          = substr($anno, 2, 3);
         $mese                          = date('m');
-        $responseData['annoCorrente'] = '20'.$anno;
+        $responseData['annoCorrente'] = '20' . $anno;
         if ($mese <= 6) {
             $responseData['semestreCorrente'] = 1;
         } elseif ($mese >= 7) {
@@ -679,7 +682,7 @@ class mainAppController
         if ($data != null) {
             $stipulaAnno     = substr($data, strlen($data) - 2, strlen($data));
             $stipulaSemestre =
-            substr($data, strlen($data) - 7, strlen($data) - 5);
+                substr($data, strlen($data) - 7, strlen($data) - 5);
             if ($stipulaSemestre > 6) {
                 $stipulaSemestre = 1;
             } else {
@@ -701,23 +704,25 @@ class mainAppController
         }
 
         if (isset($stipulaAnno) && $stipulaAnno != null && $stipulaAnno > 9) {
-            $stipulaAnno = '20'.$stipulaAnno;
-        } elseif (isset($stipulaAnno) && $stipulaAnno != null &&
-        $stipulaAnno < 10) {
-            $stipulaAnno = '20'.$stipulaAnno;
+            $stipulaAnno = '20' . $stipulaAnno;
+        } elseif (
+            isset($stipulaAnno) && $stipulaAnno != null &&
+            $stipulaAnno < 10
+        ) {
+            $stipulaAnno = '20' . $stipulaAnno;
         }
 
         $responseData['semestreStipula'] =
-        isset($stipulaSemestre) ? $stipulaSemestre : null;
+            isset($stipulaSemestre) ? $stipulaSemestre : null;
         $responseData['annoStipula']     =
-        isset($stipulaAnno) ? $stipulaAnno : null;
+            isset($stipulaAnno) ? $stipulaAnno : null;
         $arrAnno                          = array();
         $count                            = 0;
         while ($annoPartenza <= $anno) {
             if ($annoPartenza > 9) {
-                $arrAnno[$count] = '20'.$annoPartenza;
+                $arrAnno[$count] = '20' . $annoPartenza;
             } else {
-                $arrAnno[$count] = '200'.$annoPartenza;
+                $arrAnno[$count] = '200' . $annoPartenza;
             }
 
             $count++;
@@ -734,67 +739,67 @@ class mainAppController
             case 'S':
                 $giochi['COD_GIOCO'][0]   = 6;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+                    'SCOMMESSE A QUOTA FISSA NON IPPICHE';
                 $giochi['COD_GIOCO'][1]   = 2;
                 $giochi['DESCR_GIOCO'][1] =
-                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+                    'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
                 $giochi['COD_GIOCO'][2]   = 5;
                 $giochi['DESCR_GIOCO'][2] = 'IPPICA NAZIONALE';
                 if ($tiporete != 'F') {
                     $giochi['COD_GIOCO'][3]   = 7;
                     $giochi['DESCR_GIOCO'][3] = "GIOCHI DI ABILITA'";
                 }
-            break;
+                break;
 
-            // MOD LP 10/01/2012.
+                // MOD LP 10/01/2012.
             case 'IDLG':
                 $giochi['COD_GIOCO'][0]   = 1;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+                    'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
                 $giochi['COD_GIOCO'][1]   = 5;
                 $giochi['DESCR_GIOCO'][1] = 'IPPICA NAZIONALE';
-            break;
+                break;
 
             case 'I':
                 $giochi['COD_GIOCO'][0]   = 1;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+                    'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
                 $giochi['COD_GIOCO'][1]   = 2;
                 $giochi['DESCR_GIOCO'][1] =
-                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+                    'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
                 $giochi['COD_GIOCO'][2]   = 5;
                 $giochi['DESCR_GIOCO'][2] = 'IPPICA NAZIONALE';
                 if ($tiporete != 'F') {
                     $giochi['COD_GIOCO'][3]   = 7;
                     $giochi['DESCR_GIOCO'][3] = "GIOCHI DI ABILITA'";
                 }
-            break;
+                break;
 
             case 'AI':
             case 'IPP':
                 $giochi['COD_GIOCO'][0]   = 1;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
-            break;
+                    'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+                break;
 
             case 'AS':
                 $giochi['COD_GIOCO'][0]   = 6;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
-            break;
+                    'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+                break;
 
             case 'B':
                 $giochi['COD_GIOCO'][0]   = 8;
                 $giochi['DESCR_GIOCO'][0] = 'BINGO';
-            break;
+                break;
 
             case 'GAD':
                 $giochi['COD_GIOCO'][0]   = 1;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+                    'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
                 $giochi['COD_GIOCO'][1]   = 2;
                 $giochi['DESCR_GIOCO'][1] =
-                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+                    'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
                 $giochi['COD_GIOCO'][2]   = 5;
                 $giochi['DESCR_GIOCO'][2] = 'IPPICA NAZIONALE';
                 $giochi['COD_GIOCO'][4]   = 7;
@@ -805,31 +810,31 @@ class mainAppController
                 $giochi['DESCR_GIOCO'][5] = 'BINGO';
                 $giochi['COD_GIOCO'][6]   = 0;
                 $giochi['DESCR_GIOCO'][6] = 'GIOCO A DISTANZA';
-            break;
+                break;
 
             case 'VID':
                 $giochi['COD_GIOCO'][0]   = 10;
                 $giochi['DESCR_GIOCO'][0] = 'VIDEOGIOCHI';
-            break;
+                break;
 
             case 'X':
             case 'A':
                 $giochi['COD_GIOCO'][0]   = 1;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
+                    'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA';
                 $giochi['COD_GIOCO'][1]   = 2;
                 $giochi['DESCR_GIOCO'][1] =
-                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+                    'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
                 $giochi['COD_GIOCO'][2]   = 5;
                 $giochi['DESCR_GIOCO'][2] = 'IPPICA NAZIONALE';
                 $giochi['COD_GIOCO'][3]   = 6;
                 $giochi['DESCR_GIOCO'][3] =
-                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
-            break;
+                    'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+                break;
 
             default:
                 // Azione non prevista.
-            break;
+                break;
         }
 
         return $giochi;
@@ -842,49 +847,49 @@ class mainAppController
             case 0:
                 $giochi['COD_GIOCO'][0]   = 0;
                 $giochi['DESCR_GIOCO'][0] = 'GIOCO A DISTANZA';
-            break;
+                break;
 
             case 1:
                 $giochi['COD_GIOCO'][0]   = 1;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
-            break;
+                    'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+                break;
 
             case 2:
                 $giochi['COD_GIOCO'][0]   = 2;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
-            break;
+                    'SCOMMESSE A TOTALIZZATORE NON IPPICHE';
+                break;
 
             case 5:
                 $giochi['COD_GIOCO'][0]   = 5;
                 $giochi['DESCR_GIOCO'][0] = 'IPPICA NAZIONALE';
-            break;
+                break;
 
             case 6:
                 $giochi['COD_GIOCO'][0]   = 6;
                 $giochi['DESCR_GIOCO'][0] =
-                'SCOMMESSE A QUOTA FISSA NON IPPICHE';
-            break;
+                    'SCOMMESSE A QUOTA FISSA NON IPPICHE';
+                break;
 
             case 7:
                 $giochi['COD_GIOCO'][0]   = 7;
                 $giochi['DESCR_GIOCO'][0] = "GIOCHI DI ABILITA'";
-            break;
+                break;
 
             case 8:
                 $giochi['COD_GIOCO'][0]   = 8;
                 $giochi['DESCR_GIOCO'][0] = 'BINGO';
-            break;
+                break;
 
             case 10:
                 $giochi['COD_GIOCO'][0]   = 10;
                 $giochi['DESCR_GIOCO'][0] = 'VIDEOGIOCHI';
-            break;
+                break;
 
             default:
                 // Azione non prevista.
-            break;
+                break;
         }
 
         return $giochi;
@@ -893,6 +898,14 @@ class mainAppController
     function getDatiTrasmessiCSV(Request $request, Response $response)
     {
         $request_data = $request->getParsedBody();
+
+        $concessionario = null;
+        $traccolta = null;
+        $semestre = null;
+        $gioco = null;
+        $anno = null;
+        $tipo_conc = null;
+        $conctmp = null;
 
         $responseData['pars'] = $request_data;
         if (isset($request_data['concessionario'])) {
@@ -1109,7 +1122,7 @@ class mainAppController
     function _selGiochi($pars)
     {
         if (count($pars)) {
-            return 1; // $this->db->selezioneGiochi($pars); SANDRO
+            return $this->db->selezioneGiochi($pars);
         } else {
             return null;
         }
@@ -1125,7 +1138,8 @@ class mainAppController
     function giochiDisponibiliPerConcessione(Request $request, Response $response)
     {
         $request_data = $request->getParsedBody();
-        $tipoConc = $request_data['tipoConc'];
+        $tipoConc = null;
+        if (isset($request_data['tipoConc'])) $tipoConc = $request_data['tipoConc'];
         if ($tipoConc == 'T') {
             $tipoConc = null;
         }
@@ -1148,7 +1162,7 @@ class mainAppController
 
         return $this->commonResponse($response, $responseData);
     }
-	
+
     //RC01_antiric_monitoraggio.inc 
     public function getForm(Request $request, Response $response)
     {
@@ -1214,8 +1228,8 @@ class mainAppController
 
 
         $elencogiochi = $this->_giochiDisponibiliPerConcessioneNew($tipoconc);
-        if(!is_array($elencogiochi)) {
-            $giochi = $this->_giochiDisponibiliPerConcessioneMonitoraggioInc($tipo_conc_visualizza);
+        if (!is_array($elencogiochi)) {
+            $elencogiochi = $this->_giochiDisponibiliPerConcessioneMonitoraggioInc($tipo_conc_visualizza);
         }
         $responseData['elencogiochi'] = $elencogiochi;
 
@@ -1223,12 +1237,14 @@ class mainAppController
         $res         = $this->db->selezioneTipoConcessionari($arrayBind);
         $tipoConcOpt = array();
         foreach ($res as $k => $v) {
-            $tipoConcOpt[$v["TIPO_CONC"]] = $v['DESCRIZIONE'];
+            if (isset($v['DESCRIZIONE']))
+                $tipoConcOpt[$v["TIPO_CONC"]] = $v['DESCRIZIONE'];
+            else
+                $tipoConcOpt[$v["TIPO_CONC"]] = $v['DESCR'];
         }
         $responseData['tipoconcessioni'] = $tipoConcOpt;
 
         return $this->commonResponse($response, $responseData);
-        
     }
 
     public function getResult(Request $request, Response $response)
@@ -1237,8 +1253,8 @@ class mainAppController
         $anno             = $request_data['anno'];
         $semestre         = $request_data['semestre'];
         $tipoconc         = $request_data['tipoconc'];
-        $tipogioco        = $request_data['tipogioco']; 
-        $tiporete         = $request_data['tiporete'] ;
+        $tipogioco        = $request_data['tipogioco'];
+        $tiporete         = $request_data['tiporete'];
 
 
         $responseData['anno']      = $anno;
@@ -1246,13 +1262,19 @@ class mainAppController
         $responseData['tipoconc']  = $tipoconc;
         $responseData['tipogioco'] = $tipogioco;
 
-        $cf         = $request_data['cf_utente'] ;
+        $cf         = $request_data['cf_utente'];
         $responseData['tiporete'] = $tiporete;
 
-        if ($this->_checkGioco($tipoconc, $tipogioco, $anno) == 0 ||
-        $this->_controllaPeriodoConcessione($tipoconc, $semestre,
-                $anno, $tiporete, $tipogioco) == 0
-        || !$this->_vincoli($tipoconc, $anno, $semestre, $tiporete)
+        if (
+            $this->_checkGioco($tipoconc, $tipogioco, $anno) == 0 ||
+            $this->_controllaPeriodoConcessione(
+                $tipoconc,
+                $semestre,
+                $anno,
+                $tiporete,
+                $tipogioco
+            ) == 0
+            || !$this->_vincoli($tipoconc, $anno, $semestre, $tiporete)
         ) {
             $responseData['messaggio'] = 'Dati di ricerca incongruenti';
             return -1;
@@ -1262,114 +1284,118 @@ class mainAppController
         }
 
         return $this->commonResponse($response, $responseData);
-
-    }   
+    }
 
     function _controllaPeriodoConcessione($tipoconc, $periodo, $anno, $tiporete, $codgioco)
     {
-         $annoAttuale = date('y');
-         $meseAttuale = date('m');
-         // $meseAttuale = '07';
- 
-         if ($codgioco == 7 && $tiporete == 'F') {
-             return 0;
-         }
- 
-         // Caso I semestre non concluso oppure concluso.
-         if ($annoAttuale == substr($anno, 2) && $periodo == 1 &&
-         $meseAttuale <= '06') {
-             $step = 1;
-             return -1;
-         } else if ($annoAttuale == substr($anno, 2) && $periodo == 2) {
-             $step = 22;
-             return -1;
-         } elseif ($tiporete == 'F' && $tipoconc == 'GAD') {
-             $step = 3;
-             return 0;
-         } elseif (($tipoconc == 'VID' && $tiporete == 'D') ||
-         ($tipoconc == 'IDLG' && $tiporete == 'D')) {
-             return 0;
-         } else {
-             $step = 8;
-             return 1;
-         }
+        $annoAttuale = date('y');
+        $meseAttuale = date('m');
+        // $meseAttuale = '07';
+
+        if ($codgioco == 7 && $tiporete == 'F') {
+            return 0;
+        }
+
+        // Caso I semestre non concluso oppure concluso.
+        if (
+            $annoAttuale == substr($anno, 2) && $periodo == 1 &&
+            $meseAttuale <= '06'
+        ) {
+            $step = 1;
+            return -1;
+        } else if ($annoAttuale == substr($anno, 2) && $periodo == 2) {
+            $step = 22;
+            return -1;
+        } elseif ($tiporete == 'F' && $tipoconc == 'GAD') {
+            $step = 3;
+            return 0;
+        } elseif (($tipoconc == 'VID' && $tiporete == 'D') ||
+            ($tipoconc == 'IDLG' && $tiporete == 'D')
+        ) {
+            return 0;
+        } else {
+            $step = 8;
+            return 1;
+        }
     }
-    
-    function _checkGioco($tipoConc, $gioco, $anno=null) 
+
+    function _checkGioco($tipoConc, $gioco, $anno = null)
     {
 
-       if ($gioco == -1) {
-           return 1;
-       }
+        if ($gioco == -1) {
+            return 1;
+        }
 
-       switch ($tipoConc) {
-           case 'S':
-               if ($gioco != 6 && $gioco != 2 && $gioco != 5 && $gioco != 7) {
-                   return 0;
-               }
-           break;
+        switch ($tipoConc) {
+            case 'S':
+                if ($gioco != 6 && $gioco != 2 && $gioco != 5 && $gioco != 7) {
+                    return 0;
+                }
+                break;
 
-           case'I':
-               if ($gioco != 1 && $gioco != 2 && $gioco != 5 && $gioco != 7) {
-                   return 0;
-               }
-           break;
+            case 'I':
+                if ($gioco != 1 && $gioco != 2 && $gioco != 5 && $gioco != 7) {
+                    return 0;
+                }
+                break;
 
-           case'IDLG':
-               if ($gioco != 1 && $gioco != 5) {
-                   return 0;
-               }
-           break;
+            case 'IDLG':
+                if ($gioco != 1 && $gioco != 5) {
+                    return 0;
+                }
+                break;
 
-           case 'IPP':
-           case 'AI':
-               if ($gioco != 1) {
-                   return 0;
-               }
-           break;
+            case 'IPP':
+            case 'AI':
+                if ($gioco != 1) {
+                    return 0;
+                }
+                break;
 
-           case 'AS':
-               if ($gioco != 6) {
-                   return 0;
-               }
-           break;
+            case 'AS':
+                if ($gioco != 6) {
+                    return 0;
+                }
+                break;
 
-           case 'B':
-               if ($gioco != 8) {
-                   return 0;
-               }
-           break;
+            case 'B':
+                if ($gioco != 8) {
+                    return 0;
+                }
+                break;
 
-           case 'GAD':
-               if ($anno == 2011) {
-                   if ($gioco != 1 && $gioco != 5 && $gioco != 2 &&
-                   $gioco != 6 && $gioco != 7 && $gioco != 8) {
-                       return 0;
-                   }
-               } else {
-                   if ($gioco != 0) {
-                       return 0;
-                   }
-               }
-           break;
+            case 'GAD':
+                if ($anno == 2011) {
+                    if (
+                        $gioco != 1 && $gioco != 5 && $gioco != 2 &&
+                        $gioco != 6 && $gioco != 7 && $gioco != 8
+                    ) {
+                        return 0;
+                    }
+                } else {
+                    if ($gioco != 0) {
+                        return 0;
+                    }
+                }
+                break;
 
-           case 'VID':
-               if ($gioco != '10') {
-                   return 0;
-               }
-           break;
+            case 'VID':
+                if ($gioco != '10') {
+                    return 0;
+                }
+                break;
 
-           case'X':
-               if ($gioco != 1 && $gioco != 2 && $gioco != 5 && $gioco != 6) {
-                   return 0;
-               }
-           break;
-       }
-       
-       return 1;
+            case 'X':
+                if ($gioco != 1 && $gioco != 2 && $gioco != 5 && $gioco != 6) {
+                    return 0;
+                }
+                break;
+        }
+
+        return 1;
     }
 
-    function _vincoli($tipo_conc, $anno, $semestre, $tipo_rete) 
+    function _vincoli($tipo_conc, $anno, $semestre, $tipo_rete)
     {
         $result = null;
         $step   = 0;
@@ -1414,21 +1440,19 @@ class mainAppController
         $anno             = $request_data['anno'];
         $semestre         = $request_data['semestre'];
         $tipoconc         = $request_data['tipoconc'];
-        $tipogioco        = $request_data['tipogioco']; 
-        $tiporete         = $request_data['tiporete'] ;
+        $tipogioco        = $request_data['tipogioco'];
+        $tiporete         = $request_data['tiporete'];
 
-        if ($semestre != null && $semestre != '' &&
-                $anno != null &&  $anno != '' &&
-                $tipogioco != null &&$tipogioco != '' &&
-                $tipoconc != null && $tipoconc != '' &&
-                $tiporete != null && $tiporete != ''
-        ) 
-        {
+        if (
+            $semestre != null && $semestre != '' &&
+            $anno != null &&  $anno != '' &&
+            $tipogioco != null && $tipogioco != '' &&
+            $tipoconc != null && $tipoconc != '' &&
+            $tiporete != null && $tiporete != ''
+        ) {
             $retval =  true;
-            $responseData['messaggio']="";
-        } 
-        else 
-        {
+            $responseData['messaggio'] = "";
+        } else {
             $retval =  false;
             $responseData['messaggio'] = 'I Campi sono obbligatori';
             return false;
@@ -1442,14 +1466,14 @@ class mainAppController
     function calcolaAnno(Request $request, Response $response)
     {
         $anno     = date('y');
-        $arrAnno  = Array();
+        $arrAnno  = array();
         $partenza = 11;
         $count    = 0;
         while ($anno - $partenza >= 0) {
             if ($anno > 9) {
-                $arrAnno['20'.$anno] = '20'.$anno;
+                $arrAnno['20' . $anno] = '20' . $anno;
             } else {
-                $arrAnno['200'.$anno] = '200'.$anno;
+                $arrAnno['200' . $anno] = '200' . $anno;
             }
             $count++;
             $anno--;
@@ -1458,19 +1482,18 @@ class mainAppController
         $responseData['arrAnno'] = $arrAnno;
 
         return $this->commonResponse($response, $responseData);
-
     }
 
-    function getCSV(Request $request, Response $response) 
+    function getCSV(Request $request, Response $response)
     {
 
         $request_data = $request->getParsedBody();
         $anno             = $request_data['anno'];
         $semestre         = $request_data['semestre'];
         $tipoconc         = $request_data['tipoconc'];
-        $tipogioco        = $request_data['tipogioco']; 
-        $tiporete         = $request_data['tiporete'] ;
-        $paginaCSV         = $request_data['paginaCSV'] ;
+        $tipogioco        = $request_data['tipogioco'];
+        $tiporete         = $request_data['tiporete'];
+        $paginaCSV         = $request_data['paginaCSV'];
 
         $responseData['anno']      = $anno;
         $responseData['semestre']  = $semestre;
@@ -1508,23 +1531,23 @@ class mainAppController
                 $descr_gioco                       = $res[0]['DESCR_GIOCO'];
                 $responseData['tipo_concessione']  = $res[0]['DESCR'];
                 $campi                             = array(
-                                                      'COD_CONC' => 'Codice concessione',
-                                                      'RAG_SOC' => 'Ragione Sociale',
-                                                      'DATA_CONC' => 'Data stipula concessione'
-                                                     );
+                    'COD_CONC' => 'Codice concessione',
+                    'RAG_SOC' => 'Ragione Sociale',
+                    'DATA_CONC' => 'Data stipula concessione'
+                );
             } else {
                 $descr_gioco                       = 'TUTTI';
                 $responseData['tipo_concessione']  = $res[0]['DESCR'];
                 $campi                             = array(
-                                                      'COD_CONC'    => 'Codice concessione',
-                                                      'RAG_SOC'     => 'Ragione Sociale',
-                                                      'DATA_CONC'   => 'Data stipula concessione',
-                                                      'DESCR_GIOCO' => 'Tipo gioco non trasmesso'
-                                                     );
+                    'COD_CONC'    => 'Codice concessione',
+                    'RAG_SOC'     => 'Ragione Sociale',
+                    'DATA_CONC'   => 'Data stipula concessione',
+                    'DESCR_GIOCO' => 'Tipo gioco non trasmesso'
+                );
             }
-            if($tipoconc == 'VID') {
-                if(is_array($res) && count($res)) {
-                    foreach($res as $k => $v) {
+            if ($tipoconc == 'VID') {
+                if (is_array($res) && count($res)) {
+                    foreach ($res as $k => $v) {
                         $res[$k]['COD_CONC'] = 'ND';
                     }
                 }
@@ -1547,19 +1570,19 @@ class mainAppController
             } else {
                 $semestreSTR = ' secondo semestre';
             }
-            
-            $annosemestre = " \n anno ".$anno.$semestreSTR;
-            $responseData['sezione'] = 'Antiriciclaggio - Elenco concessionari inadempienti '.
-            $responseData['tipo_concessione']."\n\n  "
-                    . $annosemestre . $tiporeteSTR . 'Tipo gioco ' . $descr_gioco;
-            $responseData['tpl_name']= 'Monitoraggio'.$responseData['tipo_concessione'];
+
+            $annosemestre = " \n anno " . $anno . $semestreSTR;
+            $responseData['sezione'] = 'Antiriciclaggio - Elenco concessionari inadempienti ' .
+                $responseData['tipo_concessione'] . "\n\n  "
+                . $annosemestre . $tiporeteSTR . 'Tipo gioco ' . $descr_gioco;
+            $responseData['tpl_name'] = 'Monitoraggio' . $responseData['tipo_concessione'];
         }
 
 
         return $this->commonResponse($response, $responseData);
     }
- 
-    function _trasposizioneMatrice($matrice, $campi) 
+
+    function _trasposizioneMatrice($matrice, $campi)
     {
         foreach ($matrice as $key => $value) {
             foreach ($campi as $key2 => $campo) {
@@ -1580,21 +1603,21 @@ class mainAppController
         return $matriceI;
     }
 
-    function _giochiDisponibiliPerConcessioneNew($tipoConc=null)
+    function _giochiDisponibiliPerConcessioneNew($tipoConc = null)
     {
-          $pars = array(
-                   'tipo_conc' => $tipoConc,
-                   'tipo_rete' => null,
-                   'cod_gioco' => null,
-                   'anno'      => null,
-                   'semestre'  => null,
-                  );
+        $elencogiochi = array();
+
+        $pars = array(
+            'tipo_conc' => $tipoConc,
+            'tipo_rete' => null,
+            'cod_gioco' => null,
+            'anno'      => null,
+            'semestre'  => null,
+        );
         $giochi = $this->_selGiochi($pars);
         if ($giochi && is_array($giochi) && count($giochi)) {
-            $elencogiochi = array();
             foreach ($giochi as $k => $v) {
-                $elencogiochi[$v['COD_GIOCO']] =
-                $v['DESCR_GIOCO'];
+                $elencogiochi[$v['COD_GIOCO']] = $v['DESCR_GIOCO'];
             }
         }
 
@@ -1603,123 +1626,125 @@ class mainAppController
 
     function _giochiDisponibiliPerConcessioneMonitoraggioInc($tipoConc)
     {
+        $elencogiochi = [];
         switch ($tipoConc) {
             case 'S':
                 $elencogiochi =
-                array(
-                 '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
-                 '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
-                 '5' => 'IPPICA NAZIONALE',
-                 '7' => "GIOCHI DI ABILITA'",
-                );
-            break;
+                    array(
+                        '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                        '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                        '5' => 'IPPICA NAZIONALE',
+                        '7' => "GIOCHI DI ABILITA'",
+                    );
+                break;
 
-            case'IDLG':
+            case 'IDLG':
                 $elencogiochi =
-                array(
-                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
-                 '5' => 'IPPICA NAZIONALE',
-                );
-            break;
+                    array(
+                        '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                        '5' => 'IPPICA NAZIONALE',
+                    );
+                break;
 
             case 'I':
                 $elencogiochi =
-                array(
-                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
-                 '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
-                 '5' => 'IPPICA NAZIONALE',
-                 '7' => "GIOCHI DI ABILITA'",
-                );
-            break;
+                    array(
+                        '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                        '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                        '5' => 'IPPICA NAZIONALE',
+                        '7' => "GIOCHI DI ABILITA'",
+                    );
+                break;
 
             case 'AI':
                 $elencogiochi =
-                array(
-                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
-                );
-            break;
+                    array(
+                        '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                    );
+                break;
 
             case 'IPP':
                 $elencogiochi =
-                array(
-                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
-                );
-            break;
+                    array(
+                        '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                    );
+                break;
 
             case 'AS':
                 $elencogiochi =
-                array(
-                 '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
-                );
-            break;
+                    array(
+                        '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                    );
+                break;
 
             case 'B':
                 $elencogiochi =
-                array(
-                 '8' => 'BINGO',
-                );
-            break;
+                    array(
+                        '8' => 'BINGO',
+                    );
+                break;
 
             case 'GAD':
                 $elencogiochi =
-                array(
-                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
-                 '5' => 'IPPICA NAZIONALE',
-                 '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
-                 '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
-                 '7' => "GIOCHI DI ABILITA'",
-                 '8' => 'BINGO',
-                 '0' => 'GIOCO A DISTANZA',
-                );
-            break;
+                    array(
+                        '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                        '5' => 'IPPICA NAZIONALE',
+                        '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                        '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                        '7' => "GIOCHI DI ABILITA'",
+                        '8' => 'BINGO',
+                        '0' => 'GIOCO A DISTANZA',
+                    );
+                break;
 
             case 'VID':
                 $elencogiochi = array(
-                                                  '10' => 'VIDEOGIOCHI',
-                                                 );
-            break;
+                    '10' => 'VIDEOGIOCHI',
+                );
+                break;
 
             case 'X':
                 $elencogiochi =
-                array(
-                 '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
-                 '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
-                 '5' => 'IPPICA NAZIONALE',
-                 '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
-                );
-            break;
+                    array(
+                        '1' => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                        '2' => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                        '5' => 'IPPICA NAZIONALE',
+                        '6' => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                    );
+                break;
 
             default:
-            $elencogiochi =
-                array(
-                 '0'  => 'GIOCO A DISTANZA',
-                 '1'  => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
-                 '5'  => 'IPPICA NAZIONALE',
-                 '2'  => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
-                 '6'  => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
-                 '7'  => "GIOCHI DI ABILITA'",
-                 '8'  => 'BINGO',
-                 '10' => 'VIDEOGIOCHI',
-                );
-            break;
+                $elencogiochi =
+                    array(
+                        '0'  => 'GIOCO A DISTANZA',
+                        '1'  => 'SCOMMESSE IPPICHE A TOTALIZZATORE E A QUOTA FISSA',
+                        '5'  => 'IPPICA NAZIONALE',
+                        '2'  => 'SCOMMESSE A TOTALIZZATORE NON IPPICHE',
+                        '6'  => 'SCOMMESSE A QUOTA FISSA NON IPPICHE',
+                        '7'  => "GIOCHI DI ABILITA'",
+                        '8'  => 'BINGO',
+                        '10' => 'VIDEOGIOCHI',
+                    );
+                break;
         }
 
         return $elencogiochi;
     }
 
 
-    function getResult1(Request $request, Response $response) 
+    function getResult1(Request $request, Response $response)
     {
         $request_data = $request->getParsedBody();
-        $anno_r             = $request_data['anno_r'];
-        $semestre_r         = $request_data['semestre_r'];
-        $cf_utente         = $request_data['cf_utente'];
+        $responseData = [];
+        $anno_r       = $request_data['anno_r'];
+        $semestre_r   = $request_data['semestre_r'];
+        $cf_utente    = $request_data['cf_utente'];
 
-        $arrayBind                   = array(
-                                        'in_anno'     => $anno_r,
-                                        'in_semestre' => $semestre_r,
-                                        'cfaamsIn'    => $cf_utente,
-                                       );
+        $arrayBind    = array(
+            'in_anno'     => $anno_r,
+            'in_semestre' => $semestre_r,
+            'cfaamsIn'    => $cf_utente,
+        );
 
         $res = $this->db->selProspetti($arrayBind);
         if ($this->db->getError() != "") {
@@ -1736,7 +1761,7 @@ class mainAppController
     }
 
 
-    function getCSV1(Request $request, Response $response) 
+    function getCSV1(Request $request, Response $response)
     {
         $request_data = $request->getParsedBody();
         $anno_r             = $request_data['anno_r'];
@@ -1744,10 +1769,10 @@ class mainAppController
         $cf_utente         = $request_data['cf_utente'];
 
         $arrayBind                   = array(
-                                        'in_anno'     => $anno_r,
-                                        'in_semestre' => $semestre_r,
-                                        'cfaamsIn'    => $cf_utente,
-                                       );
+            'in_anno'     => $anno_r,
+            'in_semestre' => $semestre_r,
+            'cfaamsIn'    => $cf_utente,
+        );
 
         $res = $this->db->selProspetti($arrayBind);
         if ($this->db->getError() != "") {
@@ -1788,27 +1813,27 @@ class mainAppController
                 'TOT_GAD_CONC'        => 'GAD attivi',
                 'TOT_VID_CONC'        => 'Apparecchi da intrattenimento attivi',
                 'TOT_CONC'            => 'attivi'
-               );
+            );
 
-                $res = $this->_trasposizioneMatrice($res, $campi);
-                $responseData['show_ancora'] = 1;
-                $responseData['elenco']      = $res;
-                $responseData['sezione']     = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio \n\n ANNO '
-                                                .$anno_r? $anno_r : 'tutti'.' SEMESTRE '. $semestre_r? $semestre_r : 'tutti';
-                $responseData['tpl_name']    = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio';
+            $res = $this->_trasposizioneMatrice($res, $campi);
+            $responseData['show_ancora'] = 1;
+            $responseData['elenco']      = $res;
+            $responseData['sezione']     = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio \n\n ANNO '
+                . $anno_r ? $anno_r : 'tutti' . ' SEMESTRE ' . $semestre_r ? $semestre_r : 'tutti';
+            $responseData['tpl_name']    = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio';
         }
 
         return $this->commonResponse($response, $responseData);
     }
 
-    function getResult1det(Request $request, Response $response) 
+    function getResult1det(Request $request, Response $response)
     {
         $request_data = $request->getParsedBody();
-        $dett_anno_r             = $request_data['dettLinkAnno'];
-        $dett_semestre_r         = $request_data['dettLinkSem'];
-        $tipodett         = $request_data['dettlink'];
-        $cf         = $request_data['cf_utente'];
-        $paging                = 40;
+        $dett_anno_r       = $request_data['dettLinkAnno'];
+        $dett_semestre_r   = $request_data['dettLinkSem'];
+        $tipodett          = $request_data['dettlink'];
+        $cf                = $request_data['cf_utente'];
+        $paging            = 40;
 
         if (isset($request_data['pagina']) && $request_data['pagina']) {
             $pagina = $request_data['pagina'];
@@ -1827,31 +1852,31 @@ class mainAppController
           End Trucchetto
         */
 
-        if( isset($request_data['forn_ord_campo']) && $request_data['forn_ord_campo']){
-            if( $request_data['verso_ord'] == 'desc' ){
-                $responseData['verso_ord']           = 'asc';
+        if (isset($request_data['forn_ord_campo']) && $request_data['forn_ord_campo']) {
+            if ($request_data['verso_ord'] == 'desc') {
+                $responseData['verso_ord'] = 'asc';
                 $responseData['forn_ord_campo_corr'] = $request_data['forn_ord_campo'];
-                $verso_ord                            = 'desc';
+                $verso_ord = 'desc';
             } else {
-                $responseData['verso_ord']           = 'desc';
+                $responseData['verso_ord'] = 'desc';
                 $responseData['forn_ord_campo_corr'] = $request_data['forn_ord_campo'];
-                $verso_ord                            = 'asc';
+                $verso_ord = 'asc';
             }
             $forn_ord_campo = $request_data['forn_ord_campo'];
         } else {
-            if ( !isset($request_data['verso_ord']) ) {
+            if (!isset($request_data['verso_ord'])) {
                 $responseData['verso_ord'] = 'desc';
-                $verso_ord                  = 'asc';
+                $verso_ord = 'asc';
             } else {
-                if($this->clear_pars['verso_ord'] == 'desc'){
+                if ($this->clear_pars['verso_ord'] == 'desc') {
                     $responseData['verso_ord'] = 'asc';
-                    $verso_ord                  = 'desc';
+                    $verso_ord = 'desc';
                 } else {
                     $responseData['verso_ord'] = 'desc';
-                    $verso_ord                  = 'asc';
+                    $verso_ord = 'asc';
                 }
             }
-            $forn_ord_campo                       = '';
+            $forn_ord_campo = '';
             $responseData['forn_ord_campo_corr'] = 'TIPO_CONC';
         }
 
@@ -1864,7 +1889,7 @@ class mainAppController
             'campo_ordinamento_in' => $forn_ord_campo,
             'verso_ordinamento_in' => $verso_ord,
             'cfaamsIn'             => $cf,
-           );
+        );
         $res = $this->db->calcolaStatDett($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Disallineamento tabella dettaglio';
@@ -1881,87 +1906,55 @@ class mainAppController
             $nButton                              = ceil(($totale_generale / $paging));
             $responseData['elenco']['risultati'] = $res;
             $responseData['elenco']['pagestot']  = $nButton + 1;
-            $responseData['starting_from']       = ($paging * $pagina - ($paging - 1) -1);// Valore del counter start nel tpl
+            $responseData['starting_from']       = ($paging * $pagina - ($paging - 1) - 1); // Valore del counter start nel tpl
             $responseData['table_caption']       = 'Anno: ' . $dett_anno_r .
-                                                    ' Semestre: '.$dett_semestre_r.'<br>' .
-                                                    'Elenco Concessionari ';
+                ' Semestre: ' . $dett_semestre_r . '<br>' .
+                'Elenco Concessionari ';
             $responseData['dett_anno_r']         = $dett_anno_r;
             $responseData['dett_semestre_r']     = $dett_semestre_r;
             $responseData['dettlink_r']          = $tipodett;
-            
-            
-            $tipoGiochi = array(
-                            'TOT_GP_OK_NON'       =>
-                'Giochi Ippici e Sportivi non attivi che hanno trasmesso',
-                            'TOT_BINGO_OK_NON'    =>
-                'Bingo non attivi che hanno trasmesso',
-                            'TOT_GAD_OK_NON'      =>
-                'GAD non attivi che hanno trasmesso',
-                            'TOT_VID_OK_NON'      =>
-                'Apparecchi da intrattenimento non attivi che hanno trasmesso',
-                            'TOT_OK_NON'          =>
-                'non attivi che hanno trasmesso',
-                            'TOT_GP_OK_DWH_OK'    =>
-                'Giochi Ippici e Sportivi che hanno trasmesso dati coincidenti con DataWareHouse',
-                            'TOT_BINGO_OK_DWH_OK' =>
-                'Bingo che hanno trasmesso dati coincidenti con DataWareHouse',
-                            'TOT_GAD_OK_DWH_OK'   =>
-                'GAD che hanno trasmesso dati coincidenti con DataWareHouse',
-                            'TOT_VID_OK_DWH_OK'   =>
-                'Apparecchi da intrattenimento che hanno trasmesso dati coincidenti con DataWareHouse',
-                            'TOT_OK_DWH_OK'       =>
-                'attivi che hanno trasmesso dati coincidenti con DataWareHouse',
-                            'TOT_GP_OK_DWH_KO'    =>
-                'Giochi Ippici e Sportivi che hanno trasmesso dati diversi da DataWareHouse',
-                            'TOT_BINGO_OK_DWH_KO' =>
-                'Bingo che hanno trasmesso dati diversi da DataWareHouse',
-                            'TOT_GAD_OK_DWH_KO'   =>
-                'GAD che hanno trasmesso dati diversi da DataWareHouse',
-                            'TOT_VID_OK_DWH_KO'   =>
-                'Apparecchi da intrattenimento che hanno trasmesso dati diversi da DataWareHouse',
-                            'TOT_OK_DWH_KO'       =>
-                'che hanno trasmesso dati diversi da DataWareHouse',
-                            'TOT_GP_OK'           =>
-                'Giochi Ippici e Sportivi che hanno trasmesso',
-                            'TOT_BINGO_OK'        =>
-                'Bingo che hanno trasmesso',
-                            'TOT_GAD_OK'          =>
-                'GAD che hanno trasmesso',
-                            'TOT_VID_OK'          =>
-                'Apparecchi da intrattenimento che hanno trasmesso',
-                            'TOT_OK'              =>
-                'che hanno trasmesso',
-                            'TOT_GP_KO'           =>
-                'Giochi Ippici e Sportivi inadempienti',
-                            'TOT_BINGO_KO'        =>
-                'Bingo inadempienti',
-                            'TOT_GAD_KO'          =>
-                'GAD inadempienti',
-                            'TOT_VID_KO'          =>
-                'Apparecchi da intrattenimento inadempienti',
-                            'TOT_KO'              =>
-                'inadempienti',
-                            'TOT_GP_CONC'         =>
-                'Giochi Ippici e Sportivi attivi',
-                            'TOT_BINGO_CONC'      =>
-                'Bingo attivi',
-                            'TOT_GAD_CONC'        =>
-                'GAD attivi',
-                            'TOT_VID_CONC'        =>
-                'Apparecchi da intrattenimento attivi',
-                            'TOT_CONC'            =>
-                'attivi',
-                );
 
-                $responseData['table_caption']      .= $tipoGiochi[$tipodett].
-                '<br>TOTALE CONCESSIONARI: '.$totConcDist;
+
+            $tipoGiochi = array(
+                'TOT_GP_OK_NON'       => 'Giochi Ippici e Sportivi non attivi che hanno trasmesso',
+                'TOT_BINGO_OK_NON'    => 'Bingo non attivi che hanno trasmesso',
+                'TOT_GAD_OK_NON'      => 'GAD non attivi che hanno trasmesso',
+                'TOT_VID_OK_NON'      => 'Apparecchi da intrattenimento non attivi che hanno trasmesso',
+                'TOT_OK_NON'          => 'non attivi che hanno trasmesso',
+                'TOT_GP_OK_DWH_OK'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_BINGO_OK_DWH_OK' => 'Bingo che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_GAD_OK_DWH_OK'   => 'GAD che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_VID_OK_DWH_OK'   => 'Apparecchi da intrattenimento che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_OK_DWH_OK'       => 'attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_GP_OK_DWH_KO'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_BINGO_OK_DWH_KO' => 'Bingo che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_GAD_OK_DWH_KO'   => 'GAD che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_VID_OK_DWH_KO'   => 'Apparecchi da intrattenimento che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_OK_DWH_KO'       => 'che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_GP_OK'           => 'Giochi Ippici e Sportivi che hanno trasmesso',
+                'TOT_BINGO_OK'        => 'Bingo che hanno trasmesso',
+                'TOT_GAD_OK'          => 'GAD che hanno trasmesso',
+                'TOT_VID_OK'          => 'Apparecchi da intrattenimento che hanno trasmesso',
+                'TOT_OK'              => 'che hanno trasmesso',
+                'TOT_GP_KO'           => 'Giochi Ippici e Sportivi inadempienti',
+                'TOT_BINGO_KO'        => 'Bingo inadempienti',
+                'TOT_GAD_KO'          => 'GAD inadempienti',
+                'TOT_VID_KO'          => 'Apparecchi da intrattenimento inadempienti',
+                'TOT_KO'              => 'inadempienti',
+                'TOT_GP_CONC'         => 'Giochi Ippici e Sportivi attivi',
+                'TOT_BINGO_CONC'      => 'Bingo attivi',
+                'TOT_GAD_CONC'        => 'GAD attivi',
+                'TOT_VID_CONC'        => 'Apparecchi da intrattenimento attivi',
+                'TOT_CONC'            => 'attivi'
+            );
+
+            $responseData['table_caption'] .= $tipoGiochi[$tipodett] . '<br>TOTALE CONCESSIONARI: '. $totConcDist;
         }
 
         return $this->commonResponse($response, $responseData);
-        
     }
 
-    function getCSV1Dett(Request $request, Response $response) 
+    function getCSV1Dett(Request $request, Response $response)
     {
         $request_data = $request->getParsedBody();
         $dett_anno_r             = $request_data['dettLinkAnno'];
@@ -1970,23 +1963,21 @@ class mainAppController
         $cf         = $request_data['cf_utente'];
 
         $arrayBind             = array(
-                                  'anno_in'              => $dett_anno_r,
-                                  'semestre_in'          => $dett_semestre_r,
-                                  'tipodett_in'          => $tipodett,
-                                  'pagina_in'            => null,
-                                  'num_res_in'           => null,
-                                  'campo_ordinamento_in' => null,
-                                  'verso_ordinamento_in' => null,
-                                  'cfaamsIn'             => $cf,
-                                 );
+            'anno_in'              => $dett_anno_r,
+            'semestre_in'          => $dett_semestre_r,
+            'tipodett_in'          => $tipodett,
+            'pagina_in'            => null,
+            'num_res_in'           => null,
+            'campo_ordinamento_in' => null,
+            'verso_ordinamento_in' => null,
+            'cfaamsIn'             => $cf,
+        );
         $res = $this->db->calcolaStatDett($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Disallineamento tabella dettaglio';
         } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun concessionario per i parametri selezionati';
-        } 
-        else 
-        {
+        } else {
             $campi                        = array(
                 'TIPO_CONC'                    => 'TIPO CONCESSIONE',
                 'COD_CONC'                     => 'CODICE CONCESSIONE',
@@ -1997,57 +1988,56 @@ class mainAppController
                 'TELEFONO'                     => 'TELEFONO',
                 'EMAIL'                        => 'EMAIL',
                 'DT_TRASMISSIONE'              => 'DATA TRASMISSIONE'
-               );
-                $res                          = $this->_trasposizioneMatrice($res, $campi);
+            );
+            $res                          = $this->_trasposizioneMatrice($res, $campi);
 
-                $tipoGiochi                   = array(
-                                'TOT_GP_OK_NON'       => 'Giochi Ippici e Sportivi non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_BINGO_OK_NON'    => 'Bingo non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_GAD_OK_NON'      => 'GAD non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_VID_OK_NON'      => 'Apparecchi da intrattenimento non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_OK_NON'          => 'non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_GP_KO_NON'       => 'Giochi Ippici e Sportivi non attivi che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_BINGO_KO_NON'    => 'Bingo non attivi che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_GAD_KO_NON'      => 'GAD non attivi che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_VID_KO_NON'      => 'Apparecchi da intrattenimento non attivi che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_KO_NON'          => 'non attivi che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_GP_OK_DWH_OK'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_BINGO_OK_DWH_OK' => 'Bingo che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_GAD_OK_DWH_OK'   => 'GAD che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_VID_OK_DWH_OK'   => 'Apparecchi da intrattenimento che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_OK_DWH_OK'       => 'attivi che hanno trasmesso dati coincidenti con DataWareHouse',
-                                'TOT_GP_OK_DWH_KO'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_BINGO_OK_DWH_KO' => 'Bingo che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_GAD_OK_DWH_KO'   => 'GAD che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_VID_OK_DWH_KO'   => 'Apparecchi da intrattenimento che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_OK_DWH_KO'       => 'che hanno trasmesso dati diversi da DataWareHouse',
-                                'TOT_GP_OK'           => 'Giochi Ippici e Sportivi che hanno trasmesso',
-                                'TOT_BINGO_OK'        => 'Bingo che hanno trasmesso',
-                                'TOT_GAD_OK'          => 'GAD che hanno trasmesso',
-                                'TOT_VID_OK'          => 'Apparecchi da intrattenimento che hanno trasmesso',
-                                'TOT_OK'              => 'che hanno trasmesso',
-                                'TOT_GP_KO'           => 'Giochi Ippici e Sportivi inadempienti',
-                                'TOT_BINGO_KO'        => 'Bingo inadempienti',
-                                'TOT_GAD_KO'          => 'GAD inadempienti',
-                                'TOT_VID_KO'          => 'Apparecchi da intrattenimento inadempienti',
-                                'TOT_KO'              => 'inadempienti',
-                                'TOT_GP_CONC'         => 'Giochi Ippici e Sportivi attivi',
-                                'TOT_BINGO_CONC'      => 'Bingo attivi',
-                                'TOT_GAD_CONC'        => 'GAD attivi',
-                                'TOT_VID_CONC'        => 'Apparecchi da intrattenimento attivi',
-                                'TOT_CONC'            => 'attivi',
-                            );
-                $responseData['show_ancora'] = 1;
+            $tipoGiochi                   = array(
+                'TOT_GP_OK_NON'       => 'Giochi Ippici e Sportivi non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_BINGO_OK_NON'    => 'Bingo non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_GAD_OK_NON'      => 'GAD non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_VID_OK_NON'      => 'Apparecchi da intrattenimento non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_OK_NON'          => 'non attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_GP_KO_NON'       => 'Giochi Ippici e Sportivi non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_BINGO_KO_NON'    => 'Bingo non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_GAD_KO_NON'      => 'GAD non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_VID_KO_NON'      => 'Apparecchi da intrattenimento non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_KO_NON'          => 'non attivi che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_GP_OK_DWH_OK'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_BINGO_OK_DWH_OK' => 'Bingo che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_GAD_OK_DWH_OK'   => 'GAD che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_VID_OK_DWH_OK'   => 'Apparecchi da intrattenimento che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_OK_DWH_OK'       => 'attivi che hanno trasmesso dati coincidenti con DataWareHouse',
+                'TOT_GP_OK_DWH_KO'    => 'Giochi Ippici e Sportivi che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_BINGO_OK_DWH_KO' => 'Bingo che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_GAD_OK_DWH_KO'   => 'GAD che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_VID_OK_DWH_KO'   => 'Apparecchi da intrattenimento che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_OK_DWH_KO'       => 'che hanno trasmesso dati diversi da DataWareHouse',
+                'TOT_GP_OK'           => 'Giochi Ippici e Sportivi che hanno trasmesso',
+                'TOT_BINGO_OK'        => 'Bingo che hanno trasmesso',
+                'TOT_GAD_OK'          => 'GAD che hanno trasmesso',
+                'TOT_VID_OK'          => 'Apparecchi da intrattenimento che hanno trasmesso',
+                'TOT_OK'              => 'che hanno trasmesso',
+                'TOT_GP_KO'           => 'Giochi Ippici e Sportivi inadempienti',
+                'TOT_BINGO_KO'        => 'Bingo inadempienti',
+                'TOT_GAD_KO'          => 'GAD inadempienti',
+                'TOT_VID_KO'          => 'Apparecchi da intrattenimento inadempienti',
+                'TOT_KO'              => 'inadempienti',
+                'TOT_GP_CONC'         => 'Giochi Ippici e Sportivi attivi',
+                'TOT_BINGO_CONC'      => 'Bingo attivi',
+                'TOT_GAD_CONC'        => 'GAD attivi',
+                'TOT_VID_CONC'        => 'Apparecchi da intrattenimento attivi',
+                'TOT_CONC'            => 'attivi',
+            );
+            $responseData['show_ancora'] = 1;
 
-                $responseData['elenco']  = $res;
-                $responseData['sezione'] = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio\nn'.
-                            " ANNO: $dett_anno_r SEMESTRE: $dett_semestre_r \n\n".
-                            'Elenco Concessionari '.$tipoGiochi[$tipodett].'\n';
-                $responseData['tpl_name']           = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio';           
+            $responseData['elenco']  = $res;
+            $responseData['sezione'] = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio\nn' .
+                " ANNO: $dett_anno_r SEMESTRE: $dett_semestre_r \n\n" .
+                'Elenco Concessionari ' . $tipoGiochi[$tipodett] . '\n';
+            $responseData['tpl_name']           = 'Rapporto Concessorio Antiriciclaggio - Monitoraggio';
         }
 
         return $this->commonResponse($response, $responseData);
-
     }
 
     function getResultNew(Request $request, Response $response)
@@ -2056,18 +2046,18 @@ class mainAppController
         $anno             = $request_data['anno'];
         $semestre         = $request_data['semestre'];
         $tipo_conc         = $request_data['tipoconc'];
-        $tipogioco        = $request_data['tipogioco']; 
-        $tiporete         = $request_data['tiporete'] ;
+        $tipogioco        = $request_data['tipogioco'];
+        $tiporete         = $request_data['tiporete'];
         $tipoDettGP            = array(
-                                  'AI',
-                                  'AS',
-                                  'I',
-                                  'IDLG',
-                                  'IPP',
-                                  'S',
-                                  'X',
-                                  'A',
-                                 );
+            'AI',
+            'AS',
+            'I',
+            'IDLG',
+            'IPP',
+            'S',
+            'X',
+            'A',
+        );
         if ($tipo_conc == 'B') {
             $tipo_dett_in = 'TOT_BINGO_KO';
         } elseif ($tipo_conc == 'GAD') {
@@ -2108,22 +2098,35 @@ class mainAppController
         }
 
         $pars = array(
-                 'tipo_conc' => $tipo_conc,
-                 'tipo_rete' => $tiporete,
-                 'cod_gioco' => $codGioco,
-                 'anno'      => $anno,
-                 'semestre'  => $sem,
-                );
-        if (!$this->_selGiochi($pars) ||
-        $this->_controllaPeriodoConcessione($tipo_conc, $semestre, $anno,
-        $tiporete, $tipogioco) == 0) {
+            'tipo_conc' => $tipo_conc,
+            'tipo_rete' => $tiporete,
+            'cod_gioco' => $codGioco,
+            'anno'      => $anno,
+            'semestre'  => $sem,
+        );
+        if (
+            !$this->_selGiochi($pars) ||
+            $this->_controllaPeriodoConcessione(
+                $tipo_conc,
+                $semestre,
+                $anno,
+                $tiporete,
+                $tipogioco
+            ) == 0
+        ) {
             $responseData['messaggio'] = 'Dati di ricerca incongruenti';
             return -1;
         } elseif (
-                $this->_controllaPeriodoConcessione($tipo_conc, $semestre,
-        $anno, $tiporete, $tipogioco) == -1) {
+            $this->_controllaPeriodoConcessione(
+                $tipo_conc,
+                $semestre,
+                $anno,
+                $tiporete,
+                $tipogioco
+            ) == -1
+        ) {
             $responseData['messaggio'] =
-            'Non si possono effettuare ricerche per periodi non conclusi';
+                'Non si possono effettuare ricerche per periodi non conclusi';
             return -1;
         }
 
@@ -2141,24 +2144,22 @@ class mainAppController
         }
 
         $arrayBind = array(
-                      'tipodett_in'  => $tipo_dett_in,
-                      'tipo_conc_in' => $tipo_conc,
-                      'anno_in'      => $anno,
-                      'semestre_in'  => $semestre,
-                      'cod_gioco_in' => $tipogioco,
-                      'tipo_rete_in' => $tiporete,
-                      'cfaams_in'    => $cf,
-                      'pagina_in'    => $pagina,
-                      'num_res_in'   => $paging,
-                     );
+            'tipodett_in'  => $tipo_dett_in,
+            'tipo_conc_in' => $tipo_conc,
+            'anno_in'      => $anno,
+            'semestre_in'  => $semestre,
+            'cod_gioco_in' => $tipogioco,
+            'tipo_rete_in' => $tiporete,
+            'cfaams_in'    => $cf,
+            'pagina_in'    => $pagina,
+            'num_res_in'   => $paging,
+        );
         $res = $this->db->selElencoInadempientiNew($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Errore procedura selElencoInadempientiNew';
         } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun concessionario inadempiente per i parametri selezionati';
-        } 
-        else 
-        {         
+        } else {
             $nConc                        = $res['ROWS_TOT2'][0];
             $nRows                        = $res['ROWS_TOT'][0];
             $nButton                      = ceil(($nRows / $paging));
@@ -2167,11 +2168,9 @@ class mainAppController
             $responseData['tot_result']  = $this->db->num_cn;
             $res['pagestot']              = $nButton + 1;
             $responseData['elenco']      = $res;
-            
-        }       
+        }
 
         return $this->commonResponse($response, $responseData);
-
     }
 
     function getCSVNew(Request $request, Response $response)
@@ -2180,8 +2179,8 @@ class mainAppController
         $anno             = $request_data['anno'];
         $semestre         = $request_data['semestre'];
         $tipo_conc         = $request_data['tipoconc'];
-        $tipogioco        = $request_data['tipogioco']; 
-        $tiporete         = $request_data['tiporete'] ;
+        $tipogioco        = $request_data['tipogioco'];
+        $tiporete         = $request_data['tiporete'];
 
 
         $responseData['anno']      = $anno;
@@ -2191,15 +2190,15 @@ class mainAppController
         $responseData['tiporete'] = $tiporete;
 
         $tipoDettGP            = array(
-                                  'AI',
-                                  'AS',
-                                  'I',
-                                  'IDLG',
-                                  'IPP',
-                                  'S',
-                                  'X',
-                                  'A',
-                                 );
+            'AI',
+            'AS',
+            'I',
+            'IDLG',
+            'IPP',
+            'S',
+            'X',
+            'A',
+        );
         if ($tipo_conc == 'B') {
             $tipo_dett_in = 'TOT_BINGO_KO';
         } elseif ($tipo_conc == 'GAD') {
@@ -2217,8 +2216,10 @@ class mainAppController
         $responseData['tipo_conc'] = $tipo_conc;
         $responseData['tipogioco'] = $tipogioco;
         $responseData['tiporete']  = $tiporete;
-        if (isset($request_data['paginaCSV']) &&
-        $request_data['paginaCSV']) {
+        if (
+            isset($request_data['paginaCSV']) &&
+            $request_data['paginaCSV']
+        ) {
             $pagina = $request_data['paginaCSV'];
         } else {
             $pagina                        = 1;
@@ -2227,51 +2228,47 @@ class mainAppController
 
         $paging    = 40;
         $arrayBind = array(
-                      'tipodett_in'  => $tipo_dett_in,
-                      'tipo_conc_in' => $tipo_conc,
-                      'anno_in'      => $anno,
-                      'semestre_in'  => $semestre,
-                      'cod_gioco_in' => $tipogioco,
-                      'tipo_rete_in' => $tiporete,
-                      'cfaams_in'    => '',
-                      'pagina_in'    => null,
-                      'num_res_in'   => null,
-                     );
+            'tipodett_in'  => $tipo_dett_in,
+            'tipo_conc_in' => $tipo_conc,
+            'anno_in'      => $anno,
+            'semestre_in'  => $semestre,
+            'cod_gioco_in' => $tipogioco,
+            'tipo_rete_in' => $tiporete,
+            'cfaams_in'    => '',
+            'pagina_in'    => null,
+            'num_res_in'   => null,
+        );
         $res = $this->db->selElencoInadempientiNew($arrayBind);
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Errore procedura selElencoInadempientiNew';
         } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun concessionario inadempiente per i parametri selezionati';
-        } 
-        else 
-        {         
+        } else {
             if ($tipogioco != -1) {
                 $descr_gioco                       = $res[0]['DESCR_GIOCO'];
                 $responseData['tipo_concessione'] = $res[0]['DESCR'];
                 $campi                             = array(
-                                                      'COD_CONC'  =>
+                    'COD_CONC'  =>
                     'Codice concessione',
-                                                      'RAG_SOC'   =>
+                    'RAG_SOC'   =>
                     'Ragione Sociale',
-                                                      'DATA_CONC' =>
+                    'DATA_CONC' =>
                     'Data stipula concessione',
-                                                     );
-            } 
-            else 
-            {
+                );
+            } else {
                 $descr_gioco                       = 'TUTTI';
                 $responseData['tipo_concessione'] = $res[0]['DESCR'];
                 $campi                             = array(
-                                                      'COD_CONC'    => 'Codice concessione',
-                                                      'RAG_SOC'     => 'Ragione Sociale',
-                                                      'DATA_CONC'   => 'Data stipula concessione',
-                                                      'DESCR_GIOCO' => 'Tipo gioco non trasmesso',
-                                                     );
+                    'COD_CONC'    => 'Codice concessione',
+                    'RAG_SOC'     => 'Ragione Sociale',
+                    'DATA_CONC'   => 'Data stipula concessione',
+                    'DESCR_GIOCO' => 'Tipo gioco non trasmesso',
+                );
             }
 
             if ($tipo_conc == 'VID') {
                 if (is_array($res) && count($res)) {
-                    foreach($res as $k => $v) {
+                    foreach ($res as $k => $v) {
                         $res[$k]['COD_CONC'] = 'ND';
                     }
                 }
@@ -2295,20 +2292,18 @@ class mainAppController
                 $semestreSTR = ' secondo semestre';
             }
 
-            $annosemestre              = ' \n anno '.$anno.$semestreSTR;
+            $annosemestre              = ' \n anno ' . $anno . $semestreSTR;
             $responseData['sezione']  =
-            'Antiriciclaggio - Elenco concessionari inadempienti ';
+                'Antiriciclaggio - Elenco concessionari inadempienti ';
             $responseData['sezione'] .=
-            $responseData['tipo_concessione'].'\n\n  '.$annosemestre;
-            $responseData['sezione'] .= $tiporeteSTR.'Tipo gioco ';
+                $responseData['tipo_concessione'] . '\n\n  ' . $annosemestre;
+            $responseData['sezione'] .= $tiporeteSTR . 'Tipo gioco ';
             $responseData['sezione'] .= $descr_gioco;
             $responseData['tpl_name'] = 'Monitoraggio ';
             $responseData['tpl_name'] .= $this->tpl_dat['tipo_concessione'];
-            
-        }    
-        
+        }
+
         return $this->commonResponse($response, $responseData);
- 
     }
     //FINE --- RC01_antiric_monitoraggio.inc 
 
@@ -2355,13 +2350,13 @@ class mainAppController
         );
 
         $arrayBind       = array();
-        $res= $this->db->ListaGiochi($arrayBind);
+        $res = $this->db->ListaGiochi($arrayBind);
         $responseData['resGiochi'] = $res;
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Errore procedura ListaGiochi';
         } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun record presente';
-        } 
+        }
 
         $arrayBind       = array(
             'cod_fisc'    => $request_data['codFisc'],
@@ -2376,29 +2371,21 @@ class mainAppController
             $responseData['messaggio'] = 'Errore procedura ListaGiochi';
         } else if ($res == null) {
             $responseData['messaggio'] = 'Nessun record presente';
-        } 
-
-
+        }
 
         $responseData['save_file']    = 0;
         $responseData['freeze_panes'] = 0;
 
         $responseData['nome_file_excel'] = 'Elenco_invii_documentazione.xls';
 
-        $responseData['title_excel']['title']['testo']  =
-        'Agenzia delle Dogane e dei Monopoli - Rapporto Concessorio - Antiriciclaggio - Monitoraggio';
+        $responseData['title_excel']['title']['testo']  ='Agenzia delle Dogane e dei Monopoli - Rapporto Concessorio - Antiriciclaggio - Monitoraggio';
         $responseData['title_excel']['title']['format'] = $format_titolo;
 
-        $titoloTab                                          =
-        'Invio documentazione per concessione e per gioco';
-        $titoloTab                                         .=
-        ' - Codice Fiscale: '.$resInvii['COD_FISC'][0];
-        $titoloTab                                         .=
-        ' - Ragione Sociale: '.$resInvii['RAG_SOC'][0];
-        $titoloTab                                         .=
-        ' - Anno: '.ucfirst($request_data['annoRicerca']);
-        $titoloTab                                         .=
-        ' - Semestre: '.ucfirst($request_data['semestreRicerca']);
+        $titoloTab  = 'Invio documentazione per concessione e per gioco';
+        $titoloTab .= ' - Codice Fiscale: ' . $resInvii['COD_FISC'][0];
+        $titoloTab .= ' - Ragione Sociale: ' . $resInvii['RAG_SOC'][0];
+        $titoloTab .= ' - Anno: ' . ucfirst($request_data['annoRicerca']);
+        $titoloTab .= ' - Semestre: ' . ucfirst($request_data['semestreRicerca']);
         $responseData['title_excel']['newtitle']['testo']  = $titoloTab;
         $responseData['title_excel']['newtitle']['format'] = $format_sotto_titolo;
 
@@ -2407,72 +2394,61 @@ class mainAppController
         $responseData['array_dati'][2] = $resInvii['COD_CONC'];
 
         $colnna = 3;
-        if($request_data['annoRicerca'] === 'tutti') {
+        if ($request_data['annoRicerca'] === 'tutti') {
             $responseData['array_dati'][$colnna] = $resInvii['ANNO'];
-        $colnna++;
+            $colnna++;
         }
 
-        if($request_data['semestreRicerca'] === "tutti") {
+        if ($request_data['semestreRicerca'] === "tutti") {
             $responseData['array_dati'][$colnna] = $resInvii['SEMESTRE'];
-        $colnna++;
+            $colnna++;
         }
 
         $responseData['array_dati'][$colnna] = $resInvii['G0XLS'];
-
         $colnna++;
         $responseData['array_dati'][$colnna] = $resInvii['G1XLS'];
-
         $colnna++;
-        $responseData['array_dati'][$colnna] =$resInvii['G10XLS'];
-
+        $responseData['array_dati'][$colnna] = $resInvii['G10XLS'];
         $colnna++;
         $responseData['array_dati'][$colnna] = $resInvii['G11XLS'];
-
         $colnna++;
         $responseData['array_dati'][$colnna] = $resInvii['G12XLS'];
-
         $colnna++;
         $responseData['array_dati'][$colnna] = $resInvii['G2XLS'];
-
         $colnna++;
         $responseData['array_dati'][$colnna] = $resInvii['G5XLS'];
-
         $colnna++;
         $responseData['array_dati'][$colnna] = $resInvii['G6XLS'];
-
         $colnna++;
         $responseData['array_dati'][$colnna] = $resInvii['G7XLS'];
-
         $colnna++;
         $responseData['array_dati'][$colnna] = $resInvii['G8XLS'];
 
-
-        $responseData['title_excel'][0]['testo']  = 'Tipo_concessione';
-        $responseData['title_excel'][0]['format'] = $format_intestazioni;
-        $responseData['title_excel'][1]['testo']  = 'Tipo_diritto';
-        $responseData['title_excel'][1]['format'] = $format_intestazioni;
-        $responseData['title_excel'][2]['testo']  = 'Codice_Concessione';
+        $responseData['title_excel'][0]['testo']   = 'Tipo_concessione';
+        $responseData['title_excel'][0]['format']  = $format_intestazioni;
+        $responseData['title_excel'][1]['testo']   = 'Tipo_diritto';
+        $responseData['title_excel'][1]['format']  = $format_intestazioni;
+        $responseData['title_excel'][2]['testo']   = 'Codice_Concessione';
         $responseDatat['title_excel'][2]['format'] = $format_intestazioni;
 
         $colnna = 3;
-        if($request_data['annoRicerca'] === 'tutti') {
+        if ($request_data['annoRicerca'] === 'tutti') {
             $responseData['title_excel'][$colnna]['testo']  = 'Anno';
             $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
-        $colnna++;
+            $colnna++;
         }
 
-        if($request_data['semestreRicerca'] === 'tutti') {
+        if ($request_data['semestreRicerca'] === 'tutti') {
             $responseData['title_excel'][$colnna]['testo']  = 'Semestre';
             $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
-        $colnna++;
+            $colnna++;
         }
 
         $responseData['title_excel'][$colnna]['testo']  = 'GIOCO_A_DISTANZA';
         $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
 
         $colnna++;
-        $responseData['title_excel'][$colnna]['testo']  =
-        'SCOMMESSE_IPPICHE_A_TOTALIZZATORE_E_A_QUOTA_FISSA';
+        $responseData['title_excel'][$colnna]['testo']  = 'SCOMMESSE_IPPICHE_A_TOTALIZZATORE_E_A_QUOTA_FISSA';
         $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
 
         $colnna++;
@@ -2488,8 +2464,7 @@ class mainAppController
         $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
 
         $colnna++;
-        $responseData['title_excel'][$colnna]['testo']  =
-        'SCOMMESSE_A_TOTALIZZATORE_NON_IPPICHE';
+        $responseData['title_excel'][$colnna]['testo']  = 'SCOMMESSE_A_TOTALIZZATORE_NON_IPPICHE';
         $responseData['title_excel'][$colnna]['format'] = $format_intestazioni;
 
         $colnna++;
@@ -2518,7 +2493,6 @@ class mainAppController
     {
         $request_data = $request->getParsedBody();
 
- 
         $format_titolo = array(
             'font_family' => 'Arial',
             'font_size'   => 10,
@@ -2532,35 +2506,35 @@ class mainAppController
         );
 
         $format_sotto_titolo = array(
-                'font_family' => 'Arial',
-                'font_size'   => 10,
-                'font_color'  => 'white',
-                'font_weight' => 'B',
-                'align'	      => 'C',
-                'fgcolor'     => 'green',
-                'bgcolor'     => 'white',
-                'border'      => 0,
-                'num_format'  => 0,
-                );
+            'font_family' => 'Arial',
+            'font_size'   => 10,
+            'font_color'  => 'white',
+            'font_weight' => 'B',
+            'align'          => 'C',
+            'fgcolor'     => 'green',
+            'bgcolor'     => 'white',
+            'border'      => 0,
+            'num_format'  => 0,
+        );
 
         $format_intestazioni = array(
-                'font_family' => 'Arial',
-                'font_size'   => 10,
-                'font_color'  => 'black',
-                'font_weight' => 'B',
-                'align'       => 'C',
-                'fgcolor'     => 'silver',
-                'bgcolor'     => 'white',
-                'column_size' => 42,
-                );
+            'font_family' => 'Arial',
+            'font_size'   => 10,
+            'font_color'  => 'black',
+            'font_weight' => 'B',
+            'align'       => 'C',
+            'fgcolor'     => 'silver',
+            'bgcolor'     => 'white',
+            'column_size' => 42,
+        );
 
         $arrayBind = array(
-        'tipo_concIn' => $request_data['tipo_conc'],
-        'cod_concIn'  => $request_data['cod_conc'],
-        'annoIn'      => $request_data['annoRicerca'],
-        'semestreIn'  => $request_data['semestreRicerca'],
-        'cod_giocoIn' => $request_data['cod_gioco'],
-        'tipo_reteIn' => $request_data['tipo_rete'],
+            'tipo_concIn' => $request_data['tipo_conc'],
+            'cod_concIn'  => $request_data['cod_conc'],
+            'annoIn'      => $request_data['annoRicerca'],
+            'semestreIn'  => $request_data['semestreRicerca'],
+            'cod_giocoIn' => $request_data['cod_gioco'],
+            'tipo_reteIn' => $request_data['tipo_rete'],
         );
 
         $resQuery = $this->db->selezioneDatiTrasmessiCSV($arrayBind);
@@ -2569,7 +2543,7 @@ class mainAppController
             $responseData['messaggio'] = 'Errore procedura ListaGiochi';
         } else if ($resQuery == null) {
             $responseData['messaggio'] = 'Nessun record presente';
-        } 
+        }
 
 
         $responseData['save_file']       = 0;
@@ -2580,57 +2554,55 @@ class mainAppController
         $responseData['title_excel']['title']['format'] = $format_titolo;
 
         $titoloTab  = 'Invio documentazione per concessione e per gioco';
-        $titoloTab .= ' - Codice Fiscale: '.$request_data['codFisc'];
-        $titoloTab .= ' - Ragione Sociale: '.$request_data['ragSoc'];
-        $titoloTab .= ' - Anno: '.$request_data['annoRicerca'];
-        $semestre   = 'Primo';
-        if($request_data['semestreRicerca'] === 2) {
-            $semestre = 'Secondo';
+        $titoloTab .= ' - Codice Fiscale: ' . $request_data['codFisc'];
+        $titoloTab .= ' - Ragione Sociale: ' . $request_data['ragSoc'];
+        $titoloTab .= ' - Anno: ' . $request_data['annoRicerca'];
+        if ($request_data['semestreRicerca'] === 2) {
+            $titoloTab .= ' - Semestre: Secondo';
+        }else{
+            $titoloTab .= ' - Semestre: Primo';
         }
 
-        $titoloTab                                         .= ' - Semestre: '.$semestre;
         $responseData['title_excel']['newtitle']['testo']  = $titoloTab;
         $responseData['title_excel']['newtitle']['format'] = $format_sotto_titolo;
 
         $arrayTitle = array(
-        0  => 'CODICE CONCESSIONE',
-        1  => 'TIPO CONCESSIONE',
-        2  => 'GIOCO',
-        3  => 'Tipo raccolta',
-        4  => 'CODICE FORNITURA',
-        5  => 'DATA TRASMISSIONE',
-        6  => 'GIOCATE SUPERIORI A 1000 EURO',
-        7  => 'VINCITE SUPERIORI A 1000 EURO',
-        8  => 'OPERAZIONI FRAZIONATE',
-        9  => 'OPERAZIONI SOSPETTE',
-        10 => 'GIOCATE DWH',
-        11 => 'VINCITE DWH',
-        12 => 'OPERAZIONI FRAZIONATE DWH',
-        13 => 'OPERAZIONI SOSPETTE DWH',
+            0  => 'CODICE CONCESSIONE',
+            1  => 'TIPO CONCESSIONE',
+            2  => 'GIOCO',
+            3  => 'Tipo raccolta',
+            4  => 'CODICE FORNITURA',
+            5  => 'DATA TRASMISSIONE',
+            6  => 'GIOCATE SUPERIORI A 1000 EURO',
+            7  => 'VINCITE SUPERIORI A 1000 EURO',
+            8  => 'OPERAZIONI FRAZIONATE',
+            9  => 'OPERAZIONI SOSPETTE',
+            10 => 'GIOCATE DWH',
+            11 => 'VINCITE DWH',
+            12 => 'OPERAZIONI FRAZIONATE DWH',
+            13 => 'OPERAZIONI SOSPETTE DWH',
         );
 
-        for($i = 0; $i < 14; $i++) 
-        {
-            if(isset($resQuery[$arrayTitle[$i]][0])) {
+        for ($i = 0; $i < 14; $i++) {
+            if (isset($resQuery[$arrayTitle[$i]][0])) {
                 $valorecampo = strtolower($resQuery[$arrayTitle[$i]][0]);
-        
+
                 switch ($valorecampo) {
                     case 'nd':
                         $valorecampo = 'Non disponibile';
-                    break;
-        
+                        break;
+
                     case 'ne':
                         $valorecampo = 'Non esiste';
-                    break;
-        
+                        break;
+
                     case 'dwh':
                         $valorecampo = 'Data WareHouse';
-                    break;
+                        break;
                 }
-                
+
                 $arrayValue[$i] = ucfirst($valorecampo);
-            }
-            else {
+            } else {
                 $arrayValue[$i] = 'Non disponibile';
             }
         }
@@ -2659,14 +2631,14 @@ class mainAppController
         $semestre       = null;
         $datadal        = null;
         $dataal         = null;
-        
-        if (isset($request_data['option_giorno_dal']) and isset($request_data['option_mese_dal']) and isset($request_data['option_anno_dal'])) 
-            $datadal = str_pad($request_data['option_giorno_dal'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_mese_dal'],2,'0',STR_PAD_LEFT)
-	        .str_pad($request_data['option_anno_dal'],2,'0',STR_PAD_LEFT);
-	    if (isset($request_data['option_giorno_al']) and isset($request_data['option_mese_al']) and isset($request_data['option_anno_al']))     
-	        $dataal  = str_pad($request_data['option_giorno_al'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_mese_al'],2,'0',STR_PAD_LEFT).
-	        str_pad($request_data['option_anno_al'],2,'0',STR_PAD_LEFT);
-        
+
+        if (isset($request_data['option_giorno_dal']) and isset($request_data['option_mese_dal']) and isset($request_data['option_anno_dal']))
+            $datadal = str_pad($request_data['option_giorno_dal'], 2, '0', STR_PAD_LEFT) . str_pad($request_data['option_mese_dal'], 2, '0', STR_PAD_LEFT)
+                . str_pad($request_data['option_anno_dal'], 2, '0', STR_PAD_LEFT);
+        if (isset($request_data['option_giorno_al']) and isset($request_data['option_mese_al']) and isset($request_data['option_anno_al']))
+            $dataal  = str_pad($request_data['option_giorno_al'], 2, '0', STR_PAD_LEFT) . str_pad($request_data['option_mese_al'], 2, '0', STR_PAD_LEFT) .
+                str_pad($request_data['option_anno_al'], 2, '0', STR_PAD_LEFT);
+
         if (isset($request_data['concessionario'])) {
             $concessionario = $request_data['concessionario'];
         }
@@ -2680,114 +2652,105 @@ class mainAppController
         $responseData['semestre']       = $semestre;
         $responseData['anno']           = $anno;
         $responseData['flag_autorizza']  = 0; //vedi tasto autorizza
-        
+
         $responseData['pars']           = $this->clear_pars;
-        
+
         if (isset($request_data['tipoconc'])) {
             $tipo = $request_data['tipoconc'];
         } else {
             $tipo = 'T';
         }
-        
+
         $responseData['tipoconc']         = $tipo;
-                        
-        if (isset($request_data['autorizza']) && $request_data['autorizza'] == 'Autorizza') 
-         {
-	      //echo "\nautorizza";
-	      $rit = $this->_checkForm($request_data);
-	      //echo "\nrit=".$rit;
-	      if($rit == '0')
-	      {  
-                $arrayBind = array('tipo_conc'  => $tipo,
-                                'cod_conc'   => $concessionario,
-                                'anno'       => $anno,
-                                'semestre'   => $semestre,
-                                'datadal'    => $datadal,
-                                'dataal'     => $dataal,
-                                'cfaams_in' => $this->clear_pars['cf_utente']);
+
+        if (isset($request_data['autorizza']) && $request_data['autorizza'] == 'Autorizza') {
+            //echo "\nautorizza";
+            $rit = $this->_checkForm($request_data);
+            //echo "\nrit=".$rit;
+            if ($rit == '0') {
+                $arrayBind = array(
+                    'tipo_conc'  => $tipo,
+                    'cod_conc'   => $concessionario,
+                    'anno'       => $anno,
+                    'semestre'   => $semestre,
+                    'datadal'    => $datadal,
+                    'dataal'     => $dataal,
+                    'cfaams_in' => $this->clear_pars['cf_utente']
+                );
                 $resQuery = $this->db->ScriviDeroga($arrayBind);
                 $responseData['resQuery'] = $resQuery;
                 if ($this->db->getError() != "") {
                     $responseData['messaggio'] = 'Operazione terminata con errore - Contattare assistenza';
-                } else 
-                {
+                } else {
                     $responseData['messaggio'] = 'Deroga correttamente autorizzata ';
-                }                  
+                }
 
-                
+
                 $responseData['flag_autorizza']  = 1; //nascondi tasto autorizza  
-          }  
-          else
-            $this->tpl_dat['messaggio']=$rit;  
-            
-            
-	      //caricamento elenco concessioni
-          $arrayBind = array('tipo_conc' => $tipo);
-          $res = $this->db->selConcDeroga($arrayBind);
-          $responseData['resQuery'] = $res;
-          if ($this->db->getError() != "") {
-              $responseData['messaggio'] = 'Errore procedura Deroga';
-          } else if ($res == null) {
-            $responseData['messaggioConcessionari']='Non sono presenti concessionari per i parametri di ';
-            $responseData['messaggioConcessionari'] .= 'ricerca selezionati';
-          } 
+            } else
+                $this->tpl_dat['messaggio'] = $rit;
 
-	     
-	      $concOpt = array();
-	      if ($this->db->errcode == 0 && $res != null) {
-	          foreach ($res['COD_CONC'] as $k => $v) {
-	              if ($res['TIPO_CONC'][$k] == 'VID') {
-	                    $concOpt[$res['TIPO_CONC'][$k].$v] =
-	                    (isset($res['RAG_SOC'][$k])? $res['RAG_SOC'][$k] : '');
-	                } else {
-	                 $concOpt[$v] = $v.' - '.(isset($res['RAG_SOC'][$k])?$res['RAG_SOC'][$k] : '');
-	                }
-	            }
-	       }
-	
-           $responseData['tipoconcSelected'] = $tipo;
-           $responseData['concessionari']    = $concOpt;
-	      
-	      
-          
-         }
-         
-        if (isset($request_data['visualizza']) && $request_data['visualizza'] == 'Visualizza>>') 
-         {  
-	        if (isset($request_data['tipoconc']) && $request_data['tipoconc'] == '') 
-	         {
-                $responseData['messaggio']='Selezionare tipologia di concessione';
-             }
-	        else
-	         { 
-	           //caricamento elenco concessioni
+
+            //caricamento elenco concessioni
+            $arrayBind = array('tipo_conc' => $tipo);
+            $res = $this->db->selConcDeroga($arrayBind);
+            $responseData['resQuery'] = $res;
+            if ($this->db->getError() != "") {
+                $responseData['messaggio'] = 'Errore procedura Deroga';
+            } else if ($res == null) {
+                $responseData['messaggioConcessionari'] = 'Non sono presenti concessionari per i parametri di ';
+                $responseData['messaggioConcessionari'] .= 'ricerca selezionati';
+            }
+
+
+            $concOpt = array();
+            if ($this->db->errcode == 0 && $res != null) {
+                foreach ($res['COD_CONC'] as $k => $v) {
+                    if ($res['TIPO_CONC'][$k] == 'VID') {
+                        $concOpt[$res['TIPO_CONC'][$k] . $v] =
+                            (isset($res['RAG_SOC'][$k]) ? $res['RAG_SOC'][$k] : '');
+                    } else {
+                        $concOpt[$v] = $v . ' - ' . (isset($res['RAG_SOC'][$k]) ? $res['RAG_SOC'][$k] : '');
+                    }
+                }
+            }
+
+            $responseData['tipoconcSelected'] = $tipo;
+            $responseData['concessionari']    = $concOpt;
+        }
+
+        if (isset($request_data['visualizza']) && $request_data['visualizza'] == 'Visualizza>>') {
+            if (isset($request_data['tipoconc']) && $request_data['tipoconc'] == '') {
+                $responseData['messaggio'] = 'Selezionare tipologia di concessione';
+            } else {
+                //caricamento elenco concessioni
                 $arrayBind = array('tipo_conc' => $tipo);
                 $res = $this->db->selConcDeroga($arrayBind);
                 $responseData['resQuery'] = $res;
                 if ($this->db->getError() != "") {
                     $responseData['messaggio'] = 'Errore procedura Deroga';
                 } else if ($res == null) {
-                  $responseData['messaggioConcessionari']='Non sono presenti concessionari per i parametri di ';
-                  $responseData['messaggioConcessionari'] .= 'ricerca selezionati';
-                } 
+                    $responseData['messaggioConcessionari'] = 'Non sono presenti concessionari per i parametri di ';
+                    $responseData['messaggioConcessionari'] .= 'ricerca selezionati';
+                }
 
-         
-	            $concOpt = array();
-	            if ($this->db->errcode == 0 && $res != null) {
-	                foreach ($res['COD_CONC'] as $k => $v) {
-	                    if ($res['TIPO_CONC'][$k] == 'VID') {
-	                        $concOpt[$res['TIPO_CONC'][$k].$v] =
-	                        (isset($res['RAG_SOC'][$k])? $res['RAG_SOC'][$k] : '');
-	                    } else {
-	                     $concOpt[$v] = $v.' - '.(isset($res['RAG_SOC'][$k])?$res['RAG_SOC'][$k] : '');
-	                    }
-	                }
-	            }
-	
-	            $responseData['tipoconcSelected'] = $tipo;
-	            $responseData['concessionari']    = $concOpt;
-             }    
-         }
+
+                $concOpt = array();
+                if ($this->db->errcode == 0 && $res != null) {
+                    foreach ($res['COD_CONC'] as $k => $v) {
+                        if ($res['TIPO_CONC'][$k] == 'VID') {
+                            $concOpt[$res['TIPO_CONC'][$k] . $v] =
+                                (isset($res['RAG_SOC'][$k]) ? $res['RAG_SOC'][$k] : '');
+                        } else {
+                            $concOpt[$v] = $v . ' - ' . (isset($res['RAG_SOC'][$k]) ? $res['RAG_SOC'][$k] : '');
+                        }
+                    }
+                }
+
+                $responseData['tipoconcSelected'] = $tipo;
+                $responseData['concessionari']    = $concOpt;
+            }
+        }
 
         //caricamento tipologia di concessione
         $arrayBind   = array('allIn' => '1',);
@@ -2808,60 +2771,60 @@ class mainAppController
         //caricamento giorno data inizio
         $giorno_dal    = array();
         $giorno_dal[0] = '';
-        for($gg=1;$gg<=31;$gg++) {
-          $giorno_dal[$gg] = str_pad($gg, 2, "0", STR_PAD_LEFT);
+        for ($gg = 1; $gg <= 31; $gg++) {
+            $giorno_dal[$gg] = str_pad($gg, 2, "0", STR_PAD_LEFT);
         }
         $responseData['giorno_dal'] = $giorno_dal;
         //caricamento mese data inizio
         $mese_dal    = array();
         $mese_dal[0] = '';
-        for($mm=1;$mm<=12;$mm++){
-          $mese_dal[$mm] = str_pad($mm, 2, "0", STR_PAD_LEFT);
+        for ($mm = 1; $mm <= 12; $mm++) {
+            $mese_dal[$mm] = str_pad($mm, 2, "0", STR_PAD_LEFT);
         }
         $responseData['mese_dal'] = $mese_dal;
         //caricamento anno data inizio
         $anno_dal    = array();
         $anno_dal[0] = '';
-        for($aa=date("Y");$aa<=date("Y")+2;$aa++) {
-          $anno_dal[$aa] = $aa;
+        for ($aa = date("Y"); $aa <= date("Y") + 2; $aa++) {
+            $anno_dal[$aa] = $aa;
         }
         $responseData['anno_dal'] = $anno_dal;
         //caricamento giorno data fine
         $giorno_al    = array();
         $giorno_al[0] = '';
-        for($gg=1;$gg<=31;$gg++) {
-          $giorno_al[$gg] = str_pad($gg, 2, "0", STR_PAD_LEFT);
+        for ($gg = 1; $gg <= 31; $gg++) {
+            $giorno_al[$gg] = str_pad($gg, 2, "0", STR_PAD_LEFT);
         }
         $responseData['giorno_al'] = $giorno_al;
         //caricamento mese data fine
         $mese_al    = array();
         $mese_al[0] = '';
-        for($mm=1;$mm<=12;$mm++){
-          $mese_al[$mm] = str_pad($mm, 2, "0", STR_PAD_LEFT);
+        for ($mm = 1; $mm <= 12; $mm++) {
+            $mese_al[$mm] = str_pad($mm, 2, "0", STR_PAD_LEFT);
         }
         $responseData['mese_al'] = $mese_al;
         //caricamento anno data fine
         $anno_al    = array();
         $anno_al[0] = '';
-        for($aa=date("Y");$aa<=date("Y")+2;$aa++) {
-          $anno_al[$aa] = $aa;
+        for ($aa = date("Y"); $aa <= date("Y") + 2; $aa++) {
+            $anno_al[$aa] = $aa;
         }
         $responseData['anno_al'] = $anno_al;
-        if (isset($request_data['option_giorno_dal'])) 
+        if (isset($request_data['option_giorno_dal']))
             $responseData['giorno_dal_sel'] = $request_data['option_giorno_dal'];
-        if (isset($request_data['option_mese_dal']))   
+        if (isset($request_data['option_mese_dal']))
             $responseData['mese_dal_sel'] = $request_data['option_mese_dal'];
-        if (isset($request_data['option_anno_dal']))   
+        if (isset($request_data['option_anno_dal']))
             $responseData['anno_dal_sel'] = $request_data['option_anno_dal'];
-        if (isset($request_data['option_giorno_al']))   
+        if (isset($request_data['option_giorno_al']))
             $responseData['giorno_al_sel'] = $request_data['option_giorno_al'];
-        if (isset($request_data['option_mese_al']))   
+        if (isset($request_data['option_mese_al']))
             $responseData['mese_al_sel'] = $request_data['option_mese_al'];
-        if (isset($request_data['option_anno_al']))   
+        if (isset($request_data['option_anno_al']))
             $responseData['anno_al_sel'] = $request_data['option_anno_al'];
 
-        
-        return $this->commonResponse($response, $responseData);  
+
+        return $this->commonResponse($response, $responseData);
     }
 
     function getFormMon(Request $request, Response $response)
@@ -2870,8 +2833,8 @@ class mainAppController
         $concessionario = null;
         $anno           = null;
         $semestre           = null;
-       
-        
+
+
         if (isset($request_data['concessionario'])) {
             $concessionario = $request_data['concessionario'];
         }
@@ -2880,7 +2843,7 @@ class mainAppController
         }
         if (isset($request_data['semestre'])) {
             $semestre = $request_data['semestre'];
-        } 
+        }
         $responseData['concessionario'] = $concessionario;
         $responseData['tiporaccolta']   = $request_data['traccolta'];
         $responseData['semestre']       = $semestre;
@@ -2893,27 +2856,25 @@ class mainAppController
         }
 
         $responseData['tipoconc']         = $tipo;
-    
+
         $arrayBind = array('tipo_conc'    => $tipo);
         $res = $this->db->selConcDeroga($arrayBind);
         $responseData['resQuery'] = $res;
         if ($this->db->getError() != "") {
             $responseData['messaggio'] = 'Errore procedura Deroga';
         } else if ($res == null) {
-            $responseData['messaggioConcessionari']='Non sono presenti concessionari per i parametri di ';
+            $responseData['messaggioConcessionari'] = 'Non sono presenti concessionari per i parametri di ';
             $responseData['messaggioConcessionari'] .= 'ricerca selezionati';
-        } 
+        }
 
 
         $concOpt = array();
         if ($this->db->errcode == 0 && $res != null) {
             foreach ($res['COD_CONC'] as $k => $v) {
                 if ($res['TIPO_CONC'][$k] == 'VID') {
-                    $concOpt[$res['TIPO_CONC'][$k].$v] =
-                    (isset($res['RAG_SOC'][$k])? $res['RAG_SOC'][$k] : '');
+                    $concOpt[$res['TIPO_CONC'][$k] . $v] = (isset($res['RAG_SOC'][$k]) ? $res['RAG_SOC'][$k] : '');
                 } else {
-
-                    $concOpt[$v] = $v.' - '.(isset($res['RAG_SOC'][$k])?$res['RAG_SOC'][$k] : '');
+                    $concOpt[$v] = $v . ' - ' . (isset($res['RAG_SOC'][$k]) ? $res['RAG_SOC'][$k] : '');
                 }
             }
         }
@@ -2939,48 +2900,35 @@ class mainAppController
         }
 
         return $this->commonResponse($response, $responseData);
-        
     }
 
     function _checkForm($request_data)
     {
-	 //echo "\ncheckform";
-	 //echo "\ndata_odierna=".date("Ymd"); 
-	 //echo "\ndata_inizio=".$this->clear_pars['option_anno_dal'].str_pad($this->clear_pars['option_mese_dal'],2,'0',STR_PAD_LEFT).str_pad($this->clear_pars['option_giorno_dal'],2,'0',STR_PAD_LEFT); 
-	 //echo "\ndata_fine=".$this->clear_pars['option_anno_al'].str_pad($this->clear_pars['option_mese_al'],2,'0',STR_PAD_LEFT).str_pad($this->clear_pars['option_giorno_al'],2,'0',STR_PAD_LEFT);
-	 //print_r($this->clear_pars);  
-	 if ($request_data['option_mese_dal'] == 0 or $request_data['option_giorno_dal'] == 0 or $request_data['option_anno_dal']==0) 
-	 {
-	  return 'Data inizio trasmissione obbligatoria';  
-     } 
-	 elseif (!checkdate($request_data['option_mese_dal'], $request_data['option_giorno_dal'],$request_data['option_anno_dal']) )
-	 {
-	  return 'Data inizio trasmissione errata'; 
-     } 
-	 elseif ($request_data['option_mese_al'] == 0 or $request_data['option_giorno_al'] == 0 or $request_data['option_anno_al']==0) 
-	 {
-	  return 'Data fine trasmissione obbligatoria';  
-     } 
-	 elseif (!checkdate($request_data['option_mese_al'], $request_data['option_giorno_al'],$request_data['option_anno_al']) )
-	 {
-	  return 'Data fine trasmissione errata';   
-     } 
-	 elseif(date("Ymd") > $request_data['option_anno_dal'].str_pad($request_data['option_mese_dal'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_giorno_dal'],2,'0',STR_PAD_LEFT) )
-	 {
-	   return 'Data inizio trasmissione non deve essere minore della data odierna';   
-     } 
-     elseif($request_data['option_anno_dal'].str_pad($request_data['option_mese_dal'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_giorno_dal'],2,'0',STR_PAD_LEFT)
-      > $request_data['option_anno_al'].str_pad($request_data['option_mese_al'],2,'0',STR_PAD_LEFT).str_pad($request_data['option_giorno_al'],2,'0',STR_PAD_LEFT))
-	 {
-	  return 'Data inizio trasmissione non deve essere maggiore della data fine trasmissione';   
-     }
-     elseif($request_data['concessionario'] == '')
-	 {
-	  return 'Concessione obbligatoria';   
-     }
-	 else 
-	  return '0';
-    } 
+        //echo "\ncheckform";
+        //echo "\ndata_odierna=".date("Ymd"); 
+        //echo "\ndata_inizio=".$this->clear_pars['option_anno_dal'].str_pad($this->clear_pars['option_mese_dal'],2,'0',STR_PAD_LEFT).str_pad($this->clear_pars['option_giorno_dal'],2,'0',STR_PAD_LEFT); 
+        //echo "\ndata_fine=".$this->clear_pars['option_anno_al'].str_pad($this->clear_pars['option_mese_al'],2,'0',STR_PAD_LEFT).str_pad($this->clear_pars['option_giorno_al'],2,'0',STR_PAD_LEFT);
+        //print_r($this->clear_pars);  
+        if ($request_data['option_mese_dal'] == 0 or $request_data['option_giorno_dal'] == 0 or $request_data['option_anno_dal'] == 0) {
+            return 'Data inizio trasmissione obbligatoria';
+        } elseif (!checkdate($request_data['option_mese_dal'], $request_data['option_giorno_dal'], $request_data['option_anno_dal'])) {
+            return 'Data inizio trasmissione errata';
+        } elseif ($request_data['option_mese_al'] == 0 or $request_data['option_giorno_al'] == 0 or $request_data['option_anno_al'] == 0) {
+            return 'Data fine trasmissione obbligatoria';
+        } elseif (!checkdate($request_data['option_mese_al'], $request_data['option_giorno_al'], $request_data['option_anno_al'])) {
+            return 'Data fine trasmissione errata';
+        } elseif (date("Ymd") > $request_data['option_anno_dal'] . str_pad($request_data['option_mese_dal'], 2, '0', STR_PAD_LEFT) . str_pad($request_data['option_giorno_dal'], 2, '0', STR_PAD_LEFT)) {
+            return 'Data inizio trasmissione non deve essere minore della data odierna';
+        } elseif (
+            $request_data['option_anno_dal'] . str_pad($request_data['option_mese_dal'], 2, '0', STR_PAD_LEFT) . str_pad($request_data['option_giorno_dal'], 2, '0', STR_PAD_LEFT)
+            > $request_data['option_anno_al'] . str_pad($request_data['option_mese_al'], 2, '0', STR_PAD_LEFT) . str_pad($request_data['option_giorno_al'], 2, '0', STR_PAD_LEFT)
+        ) {
+            return 'Data inizio trasmissione non deve essere maggiore della data fine trasmissione';
+        } elseif ($request_data['concessionario'] == '') {
+            return 'Concessione obbligatoria';
+        } else
+            return '0';
+    }
 
 
     function putFormMon(Request $request, Response $response)
@@ -2989,7 +2937,7 @@ class mainAppController
         $concessionario = null;
         $anno           = null;
         $semestre       = null;
-                
+
         if (isset($request_data['concessionario'])) {
             $concessionario = $request_data['concessionario'];
         }
@@ -3006,53 +2954,53 @@ class mainAppController
         } else {
             $tipo = 'T';
         }
-        
-        
+
+
         if ($anno == 'T')
-             $responseData['anno']           = 'Tutti';
-        else 
-        $responseData['anno']           = $anno;
+            $responseData['anno']           = 'Tutti';
+        else
+            $responseData['anno']           = $anno;
         if ($semestre == 'T')
-        $responseData['semestre']       = 'Tutti';
-        else 
-        $responseData['semestre']       = $semestre; 
+            $responseData['semestre']       = 'Tutti';
+        else
+            $responseData['semestre']       = $semestre;
         if ($concessionario == 'T')
-        $responseData['concessionario'] = 'Tutti';
-        else 
-        $responseData['concessionario'] = $concessionario;  
+            $responseData['concessionario'] = 'Tutti';
+        else
+            $responseData['concessionario'] = $concessionario;
         if ($tipo == 'T')
-        $responseData['tipoconc'] = 'Tutti';
-        else 
-        $responseData['tipoconc'] = $this->_calcolaDescTipoConc($tipo);   
-         
+            $responseData['tipoconc'] = 'Tutti';
+        else
+            $responseData['tipoconc'] = $this->_calcolaDescTipoConc($tipo);
+
         $responseData['pars']           = $this->clear_pars;
-        
+
         //echo "\ntipo=".$tipo;
         //echo "\nconcessionario=".$concessionario;
-                
-        if (isset($request_data['cerca']) && $request_data['cerca'] == 'Cerca') 
-         {
-                //echo "\ncerca";
-                $arrayBind = array('tipo_conc'  => $tipo,
-                                    'cod_conc'   => $concessionario,
-                                    'anno'       => $anno,
-                                    'semestre'   => $semestre);
-                $res = $this->db->CercaDeroga($arrayBind);
-                $responseData['resQuery'] = $res;
 
-                if ($res == null) 
-                {
-                    $responseData['messaggio']='Non sono presenti deroghe per i parametri di ';
-                    $responseData['messaggio'] .= 'ricerca selezionati';
-                    $responseData['return']= 0;
-                }
+        if (isset($request_data['cerca']) && $request_data['cerca'] == 'Cerca') {
+            //echo "\ncerca";
+            $arrayBind = array(
+                'tipo_conc'  => $tipo,
+                'cod_conc'   => $concessionario,
+                'anno'       => $anno,
+                'semestre'   => $semestre
+            );
+            $res = $this->db->CercaDeroga($arrayBind);
+            $responseData['resQuery'] = $res;
 
-                $responseData['fine'] = count($res['COD_CONC']);     
-                $responseData['elenco'] = $res; 
-                //print_r($this->tpl_dat['dati']['ANNO']);
-                 
-         }    
-        $responseData['return']=1;
+            if ($res == null) {
+                $responseData['messaggio'] = 'Non sono presenti deroghe per i parametri di ';
+                $responseData['messaggio'] .= 'ricerca selezionati';
+                $responseData['return'] = 0;
+            }
+
+            $responseData['fine'] = count($res['COD_CONC']);
+            $responseData['elenco'] = $res;
+            //print_r($this->tpl_dat['dati']['ANNO']);
+
+        }
+        $responseData['return'] = 1;
 
         return $this->commonResponse($response, $responseData);
     }
@@ -3062,42 +3010,23 @@ class mainAppController
         switch ($tipoconc) {
             case 'GAD':
                 return 'GAD';
-            break;
-
             case 'I':
                 return 'GIOCHI PUBBLICI IPPICA';
-            break;
-
             case 'VID':
                 return 'VIDEOGIOCHI';
-            break;
-
             case 'AI':
                 return 'AGENZIA I';
-            break;
-
             case 'AS':
                 return 'AGENZIA SPORTIVA';
-            break;
-
             case 'S':
                 return 'GIOCHI PUBBLICI SPORT';
-            break;
-
             case 'B':
                 return 'BINGO';
-            break;
-
-           case 'IDLG':
+            case 'IDLG':
                 return 'GIOCHI PUBBLICI IPPICA D.L. 149/08';
-            break;
-
             default:
                 // Azione non prevista.
-            break;
+                return '';
         }
     }
-
-
 }
-

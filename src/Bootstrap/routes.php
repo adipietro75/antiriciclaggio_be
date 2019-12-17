@@ -7,8 +7,8 @@ use NIM_Backend\Controllers\mainAppController;
 $app->group('', function () {
 
 
-    $this->get('/',                                 'mainAppController:index');
-    $this->get('/alive',                            'mainAppController:alive');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/',                                 'mainAppController:index');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/alive',                            'mainAppController:alive');
     
 
     //RC01_antiric.inc 
@@ -20,32 +20,32 @@ $app->group('', function () {
     $this->map(['GET', 'OPTIONS', 'POST'], '/getMokups',                'mainAppController:getMokups');
 
     
-    $this->get('/getDatiTrasmessiCSV',              'mainAppController:getDatiTrasmessiCSV');
-    $this->get('/selezioneGiochi',                  'mainAppController:selezioneGiochi');
-    $this->get('/giochiDisponibiliPerConcessione',  'mainAppController:giochiDisponibiliPerConcessione');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getDatiTrasmessiCSV',              'mainAppController:getDatiTrasmessiCSV');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/selezioneGiochi',                  'mainAppController:selezioneGiochi');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/giochiDisponibiliPerConcessione',  'mainAppController:giochiDisponibiliPerConcessione');
 
     //RC01_antiric_monitoraggio.inc 
-    $this->get('/getForm',                          'mainAppController:getForm');
-    $this->get('/getResult',                        'mainAppController:getResult');
-    $this->get('/checkInput',                       'mainAppController:checkInput');
-    $this->get('/calcolaAnno',                      'mainAppController:calcolaAnno');
-    $this->get('/getCSV',                           'mainAppController:getCSV');
-    $this->get('/getResult1',                       'mainAppController:getResult1');
-    $this->get('/getCSV1',                          'mainAppController:getCSV1');
-    $this->get('/getResult1det',                    'mainAppController:getResult1det');
-    $this->get('/getCSV1Dett',                      'mainAppController:getCSV1Dett');
-    $this->get('/getResultNew',                     'mainAppController:getResultNew');
-    $this->get('/getCSVNew',                        'mainAppController:getCSVNew');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getForm',                          'mainAppController:getForm');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getResult',                        'mainAppController:getResult');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/checkInput',                       'mainAppController:checkInput');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/calcolaAnno',                      'mainAppController:calcolaAnno');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getCSV',                           'mainAppController:getCSV');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getResult1',                       'mainAppController:getResult1');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getCSV1',                          'mainAppController:getCSV1');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getResult1det',                    'mainAppController:getResult1det');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getCSV1Dett',                      'mainAppController:getCSV1Dett');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getResultNew',                     'mainAppController:getResultNew');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getCSVNew',                        'mainAppController:getCSVNew');
 
     //antiric_XLS_elenco_societa.inc 
-    $this->get('/antiric_XLS_elenco_societa',       'mainAppController:antiric_XLS_elenco_societa');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/antiric_XLS_elenco_societa',       'mainAppController:antiric_XLS_elenco_societa');
 
     //antiric_XLS_elenco_operazioni.inc 
-    $this->get('/antiric_XLS_elenco_operazioni',    'mainAppController:antiric_XLS_elenco_operazioni');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/antiric_XLS_elenco_operazioni',    'mainAppController:antiric_XLS_elenco_operazioni');
     
     //antiric_deroga.inc 
-    $this->get('/getFormDeroga',    'mainAppController:getFormDeroga');
-    $this->get('/getFormMon',       'mainAppController:getFormMon');
-    $this->get('/putFormMon',    'mainAppController:putFormMon');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getFormDeroga',    'mainAppController:getFormDeroga');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/getFormMon',       'mainAppController:getFormMon');
+    $this->map(['GET', 'OPTIONS', 'POST'], '/putFormMon',    'mainAppController:putFormMon');
 
 })->add($container['AuthenticationMiddleware']);
